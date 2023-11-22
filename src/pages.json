@@ -1,0 +1,120 @@
+{
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+		}
+	},
+	"pages": [
+		{
+			"path": "pages/home/home",
+			"style": {
+				"navigationBarTitleText": "图王定制",
+				"backgroundColor": "#1A1D53"
+			}
+		},
+		{
+			"path": "pages/draw/draw",
+			"style": {
+				"navigationBarTitleText": "定制",
+				"disableScroll":true,
+				"disableSwipeBack":true
+			}
+		},
+		{
+			"path": "pages/picture/picture",
+			"style": {
+				"navigationBarTitleText": "壁纸"
+			}
+		},
+		{
+			"path": "pages/myself/myself",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		},
+		{
+			"path": "pages/avatar/avatar",
+			"style": {
+				"navigationBarTitleText": "头像"
+			}
+		},
+		{
+			"path": "pages/myself/record",
+			"style": {
+				"navigationBarTitleText": "制作记录"
+			}
+		},
+		{
+			"path": "pages/myself/order",
+			"style": {
+				"navigationBarTitleText": "消费订单"
+			}
+		},
+		{
+			"path": "pages/myself/history",
+			"style": {
+				"navigationBarTitleText": "浏览记录"
+			}
+		},
+		{
+			"path": "pages/myself/help",
+			"style": {
+				"navigationBarTitleText": "帮助中心"
+			}
+		},
+		{
+			"path": "pages/myself/detail",
+			"style": {
+				"navigationBarTitleText": "帮助中心"
+			}
+		},
+		{
+			"path": "pages/author/author",
+			"style": {
+				"navigationBarTitleText": "创作者主页"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "图王定制",
+		"navigationBarBackgroundColor": "#161616",
+		"backgroundColor": "#161616",
+		"app-plus": {
+			"background": "#161616"
+		}
+	},
+	"tabBar": {
+		"color": "#808080",
+		"selectedColor": "#fff",
+		"borderStyle": "black",
+		"backgroundColor": "#1D1D1D",
+		"list": [
+			{
+				"pagePath": "pages/home/home",
+				"iconPath": "static/tab_home.png",
+				"selectedIconPath": "static/tab_home_select.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/picture/picture",
+				"iconPath": "static/tab_picture.png",
+				"selectedIconPath": "static/tab_picture_select.png",
+				"text": "壁纸"
+			},
+			{
+				"pagePath": "pages/avatar/avatar",
+				"iconPath": "static/tab_avatar.png",
+				"selectedIconPath": "static/tab_avatar_select.png",
+				"text": "头像"
+			},
+			{
+				"pagePath": "pages/myself/myself",
+				"iconPath": "static/tab_myself.png",
+				"selectedIconPath": "static/tab_myself_select.png",
+				"text": "我的"
+			}
+		]
+	}
+}
