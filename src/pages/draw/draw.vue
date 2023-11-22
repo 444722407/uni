@@ -55,7 +55,7 @@
 		{"type":"bg","url":"../../static/canvas_bg.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":2},
 		{"type":"image","url":"../../static/canvas_item.jpg","y":970,"x":300,"w":600,"h":600,"rotate":0,"index":0,"id":1,"selected":true},
 		{"type":"text","url":"https://lf3-static.bytednsdoc.com/obj/eden-cn/kuLauvyM-tyvmahsWulwV-upfbvK/ljhwZthlaukjlkulzlp/pc/Logo.png","y":160,"x":150,"w":608,"h":128,"rotate":0,"index":0,"id":3}
-	]); 
+	]);     
 
 	// ps中的像素转成rpx 在转成canvas中的px
 	const sysInfo = uni.getSystemInfoSync();
