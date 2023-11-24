@@ -6,7 +6,7 @@
             </view>
         </view>
         <!-- 加载完成才显示有没有数据 -->
-        <no-data v-else-if="status != 'loading'"></no-data>
+        <no-data v-else-if="status != 'loading'" marginTop="100" text="没有相关结果"></no-data>
         
         <uni-load-more :status="status" :contentText="contentText" v-if="status"/>    
     </view>
@@ -17,7 +17,11 @@
     import { ref,reactive,onMounted } from "vue";
 	
     const props = defineProps({
-        type:String
+        type:String,
+		size:{
+			type:String,
+			default:'324'
+		}
     })
 	const status = ref("loading");
 	const page = ref(1);
@@ -93,9 +97,14 @@
 	onMounted(()=>{
 		more()
 	})
-	
+	const search = ()=>{
+		list.value = [];
+		status.value = "";
+		is_load.value = false;
+	}
 	defineExpose({
 		more,
+		search,
 		is_load
 	})
 </script>
@@ -111,7 +120,7 @@
     }
     .item{
         margin: 0 16rpx;
-        width: 324rpx;
+        width: v-bind("props.size + 'rpx'");
         overflow: hidden;
     }
 </style>

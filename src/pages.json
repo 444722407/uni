@@ -17,8 +17,8 @@
 			"path": "pages/draw/draw",
 			"style": {
 				"navigationBarTitleText": "定制",
-				"disableScroll":true,
-				"disableSwipeBack":true
+				"disableScroll": true,
+				"disableSwipeBack": true
 			}
 		},
 		{
@@ -37,6 +37,12 @@
 			"path": "pages/avatar/avatar",
 			"style": {
 				"navigationBarTitleText": "头像"
+			}
+		},
+		{
+			"path": "pages/avatar/detail",
+			"style": {
+				"navigationBarTitleText": "头像详情"
 			}
 		},
 		{
@@ -73,6 +79,12 @@
 			"path": "pages/author/author",
 			"style": {
 				"navigationBarTitleText": "创作者主页"
+			}
+		},
+		{
+			"path": "pages/avatar/sets",
+			"style": {
+				"navigationBarTitleText": "系列"
 			}
 		}
 	],

@@ -1,20 +1,28 @@
 <template>
 	<view class="myself">
 		<view class="user_box">
-			<image src="@/static/me_avatar@2x.png" mode="" class="avatar"></image>
+			<image :src="userInfo.avatarUrl?userInfo.avatarUrl:'/static/me_avatar@2x.png'" mode="" class="avatar"></image>
 			<view class="aside">
 				<view class="name">
-					匿名用户
+					{{userInfo.nickName?userInfo.nickName:'匿名用户'}}
 				</view>	
 				<view class="desc">
-					剩余制作机会：2次
+					剩余制作机会：{{userInfo.production_num}}次
 				</view>	
 			</view>
-			<view class="badge">
+			
+
+			<view class="badge" @click="logout"  v-if="userInfo.avatarUrl">
+				<image src="@/static/me_refresh@2x.png" mode="" class="icon_refresh"></image>
+				退出登录
+			</view>
+
+			<view class="badge" @click="updateUserInfo" data-eventsync="true" v-else>
 				<image src="@/static/me_refresh@2x.png" mode="" class="icon_refresh"></image>
 				更新信息
 			</view>
 		</view>	
+		
 		<view class="jump_list">
 			<navigator url="/pages/myself/record" class="item">
 				<image src="@/static/me_make@2x.png" class="icon_head"></image>
@@ -45,17 +53,50 @@
 	</view>
 </template>
 
-<script>
-	export default {
-		data() {
-			return {
-				
-			}
-		},
-		methods: {
-			
+<script setup>
+	import fetchWork from "../../services";
+	import {ref } from "vue";
+    import { onShow } from "@dcloudio/uni-app";
+	const userInfo = ref({});
+
+	const getUserInfo = async ()=>{
+		try{
+			const res = await fetchWork('/v1.user/get_info',{},'POST');
+			userInfo.value.production_num = res.production_num;
+		}catch(err){
+			console.log(err)
 		}
 	}
+	const updateUserInfo = async ()=>{
+		tt.getUserProfile({
+			success:async (res)=>{
+				try{
+					await fetchWork('/v1.auth/login',res.userInfo,'POST');
+					userInfo.value.nickName = res.userInfo.nickName;
+					userInfo.value.avatarUrl =  res.userInfo.avatarUrl;
+					uni.setStorageSync('userInfo',userInfo.value)
+
+				}catch(err){
+					console.log(err)
+				}
+			},
+			fail:(err)=>{
+				console.log(err)
+			}
+		})
+	}
+	const logout = async ()=>{
+		uni.removeStorageSync('userInfo');
+		userInfo.value.nickName = "";
+		userInfo.value.avatarUrl = "";
+	}
+
+	onShow(()=>{
+		const userInfo_data = uni.getStorageSync('userInfo');
+		userInfo.value.nickName = userInfo_data && userInfo_data.nickName;
+		userInfo.value.avatarUrl =  userInfo_data && userInfo_data.avatarUrl;
+		getUserInfo()
+	})
 </script>
 
 <style scoped>

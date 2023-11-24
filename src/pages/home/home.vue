@@ -26,11 +26,17 @@
 </template>
 
 <script setup>
-	import {ref} from "vue";
-    import { onReachBottom} from "@dcloudio/uni-app";
+	import {ref,onMounted } from "vue";
+    import { onLoad, onReachBottom} from "@dcloudio/uni-app";
 	const value = ref("")
     const picture = ref(null);
 	const popup = ref(null);
+	onMounted(()=>{
+		console.log('onMounted')
+	})
+	onLoad(()=>{
+		console.log('onLoad')
+	})
     onReachBottom(()=>{
         if(picture.value.is_load){
             picture.value.more();
@@ -89,9 +95,7 @@
 		text-align: center;
 		line-height: 96rpx;
 	}
-	.title{
-		font-size: 32rpx;padding: 0 34rpx;
-	}
+
 	.user_box{
 		margin-top: 84rpx;
 	}
@@ -111,5 +115,7 @@
 	.picture_box{
 		margin-top: 70rpx;
 	}
-	
+	.title{
+		font-size: 32rpx;padding: 0 34rpx;
+	}
 </style>

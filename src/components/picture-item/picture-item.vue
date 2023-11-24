@@ -1,6 +1,6 @@
 <template>
     <view class="box">
-        <image :src="props.item.src" class="item" :class="[type == 'picture'?'item_h':'']"></image>
+        <image :src="props.item.src" class="item" :class="[type == 'picture'?'item_h':'']" mode="widthFix"></image>
         <view class="bottom" v-if="type == 'picture'">
             <view class="status">
                 <image src="@/static/tag_hot@2x.png" class="icon" v-if="props.item.status == 1"></image>
@@ -25,11 +25,11 @@
         margin-bottom: 15rpx;
     }
     .item{
-        width: 100%;height: 324rpx;
+        width: 100%;
         border-radius: 20rpx;
     }
     .item_h{
-        height: 576rpx;
+      
     }
     .bottom{
         display: flex;

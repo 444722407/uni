@@ -1,7 +1,49 @@
 <script>
+import fetchWork from './services';
 export default {
+  globalData:{
+    system:{}
+  },
+  methods:{
+      checkLogin(){
+        const token = uni.getStorageSync('token');
+        if(token){
+          uni.checkSession({
+            complete: (res)=>{
+              if(res.errMsg != 'checkSession:ok'){
+                this.userLogin();
+              }
+            }
+          })
+        }else{
+          this.userLogin();
+        }
+    },
+    userLogin(){
+      uni.login({
+      force: true,
+      success(res) {
+        const code = res.code;
+        fetchWork("/v1.auth/silent_login",{code},'POST').then((res)=>{
+          const token = res.token;
+          uni.setStorageSync('token', token);
+        })
+      },
+      fail(res) {
+        console.log(`login 调用失败`);
+      },
+    })
+    },
+    getSystem(){
+      const system =  uni.getSystemInfoSync();
+      this.globalData.system =system;
+  },
+  },
+  
   onLaunch: function () {
     console.log('App Launch')
+    this.checkLogin();
+    this.getSystem();
   },
   onShow: function () {
     console.log('App Show')
@@ -39,5 +81,10 @@ export default {
   .uni-button-color{
     color: #000000 !important;
     font-size: 32rpx !important;
+  }
+  button{
+    padding: 0;
+    margin: 0;
+    background: none;
   }
 </style>

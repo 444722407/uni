@@ -1,12 +1,21 @@
 <template>
-    <view class="box">
+    <view class="box" :style="{'marginTop':props.marginTop + 'px'}">
         <image src="@/static/default_pic@2x.png" mode="" class="img"></image>
-		<text class="t">暂无记录</text>
+		<text class="t">{{text}}</text>
     </view>
 </template>
 
 <script setup>
-    
+   const props = defineProps({
+        marginTop:{
+            type:Number,
+            default:400
+        },
+        text:{
+            type:String,
+            default:"暂无记录"
+        }
+    })
 </script>
 
 <style scoped>
@@ -15,7 +24,9 @@
 		flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin: 400rpx auto 0;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0;
     }
     .img{
         width: 384rpx; 

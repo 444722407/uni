@@ -1,15 +1,13 @@
 <template>
 	<view class="avatar">
-		<image src="@/static/avatar_logo@2x.png" class="logo"></image>
 		<view class="search_box">
 			<image src="@/static/home_search@2x.png" class="icon"></image>
 			<input type="text" class="input" placeholder="输入您的姓氏" v-model="value">
 			<image src="@/static/avatar_search_clear@2x.png" class="clear" @click="clear" v-if="value"></image>
-			<view class="btn" @click="search">立即匹配</view>
+			<view class="btn" @click="search">搜索</view>
 		</view>
 		<view class="picture_box">
-			<view class="title">{{is_search?'热门头像':'为您匹配以下头像'}}</view>
-			<picture-list type="avatar" ref="picture" @search="search"></picture-list>
+			<picture-list type="avatar" ref="picture" size="208" @search="search"></picture-list>
 		</view>
 	</view>
 </template>
@@ -51,11 +49,11 @@
 		display: block;
 	}
 	.search_box{
-		width: 632rpx;height: 112rpx;
+		width: 680rpx;height: 96rpx;
 		margin: 70rpx auto 0;
 		border: 1rpx solid #6C3FFF;
 		background-color: rgba(108,63,255,0.2);
-		border-radius: 62rpx;
+		border-radius: 48rpx;
 		box-shadow: 0px 20rpx 24rpx 0px rgba(0,0,0,0.2);
 		display: flex;
 		align-items: center;
@@ -74,18 +72,18 @@
 		color: rgba(255,255,255,0.5);
 	}
 	.btn{
-		width: 212rpx;
-		height: 96rpx;
+		width: 160rpx;
+		height: 84rpx;
 		background: #6C3FFF;
 		border-radius: 62rpx;
 		color: #fff;
 		font-size: 32rpx;
 		margin-right: 8rpx;
 		text-align: center;
-		line-height: 96rpx;
+		line-height: 84rpx;
 	}
 	.picture_box{
-		margin-top: 60rpx;
+		margin-top: 30rpx;
 	}
 	.title{
 		font-size: 32rpx;padding: 0 34rpx;
