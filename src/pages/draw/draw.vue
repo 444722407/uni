@@ -1,12 +1,12 @@
 <template>
 	<view class="draw">
 		<view class="canvas_box">
-			<canvas-drag id="canvas-drag" :graph="graph" :width="474" :height="1026" :enableUndo="true" ref="canvas" @getData="getData" @changeImg="changeImg" @selectImgId="selectImgId"></canvas-drag>
+			<canvas-drag id="canvas-drag" :graph="graph" :width="width" :height="height" :enableUndo="true" ref="canvas" @getData="getData" @changeImg="changeImg" @selectImgId="selectImgId"></canvas-drag>
 		</view>
 		<view class="menu_nav">
 			<view class="item" :class="{active:navId == 0}" @click="changeNav(0)">换图片</view>
 			<view class="item" :class="{active:navId == 1}" @click="changeNav(1)">换文字</view>
-			<view class="help" @click=""><image src="@/static/icon_when.png" class="icon_help"></image> 操作说明</view>
+			<view class="help" @click="toExport"><image src="@/static/icon_when.png" class="icon_help"></image> 操作说明</view>
 		</view>
 		<view class="menu_img" v-show="navId == 0">
 			<template  v-for="(item,index) in temp_theme" >
@@ -41,15 +41,56 @@
 				制作记录
 			</view>
 		</view>
+
+		<uni-popup ref="popup_img" :safe-area="false">
+			<view class="preview_box">
+				<view class="t">请预览制作效果</view>
+				<image :src="tempImage" class="tempImage" mode="widthFix"></image>
+				<view class="s">点击【确认提交】可保存高清无水印作品</view>
+				<view class="preview_btn_box">
+					<view class="goback" @click="toBack"><image src="@/static/make_back.png" class="icon_back"></image> 返回修改</view>
+					<view class="confrim" @click="toPay">确认提交</view>
+				</view>
+			</view>
+		</uni-popup>
+ 
+		<uni-popup ref="popup_pay" >
+			<view class="popup_pay">
+				<view class="t">编辑完成</view>
+				<view class="s">只差一步就可以生成啦</view>
+				<view class="cell" :class="{active:check_id == 0}" @click="changePay(0)">
+					<image :src="check_id == 0?'/static/icon_radio_check.png':'/static/icon_radio_default.png'" class="icon_radio"></image>
+					<view class="name">制作1次</view>
+					<view class="symbol">￥</view>
+					<view class="price">6.8</view>
+				</view>
+				<view class="cell" :class="{active:check_id == 1}" @click="changePay(1)">
+					<image :src="check_id == 1?'/static/icon_radio_check.png':'/static/icon_radio_default.png'" class="icon_radio"></image>
+					<view class="name">制作3次</view>
+					<view class="symbol">￥</view>
+					<view class="price">12.8</view>
+				</view>
+				<view class="btn" @click="goMake">立即制作</view>
+				<view class="tips">支付前请阅读 <text class="xy">《付费制作协议》</text>支付后不支持退款</view>
+			</view>
+		</uni-popup>
+ 
 	</view>
 </template>
 
 <script setup>
-	import {ref} from "vue";
+	import {ref,getCurrentInstance } from "vue";
 	import { onReady } from "@dcloudio/uni-app";
+	const width = ref(0);
+	const height = ref(0);
+
 	const  graph = ref({})
 	const canvas = ref(null)
 	const navId = ref(0);
+	const popup_img = ref(null);
+	const popup_pay = ref(null);
+	const tempImage = ref("");
+	const check_id = ref(0);
 
 	var temp_theme = ref([
 		{"type":"bg","url":"../../static/canvas_bg.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":2},
@@ -57,31 +98,36 @@
 		{"type":"text","url":"https://lf3-static.bytednsdoc.com/obj/eden-cn/kuLauvyM-tyvmahsWulwV-upfbvK/ljhwZthlaukjlkulzlp/pc/Logo.png","y":160,"x":150,"w":608,"h":128,"rotate":0,"index":0,"id":3}
 	]);     
 
-	// ps中的像素转成rpx 在转成canvas中的px
-	const sysInfo = uni.getSystemInfoSync();
-    const screenWidth = sysInfo.screenWidth;
-	const ratio = 1080 / 474;
 
-	temp_theme.value.map((item)=>{
-		item.w = item.w / ratio * (screenWidth / 750);
-		item.h = item.h / ratio * (screenWidth / 750);
-		item.x = item.x / ratio * (screenWidth / 750);
-		item.y = item.y / ratio * (screenWidth / 750);
-	})
-	temp_theme.value.sort((a, b) => a.index - b.index);
+
 	onReady(function(){
-		setTimeout(() => {
-			canvas.value.initByArr(temp_theme.value)
-		}, 1000);
+		const query = uni.createSelectorQuery().in(getCurrentInstance());
+		query.select('.canvas_box').boundingClientRect(data => {
+			// 按比例缩放canvas
+			const this_height = data.height;
+			const ratio = 2336 / this_height;
+
+			height.value = this_height;
+			width.value = 1080 / ratio;
+
+			temp_theme.value.map((item)=>{
+				item.w = item.w / ratio;
+				item.h = item.h / ratio;
+				item.x = item.x / ratio;
+				item.y = item.y / ratio;
+			})
+			temp_theme.value.sort((a, b) => a.index - b.index);
+			console.log(temp_theme.value)
+			setTimeout(() => {
+				canvas.value.initByArr(temp_theme.value)
+			}, 1000);
+		}).exec();
+
+
+	
+	
 	})
-	const onExportJSON = ()=>{
-		canvas.value.exportJson().then((imgArr) => {
-            console.log(JSON.stringify(imgArr));
-        })
-		.catch((e) => {
-			console.error(e);
-		});
-	}
+
 	const selectImg = (id)=>{
 		temp_theme.value.map((item)=>item.selected = false);
 		temp_theme.value.map((item)=>item.selected = item.id == id);
@@ -95,6 +141,7 @@
 		
 		temp_theme.value.map((item)=>item.selected = false);
 		temp_theme.value.map((item)=>item.selected = item.id == id)
+
 	}
 	const changeImg = (id)=>{
 		
@@ -143,10 +190,28 @@
 	}
 	const toImage = ()=>{
 		canvas.value.export().then((res)=>{
+			tempImage.value =  res;
+			popup_img.value.open('bottom')
+		})
+	}
+	const toPay = ()=>{
+		popup_img.value.close('bottom')
+		popup_pay.value.open('center')
+	}
+	const toBack = ()=>{
+		popup_img.value.close('bottom')
+	}
+	const changePay = (id)=>{
+		check_id.value = id;
+	}
+	const goMake = ()=>{
+		uni.navigateTo({
+			url:'/pages/make/make?tempImage=' + tempImage.value
+		})
+	}
+	const toExport = ()=>{
+		canvas.value.exportJson().then(res=>{
 			console.log(res)
-			wx.previewImage({
-				urls: [res]
-			})
 		})
 	}
 </script>
@@ -154,7 +219,12 @@
 <style>
 	.draw{
 		height: 100vh;
+		display: flex;
+		flex-direction: column;
 		overflow: hidden;
+	}
+	.canvas_box{
+		flex: 1;
 	}
 	.menu_nav{
 		display: flex;
@@ -162,6 +232,7 @@
 		height: 80rpx;
 		padding: 0 16rpx 0 30rpx;
 		background-color: #232323;
+		margin-top: auto;
 	}
 	
 	.menu_nav .item{
@@ -220,7 +291,7 @@
 		display: block;
 	}
 	.btn_box{
-		padding: 0 60rpx;
+		padding: 0 60rpx 30rpx;
 		display: flex;
 		align-items: center;
 	}
@@ -268,6 +339,122 @@
 		padding: 0 34rpx;
 		box-sizing: border-box;
 		font-size: 32rpx;
+		color: #fff;
+	}
+	.preview_box{
+		padding:40rpx 108rpx;
+		background-color: #383838;
+		border-top-right-radius: 40rpx;
+		border-top-left-radius: 40rpx;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+	.preview_box .tempImage{
+		width: 300rpx;
+		display: block;
+		margin-top: 40rpx;
+	}
+	.preview_box .t{
+		font-size: 40rpx;
+		font-weight: bold;
+	}
+	.preview_box .s{
+		color: #FFD717;font-size: 24rpx;
+		margin-top: 40rpx;
+	}
+	.preview_box .preview_btn_box{
+		display: flex;
+		align-items: center;
+		font-size: 32rpx;color: #fff;
+		margin-top: 45rpx;
+	}
+	.preview_box .goback{
+		background-color: #494949;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 24rpx;
+		width: 240rpx;
+		height: 92rpx;
+		margin-right:20rpx;
+	}
+	.preview_box .icon_back{
+		width: 32rpx;height: 32rpx;
+		margin-right: 5rpx;
+		margin-top: 3rpx;
+	}
+	.preview_box .confrim{
+		background-color: #FD2C55;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 24rpx;
+		width: 310rpx;
+		height: 92rpx;
+	}
+	.popup_pay{
+		padding: 60rpx 50rpx;
+		background-color: #383838;
+		border-radius: 40rpx;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+	.popup_pay .t{
+		font-size: 48rpx;color: #fff;font-weight: bold;
+	}
+	.popup_pay .s{
+		color: #909090;font-size: 28rpx;
+	}
+	.popup_pay .cell{
+		display: flex;
+		align-items: center;
+		height: 108rpx;
+		width: 536rpx;
+		box-sizing: border-box;
+		padding: 0 34rpx;
+		border: 1px solid #8D8D8D;
+		color: #fff;
+		margin-top: 24rpx;
+		border-radius: 32rpx;
+	}
+	.popup_pay .cell .name{
+		font-size: 32rpx;
+		font-weight: bold;
+	}
+	.popup_pay .cell .symbol{
+		font-size: 28rpx;
+		margin-left: auto;
+		position: relative;
+		top: -5rpx;
+	}
+	.popup_pay .cell .price{
+		font-size: 48rpx;
+	}
+	.popup_pay .active{
+		border: 1px solid #FFD717;
+		color: #FFD717;
+	}
+	.popup_pay .cell .icon_radio{
+		width:38rpx;height: 38rpx;
+		margin-right: 20rpx;
+	}
+	.popup_pay .btn{
+		width: 100%;
+		height: 108rpx;
+		color: #fff;
+		background-color: #FD2C55;
+		font-size: 36rpx;
+		font-weight: bold;
+		margin-top: 60rpx;
+	}
+	.popup_pay .tips{
+		color: #7A7A7A;font-size: 20rpx;margin-top: 32rpx;
+	}
+	.popup_pay .xy{
 		color: #fff;
 	}
 </style>

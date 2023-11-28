@@ -1,5 +1,5 @@
 <template>
-    <view class="box">
+    <navigator class="box" :url="type == 'picture'?'/pages/draw/draw':'/pages/avatar/detail'" open-type="navigate" hover-class="navigator-hover">
         <image :src="props.item.src" class="item" :class="[type == 'picture'?'item_h':'']" mode="widthFix"></image>
         <view class="bottom" v-if="type == 'picture'">
             <view class="status">
@@ -8,7 +8,7 @@
             </view>
             <view class="name">{{ props.item.name }}</view>
         </view>
-    </view>
+    </navigator>
 </template>
 
 <script setup>

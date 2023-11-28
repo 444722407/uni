@@ -1,7 +1,7 @@
 <template>
 	<view class="detail">
 		<image src="https://fakeimg.pl/324x324/ffffff/" class="detail_img"></image>
-        <navigator  url="/pages/" open-type="navigate" hover-class="navigator-hover" class="jump">
+        <navigator  url="/pages/avatar/sets" open-type="navigate" hover-class="navigator-hover" class="jump">
             卡通米老鼠系列 <image src="@/static/avatar_arrow@2x.png" class="icon"></image>
         </navigator>
         <view class="down" @click="show"><image src="@/static/avatar_download@2x.png" class="icon"></image>下载高清无水印原图</view>

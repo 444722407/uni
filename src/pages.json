@@ -86,6 +86,12 @@
 			"style": {
 				"navigationBarTitleText": "系列"
 			}
+		},
+		{
+			"path": "pages/make/make",
+			"style": {
+				"navigationBarTitleText": "制作"
+			}
 		}
 	],
 	"globalStyle": {

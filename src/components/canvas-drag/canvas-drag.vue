@@ -1,5 +1,5 @@
 <template>
-    <canvas id="canvas-drag" canvas-id="canvas-drag" disable-scroll="true" @touchstart="start" @touchmove="move" @touchend="end" :style="'width: ' + width + 'rpx; height: ' + height + 'rpx;'"></canvas>
+    <canvas id="canvas-drag" canvas-id="canvas-drag" disable-scroll="true" @touchstart="start" @touchmove="move" @touchend="end" :style="'width: ' + width + 'px; height: ' + height + 'px;'"></canvas>
 </template>
 
 <script>
@@ -279,11 +279,6 @@ export default  {
     toPx(rpx) {
       return rpx * this.factor;
     },
-    initBg() {
-      this.bgColor1 = "";
-      this.bgSourceId1 = "";
-      this.bgImage1 = "";
-    },
     initHistory() {
       this.history = [];
     },
@@ -324,7 +319,7 @@ export default  {
     initByArr(newArr) {
     
       this.drawArr = [];
-      
+   
       newArr.forEach((item, index) => {
         this.drawArr.push(new dragGraph(item, this.ctx, this.factor));
         // switch (item.type) {
@@ -469,48 +464,19 @@ export default  {
     exportJson() {
       return new Promise((resolve, reject) => {
         let exportArr = this.drawArr.map((item) => {
-          item.selected = false;
-          switch (item.type) {
-            case "image":
-              return {
-                type: "image",
+          return {
+                type: item.type,
                 url: item.url,
                 y: item.y,
                 x: item.x,
                 w: item.w,
                 h: item.h,
                 rotate: item.rotate,
-                sourceId: item.sourceId,
                 index:item.index,
-                id:item.id
+                id:item.id,
+                selected:item.selected
               };
-            case "text":
-              return {
-                type: "text",
-                url: item.url,
-                y: item.y,
-                x: item.x,
-                w: item.w,
-                h: item.h,
-                rotate: item.rotate,
-                sourceId: item.sourceId,
-                index:item.index,
-                id:item.id
-              };
-            case "bg":
-              return {
-                type: "bg",
-                url: item.url,
-                y: item.y,
-                x: item.x,
-                w: item.w,
-                h: item.h,
-                rotate: item.rotate,
-                sourceId: item.sourceId,
-                index:item.index,
-                id:item.id
-              };  
-          }
+         
         });
         resolve(exportArr);
       });
