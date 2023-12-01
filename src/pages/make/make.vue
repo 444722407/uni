@@ -51,6 +51,8 @@
 		height: 100vh;
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 		box-sizing: border-box;
 		padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
 		background-color:#232323;
@@ -61,15 +63,13 @@
 		margin: 0 auto;
 	}
 	.progress_box{
-		margin-top: auto;
 		background-color: #232323;
-		height: 328rpx;
+		padding: 40rpx 0;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		
 	}
 	.progress_box .t{
 		color: #fff;font-size: 32rpx;
@@ -128,7 +128,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		margin-top: auto;
+		margin-top: 40rpx;
 	}
 	.successs .s{
 		font-size: 28rpx;color: #fff;

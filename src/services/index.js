@@ -3,7 +3,7 @@ const host = 'https://apituwang.taihela.com'
 const appid = '5GtjiexrCwYR0DDx'
 const secret = 'Q1AaiEbPz8cl1O8Hl7nBjMrI37y6WueB'
 
-export default function fetchWork(url="", data={}, method="GET"){
+export default function fetchWork(url="", data={}, method="GET",text){
   
   const format_data = formatData(data);
   const format_header = formatHeader();
@@ -15,40 +15,39 @@ export default function fetchWork(url="", data={}, method="GET"){
       header: format_header,
       method,
       success: function(res){
-        
-        const data = res.data;
-        if(data.code == 1){
-          resolve(data.data)
-        }else{
-          if(data.msg){
-            uni.showToast({
-              title: data.msg,
-              icon: 'none'
-            });
+    
+           const data = res.data;
+          if(data.code == 1){
+            resolve(data.data)
+          }else{
+            if(data.msg){
+              uni.showToast({
+                title: data.msg,
+                icon: 'none'
+              });
+            }
+            reject(data.msg)
           }
-          reject(data.msg)
-        }
+         
+       
       },
       fail:function(errMsg){
+        console.log(errMsg)
         reject(errMsg)
       }
     })
   })
 }
 
+
+
 function formatHeader(){
   const header = {
     "qr-client": "tiktok-mini",
-    // "qr_appId": appid,
     "qr-ver": "1.0.0",
     "qr-ver-code": "100",
     "qr-token": uni.getStorageSync('token') || "",
-    // "qr-country": "cn",
-    // "qr-locale": "zh_CN",
-    // "qr-timezone": "28800",
-    // "qr-tz": "Asia/Shanghai",
-    // "qr-lang": "zh",
-    // "qr-app-lang": "3",
+    
   };
  
   return header;

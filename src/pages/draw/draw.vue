@@ -10,8 +10,8 @@
 		</view>
 		<view class="menu_img" v-show="navId == 0">
 			<template  v-for="(item,index) in temp_theme" >
-				<view class="item" v-if="item.type != 'bg'" :key="index" @click.stop="selectImg(item.id)" >
-					<view class="mask" v-if="item.selected" @click.stop="changeImg(item.id)"><image src="@/static/make_pic_mask.png" class="mask_img"></image></view>
+				<view class="item" v-if="item.type == 'image'" :key="index" @click.stop="selectImg(item.id)" >
+					<view class="mask" v-if="item.selected" @click.stop="changeImg(item.id,item.type)"><image src="@/static/make_pic_mask.png" class="mask_img"></image></view>
 					<image :src="item.url" class="item_img"></image>
 				</view>
 			</template>
@@ -19,18 +19,9 @@
 
 		<view class="menu_text" v-show="navId == 1">
 			<scroll-view scroll-x="true" class="scroll_w">
-				<view class="input_box">
-					<input type="text" class="input">
-				</view>
-				<view class="input_box">
-					<input type="text" class="input">
-				</view>
-				<view class="input_box">
-					<input type="text" class="input">
-				</view>
-				<view class="input_box">
-					<input type="text" class="input">
-				</view>
+				<template  v-for="item in temp_theme" >
+					<view class="input_box" :class="{active:item.selected}" v-if="item.type == 'text'" :key="item.id" @click.stop="selectImg(item.id)">{{ item.text }}</view>
+				</template>
 			</scroll-view>
 		</view>
 		
@@ -45,7 +36,7 @@
 		<uni-popup ref="popup_img" :safe-area="false">
 			<view class="preview_box">
 				<view class="t">请预览制作效果</view>
-				<image :src="tempImage" class="tempImage" mode="widthFix"></image>
+				<image :src="tempImage" class="tempImage" mode="widthFix" :style="{width:width-20 + 'px'}"></image>
 				<view class="s">点击【确认提交】可保存高清无水印作品</view>
 				<view class="preview_btn_box">
 					<view class="goback" @click="toBack"><image src="@/static/make_back.png" class="icon_back"></image> 返回修改</view>
@@ -74,78 +65,122 @@
 				<view class="tips">支付前请阅读 <text class="xy">《付费制作协议》</text>支付后不支持退款</view>
 			</view>
 		</uni-popup>
+
+
+		<uni-popup ref="popup_text" type="dialog">
+			<uni-popup-dialog ref="inputClose" :before-close="true" mode="input" title="修改内容" :value="font_item.text"
+			 @confirm="dialogConfirm" @close="dialogClose">
+			</uni-popup-dialog>
+		</uni-popup>
  
 	</view>
 </template>
 
 <script setup>
 	import {ref,getCurrentInstance } from "vue";
-	import { onReady } from "@dcloudio/uni-app";
+	import fetchWork from '@/services'
+	import { onLoad,onReady } from "@dcloudio/uni-app";
 	const width = ref(0);
 	const height = ref(0);
-
+	const ratio = ref(0);
+	
 	const  graph = ref({})
-	const canvas = ref(null)
-	const navId = ref(0);
-	const popup_img = ref(null);
-	const popup_pay = ref(null);
 	const tempImage = ref("");
+
+	const canvas = ref(null)
+
+	const navId = ref(0);
 	const check_id = ref(0);
 
-	var temp_theme = ref([
+	const popup_text = ref(null);
+	const popup_img = ref(null);
+	const popup_pay = ref(null);
+
+	const font_item = ref({});
+	
+
+	
+	var test = [
 		{"type":"bg","url":"../../static/canvas_bg.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":2},
 		{"type":"image","url":"../../static/canvas_item.jpg","y":970,"x":300,"w":600,"h":600,"rotate":0,"index":0,"id":1,"selected":true},
-		{"type":"text","url":"https://lf3-static.bytednsdoc.com/obj/eden-cn/kuLauvyM-tyvmahsWulwV-upfbvK/ljhwZthlaukjlkulzlp/pc/Logo.png","y":160,"x":150,"w":608,"h":128,"rotate":0,"index":0,"id":3}
-	]);     
+		{"type":"text","url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAyCAYAAAAayliMAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAEkElEQVRoge2ZXWicRRSGnxOWdIlrCSHEEjUXpcRaSrBexCIRRYqIVBGN4EWxVqS0FKWi1Qv/EIVeBFFBoWC1KvWiNqioCNqqCEUEK4Zia1sRYhEtKqGNtaZJzPFiJsnZyX4/8+1KCOSFYWfOOfPzfnNm5sysqCoLGU3zPYB6sUhgvrFIYL6xSGC+sUhgvlH631oW2Q5cB3wBHAGOofpnw/tRVZegVaFLYalC84w8TNCkUFboUFiRYndAQU3akmhbR7Id3hd0mCd9ljD4isIFY/db6kepI9k1MFpgAt9OkN8ENJvyS6iOF2g/E/UQGAMGE3S3mvx5YFdk27mRRuAaVKUqwddG/z7QiUgXIu2ItAAgUgLWG7u3UD2TOAKRJkSaEWn1bXVEMTB+e3Xg372BX68I9OsUJgqsm6z0aNE1MJXBdZPJD6N6EDgX9bXyYSTGOOYg22Dye/xvS0xnORHlQvYgS54BkRuBLmP3us+vAc7g1s840AN843XngctRTf+ibs2UcB+j1dcrRCANG03+IKq/AKB6LBjMNlPalTl418YkMInb1aLcB/IQEKkAdxjJqwl2HcDdvjQGDHj5duBKL29H9c7YQaYhzwxsBio+PwJ8kGC3Ayj7/Buonvb5K3wbUOywTEX6Inb++ZCR7K15ooq0Alt8aRLYabR20MnnQUFk7UK3AJeZ8oEEux3MztJeVE8Z3ZjJN3zbzSLwMTBkyjsRaa6yEOkEHvSlKaq/PsC/Jt/weCidgNsh7mLWDVYDz87oRdqA/cx+/UFUT0aNQKSESAsiyxDpjqrrxjgTKvQkhhLwiJFPKHT7kPlsg8OIs/WE02l4GZi+TZWAx1A9BxyO/mLpiN6l8hFQHQN2G0m/Xwv7YjvMQFwkSlws9J7JLwX6gHeBrcD1wKXARTVC8KdNvaEa+iXAxb7+mlgCMZf6I0F5FaqfU+9lxZ0r47gt9tfY6vU8q1wyRyLSHtWC24G6sg2TEUOgMyj/HQzmWuBnRAYQWZ7akruF9QNHgS99vFUMKdvoZoV7FfoUblb4JNDflvKMMqGw0sufMvLvvOyVoK09jXhWCQncoPBTwn59QaHN1F0X6F8wuloEKgpHgzq3N5pAr5+BWgSeMPVKCieM7oRCOZWAk69W+Mfo/lDoaPRB9g7VwdgIsBXV54zsSWA6BJgCNvlzI8t3vweeMZJ24LXMenPbSXyVWOvl+xT2K9yj0BL4fY9Wv8A9X+OVrvYMzM7eD0G/9xd1obVBQ32plef68Y9VrpOHgNOvD/r9S2F5ERcqB5MTlmch0oQLI1Z5SX7XmesCHwGHjKRC0rW1BiyB8Ikk7clkAHfZmcaLqB5KsF2SYxzTIfop4GEg973ZhhL5CIiUcc8fY7hZOg487nXdQK+XjQJtQH/mKFQ/ReQBYHf0LBpf3BC1mGCZwpsKV6VsqWH6tuiBVWQNpB/vqqdR3YjqkJFNMv2cUhu/R33dHChOIBmD1H7lO4m9jjYIoqo+Jytxu8oozv+HUQ1D6Jytyoe4PziGcQHbV6g2+vbmupohsECx4P9mXfAE/gNdYFwvAqa3wgAAAABJRU5ErkJggg==","y":1875,"x":155,"w":102,"h":102,"rotate":0,"index":3,"id":3,"text":"我"},
+		{"type":"text","url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAA1CAYAAADs+NM3AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAETUlEQVRoge2aW4hWVRTHf2sYahimYRCzeRAfYogYJEpEBpEUCRER8UFKDIRKiCDyoRtBKjKIDCYiVlTkiBRdjEKieughysqub6IWXrrZxZLBZNBxqlk97DPN+s539jn77PONfer84cBee6+99/rvtdc6e5/vE1XlSkHL/21AIzFFplkxRaZZMUWmWRFORmQ5ItMm0ZbKKOOZ7cAJRJ5EZLpXS6QPkSWVLYuBqhY/0KOg5vlDoc2juzfROaTwiMLMoDka8ISSeSxFZqNHryUhanUfajYyXxnj/lTo9OgtSxE5ptB6qcgUx4xIDzDX1DyH6jmP9n0p+VFU/46MgPII8Eq/WekLCt0evW6Fv4zuR5fKI2HbzMXAz8bA53N0Nxq9fxTmljYIWhU6FGYq3NJoMqtTBvZ49NoyAr/q826jydjAP5aj92CDiajCgsaRgcV1mcnvlR8aTORQTMzkZbMNgTlkEzArKQ8DN6AqpR64FjhjxtxdPpXh8Uy9V7I9AzcpXDQ6m2NWVGGdGeOiwvSYcXyDf1FIxmW6z0z7rwodkWSOmnHeiBpDldY6V4msBeYFOLUf6DPy46gOp8a6FZgPDAEdwI+ovp/SWQXcbGrithiQXqFpCqfNKv2U6RlYkaTq8bbsFySsTHl3S4bO4ZR3W2I9k04AzwAzkvI5YKCOvTvevMrE9WEUeMCzVr+n5NOpsdYCvabmNVTHihzgwwQZkXuB1aZtgNoM46B6HLgNeBEYA55G9Yhn/OEC+Qwua74CnAJeCjc9A4mrZ6s7d1l3t2vtCSArm81X6MoJ7N7UNlsTu4XKbLNvgLcNxw2ong9YiYOoni2xdpN6gnZk3DH9buBr4AgwWNNeBJFZxUrevt3RfVOYMNYRugdYHxGEuxE5jMg6RDqDeojMQGQA+A6RxSXny0bBy2xN4NnMxtu3OTFzZ1Lfpe7GOl7/cSNjpgqWAm1G3hKwgmeBbaZmASJ3VDWkiEwI2btM+Xvg5cC5nwJ+MXJ/YD8vqnlGpB1Ybmp2Bseb6giw1dT0IbK0ijlVt9kq3JkL3AtxMEc3Cy9Q653NVYypSma9KQ/i/2qTDdVRYJepmYfIslhj4smILALmJNIYsDNypGcB+4KOjp0qCWCTKb+D6skoC5w395uaOYisiBkqzjNuskWmZqtHMxR7UnJU7JQnI9KFuyqM40NUP4+Z3OADak/ovYiEXBBrELPNRoCHgfEb446c/tcEWeHS+X7gJHA/cD2qXwb1Nai/Ntei3ZTbkolHgH3APkRuBz7J6T+7hC1PAENVLmdlyNQfIFUP1MjuSNKJe+fcSPjnKlCtvwiWRBGZ60y5E5GWgpUbBd7Maf8t2LIIFMVMR0rOP947T73naT0FHAwzKw5FZLoK5Cy8npJHgbeAhUzybzWiqjmt//26fB7nlaFCg9zXm224q/inwIHSx5xI5JO5zHCV/qnhMsAUmWbFFUXmX1g4hJlr0YDIAAAAAElFTkSuQmCC","y":1875,"x":600,"w":102,"h":102,"rotate":0,"index":3,"id":4,"text":"你"},
+		{"type":"bg","url":"../../static/wallpaper_watermark.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":9999,"id":-9527}
+	]
+	const temp_theme = ref([]);     
 
+	onLoad( async ()=>{
+		tt.setSwipeBackMode(0);
+		
+	})
+	const scaleCanvas = ()=>{
 
+			const query = uni.createSelectorQuery().in(getCurrentInstance());
+			query.select('.canvas_box').boundingClientRect(async data => {
+				// 按比例缩放canvas
+				const this_height = data.height;
+				ratio.value = 2336 / this_height;
+				
+				height.value = this_height;
+				width.value = 1080 / ratio.value;
 
-	onReady(function(){
-		const query = uni.createSelectorQuery().in(getCurrentInstance());
-		query.select('.canvas_box').boundingClientRect(data => {
-			// 按比例缩放canvas
-			const this_height = data.height;
-			const ratio = 2336 / this_height;
+				const res = await fetchWork('/v1.wallpaper/get_detail',{id:1},'POST');
 
-			height.value = this_height;
-			width.value = 1080 / ratio;
+				// 如果不是会员增加水印
+				if(true){
+					res.picture_info.push({"type":"bg","url":"../../static/wallpaper_watermark.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":9999,"id":-9527})
+				}
+				temp_theme.value = res.picture_info;
 
-			temp_theme.value.map((item)=>{
-				item.w = item.w / ratio;
-				item.h = item.h / ratio;
-				item.x = item.x / ratio;
-				item.y = item.y / ratio;
-			})
-			temp_theme.value.sort((a, b) => a.index - b.index);
-			console.log(temp_theme.value)
-			setTimeout(() => {
+				temp_theme.value.map((item)=>{
+					item.w = item.w / ratio.value;
+					item.h = item.h / ratio.value;
+					item.x = item.x / ratio.value;
+					item.y = item.y / ratio.value;
+					
+				})
+				temp_theme.value.sort((a, b) => a.index - b.index);
+		
 				canvas.value.initByArr(temp_theme.value)
-			}, 1000);
-		}).exec();
-
-
+				
+			}).exec();
+	
+	}
+	onReady(async ()=>{
+		
+		
+		scaleCanvas()
 	
 	
 	})
-
-	const selectImg = (id)=>{
+	
+	const selectImg = (id,type)=>{
+		
 		temp_theme.value.map((item)=>item.selected = false);
 		temp_theme.value.map((item)=>item.selected = item.id == id);
 		
-		canvas.value.initByArr(temp_theme.value);
+		
 		canvas.value.selectImg(id)
+
 
 	}
 	// canvas选中元素后 同桌父组件更新按钮
-	const selectImgId = (id)=>{
-		
+	const selectImgId = (id,type)=>{
+
+		if(type == 'image'){
+			navId.value = 0;
+		}else{
+			navId.value = 1;
+		}
 		temp_theme.value.map((item)=>item.selected = false);
 		temp_theme.value.map((item)=>item.selected = item.id == id)
 
 	}
-	const changeImg = (id)=>{
-		
-		uni.chooseMedia({
+	const changeImg = (id,type)=>{
+		// 点击了左上角 换图 换字
+		if(type == "image"){
+			navId.value = 0;
+			uni.chooseMedia({
 			count: 1,
 			mediaType: ['image'],
 			sourceType: ['album', 'camera'],
@@ -155,13 +190,12 @@
 				uni.getImageInfo({
 					src:url,
 					success:(image)=>{
-						temp_theme.value.map((item)=>item.selected = false);
+					
 						temp_theme.value.map((item)=>{
 							if(item.id == id){
 								item.w = image.width;
 								item.h = image.height;
 								item.url = url;
-								item.selected = true;
 							}
 						})
 						canvas.value.initByArr(temp_theme.value)
@@ -170,19 +204,40 @@
 	
 			}
 		})
+		}else{
+			navId.value = 1;
+			const fliterArr = temp_theme.value.filter((item)=>item.id == id);
+			font_item.value = fliterArr[0]
+			popup_text.value.open();
+			
+		}
+		
 	}
 	const getData = (item)=>{
 		const {id,x,y,w,h,rotate} = item;
 		
 		temp_theme.value.map((t)=>{
 			if(t.id == id){
-				t.x = x;
-				t.y = y;
-				t.w = w;
-				t.h = h;
-				t.rotate = rotate;
+				if(t.type == 'image'){
+					t.x = x;
+					t.y = y;
+					t.w = w;
+					t.h = h;
+					t.rotate = rotate;
+				}else{
+					t.font_size = t.font_size * (w/t.w)
+					t.x = x;
+					t.y = y;
+					t.w = w;
+					t.h = h;
+					t.rotate = rotate;
+					
+				}
 			}
 		})
+	
+
+		
 	
 	}
 	const changeNav = (id)=>{
@@ -209,14 +264,72 @@
 			url:'/pages/make/make?tempImage=' + tempImage.value
 		})
 	}
+	const dialogConfirm = async (value)=>{
+	
+		if(value){
+			const res = await fetchWork('/v1.font/render_text',{
+				font_id:font_item.value.font_id,
+				text:value,
+				font_color:font_item.value.font_color,
+				font_size:Math.round(font_item.value.font_size)
+
+			},'POST');
+		
+			font_item.value.text = value;
+			temp_theme.value.map((item)=>{
+				if(item.id == font_item.value.id){
+					item.url = res.base64;
+					item.w = res.weight / ratio.value;
+					item.h = res.height / ratio.value;
+				}
+			})
+		
+			canvas.value.initByArr(temp_theme.value)
+			popup_text.value.close()
+		}
+	
+	}
+	const dialogClose =()=>{
+		popup_text.value.close()
+	}
 	const toExport = ()=>{
-		canvas.value.exportJson().then(res=>{
-			console.log(res)
+		temp_theme.value.map((item)=>{
+			item.w = item.w * ratio.value;
+			item.h = item.h * ratio.value;
+			item.x = item.x * ratio.value;
+			item.y = item.y * ratio.value;
 		})
+
+		temp_theme.value.sort((a, b) => a.index - b.index);
+
+		temp_theme.value.map((item)=>{
+			item.w = item.w / ratio.value;
+			item.h = item.h / ratio.value;
+			item.x = item.x / ratio.value;
+			item.y = item.y / ratio.value;
+		})
+		canvas.value.initByArr(temp_theme.value)
+		
 	}
 </script>
 
-<style>
+<style scoped>
+	:global(.uni-dialog-title-text){
+		font-size: 32rpx !important;
+		font-weight: bold !important;
+		color: #000 !important;
+	}
+	:global(.uni-dialog-title){
+		display: flex !important;
+	}
+	:global(.uni-dialog-button:nth-child(1)){
+		display: flex !important;
+	}
+	:global(.uni-border-left){
+		border-left-color: #f0f0f0 !important;
+		border-left-style: solid !important;
+		border-left-width: 1px !important;
+	}
 	.draw{
 		height: 100vh;
 		display: flex;
@@ -227,6 +340,7 @@
 		flex: 1;
 	}
 	.menu_nav{
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		height: 80rpx;
@@ -268,7 +382,9 @@
 	}
 	.menu_img{
 		display: flex;
-		padding: 30rpx 60rpx;
+		padding: 0 60rpx;
+		align-items: center;
+		height: 200rpx;
 	}
 	.menu_img .item{
 		position: relative;
@@ -319,7 +435,10 @@
 		width: 48rpx;height: 48rpx;
 	}
 	.menu_text{
-		padding: 30rpx 60rpx;
+		display: flex;
+		padding: 0 60rpx;
+		align-items: center;
+		height: 200rpx;
 	}
 	.scroll_w{
 		white-space: nowrap;
@@ -329,17 +448,17 @@
 		display: inline-block;
 		width: 300rpx;height: 100rpx;
 		border-radius: 16rpx;
-		border: 1px solid #FFD717;
+		border: 1px solid #fff;
 		margin-right: 24rpx;
-	}
-	.input_box .input{
-		width: 100%;
-		height: 100%;
-		line-height: 100rpx;
-		padding: 0 34rpx;
-		box-sizing: border-box;
-		font-size: 32rpx;
 		color: #fff;
+		font-size: 32rpx;
+		line-height: 100rpx;
+		box-sizing: border-box;
+		padding: 0 16rpx;
+	}
+	.menu_text .active{
+		color: #FFD717;
+		border: 1px solid #FFD717;
 	}
 	.preview_box{
 		padding:40rpx 108rpx;
@@ -352,7 +471,7 @@
 		justify-content: center;
 	}
 	.preview_box .tempImage{
-		width: 300rpx;
+		width: 420rpx;
 		display: block;
 		margin-top: 40rpx;
 	}

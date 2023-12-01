@@ -23,8 +23,9 @@
 	import {ref} from "vue";
 	import { onReachBottom} from "@dcloudio/uni-app";
 	const navList = ref(['全部','上新','励志壁纸','励志壁纸','祝福壁纸','1','123']);
-	const left = ref(0)
+	const left = ref(0);
 	const navId = ref(0);
+	const value = ref("");
 	const changNav = (index)=>{
 		navId.value = index;
 		left.value = index>3?index* 60:0

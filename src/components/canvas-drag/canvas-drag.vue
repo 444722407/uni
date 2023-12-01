@@ -4,6 +4,7 @@
 
 <script>
 const DELETE_ICON = '../../static/replace.png'; // 删除按钮
+const DELETE_ICON2 = '../../static/replace2.png';
 const DRAG_ICON = '../../static/scale.png'; // 缩放按钮
 const STROKE_COLOR = '#ffffff';
 const ROTATE_ENABLED = true;
@@ -48,16 +49,13 @@ dragGraph.prototype = {
    */
   paint() {
     this.ctx.save();
-    let textWidth = 0;
-    let textHeight = 0;
+
 
     this.ctx.translate(this.centerX, this.centerY);
     this.ctx.rotate(this.rotate * Math.PI / 180);
     this.ctx.translate(-this.centerX, -this.centerY);
     
     this.ctx.drawImage(this.url, this.x, this.y, this.w, this.h);
-
-   
    
     if (this.selected) {
       this.ctx.setLineDash([5, 5], 5);
@@ -65,7 +63,7 @@ dragGraph.prototype = {
       this.ctx.setStrokeStyle(STROKE_COLOR);
       if (this.type === "text") {
         this.ctx.strokeRect(this.x, this.y, this.w, this.h);
-        this.ctx.drawImage(DELETE_ICON, this.x - 15, this.y - 15, 60, 39);
+        this.ctx.drawImage(DELETE_ICON2, this.x - 15, this.y - 15, 60, 39);
         this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 36, 36);
       } else if (this.type === "image") {
         this.ctx.strokeRect(this.x, this.y, this.w, this.h);
@@ -110,6 +108,7 @@ dragGraph.prototype = {
    */
   isInGraph(x, y) {
     if(this.type == "bg") return false;
+    
     const delW = 60;
     const delH = 39;
     const transformedDelCenter = this._rotatePoint(this.x, this.y, this.centerX, this.centerY, this.rotate);
@@ -144,6 +143,7 @@ dragGraph.prototype = {
       let xi = points[i][0], yi = points[i][1];
       let xj = points[j][0], yj = points[j][1];
       let intersect = yi > y != yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi;
+
       if (intersect)
         inside = !inside;
     }
@@ -319,21 +319,9 @@ export default  {
     initByArr(newArr) {
     
       this.drawArr = [];
-   
+  
       newArr.forEach((item, index) => {
         this.drawArr.push(new dragGraph(item, this.ctx, this.factor));
-        // switch (item.type) {
-        //   case "bg":
-        //   case "image":
-        //   case "text":
-        //     if (index === newArr.length - 1) {
-        //       item.selected = true;
-        //     } else {
-        //       item.selected = false;
-        //     }
-        //     this.drawArr.push(new dragGraph(item, this.ctx, this.factor));
-        //     break;
-        // }
       });
       
       this.draw();
@@ -359,6 +347,7 @@ export default  {
       this.tempGraphArr = [];
       let lastDelIndex = null;
 
+   
       this.drawArr && this.drawArr.forEach((item, index) => {
         const action = item.isInGraph(x, y);
         
@@ -366,7 +355,7 @@ export default  {
           item.action = action;
           item.index = 99999;
           item.selected = true;
-          this.$emit('selectImgId',item.id)
+          this.$emit('selectImgId',item.id,item.type)
           this.tempGraphArr.push(item);
           this.currentTouch = {
             x,
@@ -380,23 +369,28 @@ export default  {
           item.action = false;
           item.selected = false;
         }
+        
       });
-
+   
+  
       if (this.tempGraphArr.length > 0) {
         for (let i = 0; i < this.tempGraphArr.length; i++) {
           let lastIndex = this.tempGraphArr.length - 1;
           if (i === lastIndex) {
             if (lastDelIndex !== null && this.tempGraphArr[i].selected) {
               if (this.drawArr[lastDelIndex].action == "del") {
-                this.$emit('changeImg',this.tempGraphArr[i].id)
+               
+                this.$emit('changeImg',this.tempGraphArr[i].id,this.tempGraphArr[i].type)
                 // this.drawArr.splice(lastDelIndex, 1);
                 // this.ctx.clearRect(0, 0, this.toPx(this.width), this.toPx(this.height));
               }
             } else {
+             
               this.tempGraphArr[lastIndex].selected = true;
               this.currentGraph = Object.assign({}, this.tempGraphArr[lastIndex]);
             }
           } else {
+            this.tempGraphArr[i].index = this.tempGraphArr[i].moveIndex;
             this.tempGraphArr[i].action = false;
             this.tempGraphArr[i].selected = false;
           }
@@ -406,6 +400,7 @@ export default  {
       this.draw();
     },
     move(e) {
+    
       const {
         x,
         y
@@ -494,6 +489,9 @@ export default  {
     },
     // 将当前图片显示编辑状态
     selectImg(id){
+
+      this.drawArr.map((item)=>item.selected = false);
+
       this.drawArr.map((item)=>{
         if(item.id == id){
           item.index = 99999;
