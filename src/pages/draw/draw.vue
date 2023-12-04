@@ -126,12 +126,14 @@
 				temp_theme.value = res.picture_info;
 
 				temp_theme.value.map((item)=>{
-					item.w = (item.w / ratio.value).toFixed(2);
-					item.h = ( item.h / ratio.value ).toFixed(2);
-					item.x = ( item.x / ratio.value ).toFixed(2); 
-					item.y = ( item.y / ratio.value ).toFixed(2);
+					
+					item.w = parseFloat((item.w / ratio.value).toFixed(2)) ;
+					item.h = parseFloat( ( item.h / ratio.value ).toFixed(2));
+					item.x = parseFloat( ( item.x / ratio.value ).toFixed(2)); 
+					item.y = parseFloat(( item.y / ratio.value ).toFixed(2));
 					
 				})
+			
 				temp_theme.value.sort((a, b) => a.index - b.index);
 		
 				canvas.value.initByArr(temp_theme.value)
@@ -238,6 +240,7 @@
 	}
 	const toImage = ()=>{
 		canvas.value.export().then((res)=>{
+			
 			tempImage.value =  res;
 			popup_img.value.open('bottom')
 		})

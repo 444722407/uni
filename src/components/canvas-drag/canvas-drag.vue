@@ -522,10 +522,15 @@ export default  {
                   
                     uni.canvasToTempFilePath({
                         canvasId: 'canvas-drag',
+                        width:this.width,
+                        height:this.height,
+                        destWidth:this.width * 3.5,
+                        destHeight:this.height * 3.5,
                         success: (res) => {
                             resolve(res.tempFilePath);
                         },
                         fail: (e) => {
+                          console.log(e)
                             reject(e);
                         },
                     }, this);

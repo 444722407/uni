@@ -41,7 +41,7 @@
 			await fetchWork('/v1.wallpaper/make',{
 				wallpaper_id:optinos.id,
 				picture_info:JSON.stringify(app.globalData.temp_theme),
-				preview_img:data.data.url
+				preview_img:data.data.path
 			},'POST')
 		})
 
