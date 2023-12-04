@@ -80,6 +80,7 @@
 	import {ref,getCurrentInstance } from "vue";
 	import fetchWork from '@/services'
 	import { onLoad,onReady } from "@dcloudio/uni-app";
+	const app = getApp()
 	const width = ref(0);
 	const height = ref(0);
 	const ratio = ref(0);
@@ -99,14 +100,6 @@
 	const font_item = ref({});
 	
 
-	
-	var test = [
-		{"type":"bg","url":"../../static/canvas_bg.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":2},
-		{"type":"image","url":"../../static/canvas_item.jpg","y":970,"x":300,"w":600,"h":600,"rotate":0,"index":0,"id":1,"selected":true},
-		{"type":"text","url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAyCAYAAAAayliMAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAEkElEQVRoge2ZXWicRRSGnxOWdIlrCSHEEjUXpcRaSrBexCIRRYqIVBGN4EWxVqS0FKWi1Qv/EIVeBFFBoWC1KvWiNqioCNqqCEUEK4Zia1sRYhEtKqGNtaZJzPFiJsnZyX4/8+1KCOSFYWfOOfPzfnNm5sysqCoLGU3zPYB6sUhgvrFIYL6xSGC+sUhgvlH631oW2Q5cB3wBHAGOofpnw/tRVZegVaFLYalC84w8TNCkUFboUFiRYndAQU3akmhbR7Id3hd0mCd9ljD4isIFY/db6kepI9k1MFpgAt9OkN8ENJvyS6iOF2g/E/UQGAMGE3S3mvx5YFdk27mRRuAaVKUqwddG/z7QiUgXIu2ItAAgUgLWG7u3UD2TOAKRJkSaEWn1bXVEMTB+e3Xg372BX68I9OsUJgqsm6z0aNE1MJXBdZPJD6N6EDgX9bXyYSTGOOYg22Dye/xvS0xnORHlQvYgS54BkRuBLmP3us+vAc7g1s840AN843XngctRTf+ibs2UcB+j1dcrRCANG03+IKq/AKB6LBjMNlPalTl418YkMInb1aLcB/IQEKkAdxjJqwl2HcDdvjQGDHj5duBKL29H9c7YQaYhzwxsBio+PwJ8kGC3Ayj7/Buonvb5K3wbUOywTEX6Inb++ZCR7K15ooq0Alt8aRLYabR20MnnQUFk7UK3AJeZ8oEEux3MztJeVE8Z3ZjJN3zbzSLwMTBkyjsRaa6yEOkEHvSlKaq/PsC/Jt/weCidgNsh7mLWDVYDz87oRdqA/cx+/UFUT0aNQKSESAsiyxDpjqrrxjgTKvQkhhLwiJFPKHT7kPlsg8OIs/WE02l4GZi+TZWAx1A9BxyO/mLpiN6l8hFQHQN2G0m/Xwv7YjvMQFwkSlws9J7JLwX6gHeBrcD1wKXARTVC8KdNvaEa+iXAxb7+mlgCMZf6I0F5FaqfU+9lxZ0r47gt9tfY6vU8q1wyRyLSHtWC24G6sg2TEUOgMyj/HQzmWuBnRAYQWZ7akruF9QNHgS99vFUMKdvoZoV7FfoUblb4JNDflvKMMqGw0sufMvLvvOyVoK09jXhWCQncoPBTwn59QaHN1F0X6F8wuloEKgpHgzq3N5pAr5+BWgSeMPVKCieM7oRCOZWAk69W+Mfo/lDoaPRB9g7VwdgIsBXV54zsSWA6BJgCNvlzI8t3vweeMZJ24LXMenPbSXyVWOvl+xT2K9yj0BL4fY9Wv8A9X+OVrvYMzM7eD0G/9xd1obVBQ32plef68Y9VrpOHgNOvD/r9S2F5ERcqB5MTlmch0oQLI1Z5SX7XmesCHwGHjKRC0rW1BiyB8Ikk7clkAHfZmcaLqB5KsF2SYxzTIfop4GEg973ZhhL5CIiUcc8fY7hZOg487nXdQK+XjQJtQH/mKFQ/ReQBYHf0LBpf3BC1mGCZwpsKV6VsqWH6tuiBVWQNpB/vqqdR3YjqkJFNMv2cUhu/R33dHChOIBmD1H7lO4m9jjYIoqo+Jytxu8oozv+HUQ1D6Jytyoe4PziGcQHbV6g2+vbmupohsECx4P9mXfAE/gNdYFwvAqa3wgAAAABJRU5ErkJggg==","y":1875,"x":155,"w":102,"h":102,"rotate":0,"index":3,"id":3,"text":"我"},
-		{"type":"text","url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAA1CAYAAADs+NM3AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAETUlEQVRoge2aW4hWVRTHf2sYahimYRCzeRAfYogYJEpEBpEUCRER8UFKDIRKiCDyoRtBKjKIDCYiVlTkiBRdjEKieughysqub6IWXrrZxZLBZNBxqlk97DPN+s539jn77PONfer84cBee6+99/rvtdc6e5/vE1XlSkHL/21AIzFFplkxRaZZMUWmWRFORmQ5ItMm0ZbKKOOZ7cAJRJ5EZLpXS6QPkSWVLYuBqhY/0KOg5vlDoc2juzfROaTwiMLMoDka8ISSeSxFZqNHryUhanUfajYyXxnj/lTo9OgtSxE5ptB6qcgUx4xIDzDX1DyH6jmP9n0p+VFU/46MgPII8Eq/WekLCt0evW6Fv4zuR5fKI2HbzMXAz8bA53N0Nxq9fxTmljYIWhU6FGYq3NJoMqtTBvZ49NoyAr/q826jydjAP5aj92CDiajCgsaRgcV1mcnvlR8aTORQTMzkZbMNgTlkEzArKQ8DN6AqpR64FjhjxtxdPpXh8Uy9V7I9AzcpXDQ6m2NWVGGdGeOiwvSYcXyDf1FIxmW6z0z7rwodkWSOmnHeiBpDldY6V4msBeYFOLUf6DPy46gOp8a6FZgPDAEdwI+ovp/SWQXcbGrithiQXqFpCqfNKv2U6RlYkaTq8bbsFySsTHl3S4bO4ZR3W2I9k04AzwAzkvI5YKCOvTvevMrE9WEUeMCzVr+n5NOpsdYCvabmNVTHihzgwwQZkXuB1aZtgNoM46B6HLgNeBEYA55G9Yhn/OEC+Qwua74CnAJeCjc9A4mrZ6s7d1l3t2vtCSArm81X6MoJ7N7UNlsTu4XKbLNvgLcNxw2ong9YiYOoni2xdpN6gnZk3DH9buBr4AgwWNNeBJFZxUrevt3RfVOYMNYRugdYHxGEuxE5jMg6RDqDeojMQGQA+A6RxSXny0bBy2xN4NnMxtu3OTFzZ1Lfpe7GOl7/cSNjpgqWAm1G3hKwgmeBbaZmASJ3VDWkiEwI2btM+Xvg5cC5nwJ+MXJ/YD8vqnlGpB1Ybmp2Bseb6giw1dT0IbK0ijlVt9kq3JkL3AtxMEc3Cy9Q653NVYypSma9KQ/i/2qTDdVRYJepmYfIslhj4smILALmJNIYsDNypGcB+4KOjp0qCWCTKb+D6skoC5w395uaOYisiBkqzjNuskWmZqtHMxR7UnJU7JQnI9KFuyqM40NUP4+Z3OADak/ovYiEXBBrELPNRoCHgfEb446c/tcEWeHS+X7gJHA/cD2qXwb1Nai/Ntei3ZTbkolHgH3APkRuBz7J6T+7hC1PAENVLmdlyNQfIFUP1MjuSNKJe+fcSPjnKlCtvwiWRBGZ60y5E5GWgpUbBd7Maf8t2LIIFMVMR0rOP947T73naT0FHAwzKw5FZLoK5Cy8npJHgbeAhUzybzWiqjmt//26fB7nlaFCg9zXm224q/inwIHSx5xI5JO5zHCV/qnhMsAUmWbFFUXmX1g4hJlr0YDIAAAAAElFTkSuQmCC","y":1875,"x":600,"w":102,"h":102,"rotate":0,"index":3,"id":4,"text":"你"},
-		{"type":"bg","url":"../../static/wallpaper_watermark.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":9999,"id":-9527}
-	]
 	const temp_theme = ref([]);     
 
 	onLoad( async ()=>{
@@ -121,11 +114,11 @@
 				const this_height = data.height;
 				ratio.value = 2336 / this_height;
 				
-				height.value = this_height;
+				height.value = this_height; 
 				width.value = 1080 / ratio.value;
 
-				const res = await fetchWork('/v1.wallpaper/get_detail',{id:1},'POST');
-
+				const res = await fetchWork('/v1.wallpaper/get_detail',{id:2},'POST');
+			
 				// 如果不是会员增加水印
 				if(true){
 					res.picture_info.push({"type":"bg","url":"../../static/wallpaper_watermark.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":9999,"id":-9527})
@@ -133,10 +126,10 @@
 				temp_theme.value = res.picture_info;
 
 				temp_theme.value.map((item)=>{
-					item.w = item.w / ratio.value;
-					item.h = item.h / ratio.value;
-					item.x = item.x / ratio.value;
-					item.y = item.y / ratio.value;
+					item.w = (item.w / ratio.value).toFixed(2);
+					item.h = ( item.h / ratio.value ).toFixed(2);
+					item.x = ( item.x / ratio.value ).toFixed(2); 
+					item.y = ( item.y / ratio.value ).toFixed(2);
 					
 				})
 				temp_theme.value.sort((a, b) => a.index - b.index);
@@ -261,7 +254,10 @@
 	}
 	const goMake = ()=>{
 		uni.navigateTo({
-			url:'/pages/make/make?tempImage=' + tempImage.value
+			url:'/pages/make/make?tempImage=' + tempImage.value + '&id=2',
+			success:()=>{
+				app.globalData.temp_theme = temp_theme.value;
+			}
 		})
 	}
 	const dialogConfirm = async (value)=>{

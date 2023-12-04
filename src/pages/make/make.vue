@@ -12,8 +12,8 @@
 			<view class="s">制作记录只保留7天，请您尽快保存</view>
 			<view class="s">当前作品还有<text style="color: #FFD718;">3</text>次修改机会</view>
 			<view class="save_box">
-				<view class="goback" @click="toBack"><image src="@/static/make_back.png" class="icon_back"></image> 返回修改</view>
-				<view class="confrim" @click="toPay">确认提交</view>
+				<view class="goback" @click="toBack"><image src="@/static/works_modify.png" class="icon_back"></image>再次修改</view>
+				<view class="confrim" @click="save"><image src="@/static/works_download.png" class="icon_save"></image>保存到系统相册</view>
 			</view>
 		</view>
 	</view>
@@ -22,16 +22,31 @@
 <script setup>
 	import {ref} from "vue";
 	import { onLoad , onReady} from "@dcloudio/uni-app";
+	import fetchWork,{fetchWorkImage} from '@/services'
+	const app = getApp();
+	const time = ref(0);
+
 	const tempImage = ref('');
-	const animationData = ref({});
-	const is_progress = ref(true)
-	onLoad((optinos)=>{
+	const animationData  = ref()
+	const is_progress = ref(true);
+
+	onLoad( async (optinos)=>{
+		// 图片上传
+		time.value = +new Date();
 		tempImage.value = optinos.tempImage;
-		
-		
-	})
-	onReady(()=>{
-		var duration = 3000;
+
+		const uploadTask  = fetchWorkImage('/v1.upload/image',optinos.tempImage,async (res)=>{
+			const data = JSON.parse(res.data)
+			// 制作数据
+			await fetchWork('/v1.wallpaper/make',{
+				wallpaper_id:optinos.id,
+				picture_info:JSON.stringify(app.globalData.temp_theme),
+				preview_img:data.data.url
+			},'POST')
+		})
+
+		var duration = +new Date() - time.value;
+	
 		var animation = uni.createAnimation({
 			duration,
 			timingFunction: 'ease',
@@ -39,11 +54,20 @@
 		})
 		animation.width('100%').step();
 		animationData.value = animation.export()
+
+		// uploadTask.onProgressUpdate((res)=>{
+		// 	width.value = res.progress;
+		// 	if (res.progress  == 100){
+		// 		is_progress.value = false;
+		// 	}
+		// })
 	})
+	
 	const end = ()=>{
 		console.log('end')
 		is_progress.value = false;
 	}
+
 </script>
 
 <style scoped>
@@ -111,6 +135,11 @@
 	}
 	.save_box .icon_back{
 		width: 32rpx;height: 32rpx;
+		margin-right: 5rpx;
+		margin-top: 3rpx;
+	}
+	.save_box .icon_save{
+		width: 40rpx;height: 40rpx;
 		margin-right: 5rpx;
 		margin-top: 3rpx;
 	}

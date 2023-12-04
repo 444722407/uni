@@ -2,7 +2,8 @@
 import fetchWork from './services';
 export default {
   globalData:{
-    system:{}
+    system:{},
+    temp_theme:[]
   },
   methods:{
       checkLogin(){

@@ -39,6 +39,28 @@ export default function fetchWork(url="", data={}, method="GET",text){
   })
 }
 
+export function fetchWorkImage(url,path,cb){
+
+    const format_data = formatData({});
+    const format_header = formatHeader();
+    const uploadTask = uni.uploadFile({
+        url: host+url,
+        header:format_header,
+        fileType:"image",
+        filePath:path,
+        name:"file",
+        formData:format_data,
+        success:(res)=>{
+          cb(res)
+        },
+        fail:function(errMsg){
+          console.log(errMsg)
+        }
+    })
+    return uploadTask;
+
+ 
+}
 
 
 function formatHeader(){
