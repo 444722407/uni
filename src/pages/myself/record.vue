@@ -24,8 +24,13 @@
 		<no-data v-else-if="status != 'loading'"></no-data>
 		<uni-load-more :status="status" :contentText="contentText" v-else-if="status != 'no-more'"/>  
 
-		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog  content="过期作品无法查看" title="" cancelText="" confirmText="知道了" :duration="2000" @close="close" @confirm="confirm"></uni-popup-dialog>
+		<uni-popup ref="popup">
+			<view class="dialog">
+				<view class="dialog_title">过期作品无法查看</view>
+				<view class="dialog_btn_box">
+					<view class="dialog_btn dialog_confirm" @click="confirm">知道了</view>
+				</view>
+			</view>
 		</uni-popup>
 
 	</view>
@@ -69,7 +74,9 @@
 			page.value ++;
 		}, 200);
 	})
-	
+	const confirm = ()=>{
+		popup.value.close();
+	}
 	const handlerItem = function(item){
 		if(item.status == 2){
 			popup.value.open();

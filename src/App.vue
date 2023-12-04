@@ -61,19 +61,40 @@ export default {
 		background-color: #161616;
 		color:#FFFFFF
 	}
-  .uni-dialog-title{
-    display: none !important;
+  
+  button{
+    padding: 0;
+    margin: 0;
+    background: none;
   }
-  .uni-dialog-button:nth-child(1){
-    display: none !important;
+  .dialog{
+    width: 560rpx;
+    background-color: #fff;
+    border-radius: 16rpx;
   }
-  .uni-border-left{
-    border: 0 !important;
+  .dialog_title{
+    font-size: 36rpx;
+    color: #000;
+    font-weight: bold;
+    padding: 60rpx 40rpx;
+    text-align: center;
   }
-  .uni-dialog-content{
-    padding: 50rpx !important;
+  .dialog_btn_box{
+    border-top: 1px solid rgba(22,24,35,0.12);
+    display: flex;
   }
-  .uni-dialog-content-text{
+  .dialog_btn_box .dialog_btn{
+    color: #000;
+    font-size: 32rpx;
+    flex: 1;
+    text-align: center;
+    height: 94rpx;
+    line-height: 94rpx;
+  }
+  .dialog .dialog_cencel{
+    border-right: 1px solid rgba(22,24,35,0.12);
+  }
+  .uni-dialog-title-text{
     font-size: 36rpx !important;
     color: #000 !important;
     text-align: center !important;
@@ -82,10 +103,5 @@ export default {
   .uni-button-color{
     color: #000000 !important;
     font-size: 32rpx !important;
-  }
-  button{
-    padding: 0;
-    margin: 0;
-    background: none;
   }
 </style>

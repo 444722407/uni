@@ -16,6 +16,15 @@
 				<view class="confrim" @click="save"><image src="@/static/works_download.png" class="icon_save"></image>保存到系统相册</view>
 			</view>
 		</view>
+		<uni-popup ref="save_mask" >
+			<view class="save_tips">
+				<image src="@/static/works_saved.png" class="icon_success"></image>
+				<view class="t">保存成功</view>
+				<view class="s">请在手机相册或照片内查看，如果未找到，可尝试在手机文件内查找，部分机型需要等待3分钟才能找到！</view>
+				<view class="confrim" @click="hideSave">知道了</view>
+			</view>
+		</uni-popup>
+
 	</view>
 </template>
 
@@ -24,36 +33,32 @@
 	import { onLoad , onReady} from "@dcloudio/uni-app";
 	import fetchWork,{fetchWorkImage} from '@/services'
 	const app = getApp();
-	const time = ref(0);
-
+	
 	const tempImage = ref('');
-	const animationData  = ref()
 	const is_progress = ref(true);
+	const time = ref(0);
+	const animationData  = ref({})
+	
+	const is_save = ref(false);
+
+	const save_mask = ref(null);
 
 	onLoad( async (optinos)=>{
 		// 图片上传
 		time.value = +new Date();
 		tempImage.value = optinos.tempImage;
 
-		const uploadTask  = fetchWorkImage('/v1.upload/image',optinos.tempImage,async (res)=>{
-			const data = JSON.parse(res.data)
-			// 制作数据
-			await fetchWork('/v1.wallpaper/make',{
-				wallpaper_id:optinos.id,
-				picture_info:JSON.stringify(app.globalData.temp_theme),
-				preview_img:data.data.path
-			},'POST')
-		})
+		// const uploadTask  = fetchWorkImage('/v1.upload/image',optinos.tempImage,async (res)=>{
+		// 	const data = JSON.parse(res.data)
+		// 	// 制作数据
+		// 	await fetchWork('/v1.wallpaper/make',{
+		// 		wallpaper_id:optinos.id,
+		// 		picture_info:JSON.stringify(app.globalData.temp_theme),
+		// 		preview_img:data.data.path
+		// 	},'POST')
+		// })
 
-		var duration = +new Date() - time.value;
-	
-		var animation = uni.createAnimation({
-			duration,
-			timingFunction: 'ease',
-			
-		})
-		animation.width('100%').step();
-		animationData.value = animation.export()
+		
 
 		// uploadTask.onProgressUpdate((res)=>{
 		// 	width.value = res.progress;
@@ -62,12 +67,55 @@
 		// 	}
 		// })
 	})
-	
+	onReady(()=>{
+		var duration = +new Date() - time.value;
+		console.log(duration)
+		var animation = uni.createAnimation({
+			duration:duration*10,
+			timingFunction: 'ease',
+			
+		})
+		animation.width('100%').step();
+		animationData.value = animation.export()
+	})
 	const end = ()=>{
 		console.log('end')
 		is_progress.value = false;
 	}
-
+	const toBack = ()=>{
+		uni.navigateBack()
+	}
+	const save = ()=>{
+		uni.saveImageToPhotosAlbum({
+			filePath:tempImage.value,
+			success:(res)=>{
+				save_mask.value.open();
+			},
+			fail:(err)=>{
+				if(err.errMsg.includes('saveImageToPhotosAlbum:fail auth deny')){
+					uni.showModal({
+						title:"提示",
+						content:"没有权限",
+						showCancel:false,
+						confirmText:"打开权限",
+						confirmColor:"#42b983",
+						success:(res)=>{
+							uni.openSetting()
+						}
+					})
+				}else{
+					uni.showToast({
+						title:"保存失败",
+						icon:"none"
+					})
+				}
+			}
+		})
+		
+	}
+	const hideSave = ()=>{
+		save_mask.value.close();
+	}
 </script>
 
 <style scoped>
@@ -79,14 +127,16 @@
 		align-items: center;
 		box-sizing: border-box;
 		padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
-		background-color:#232323;
+		background-color:#161616;
 	}
 	.tempImage{
 		width: 430rpx;
 		display: block;
-		margin: 0 auto;
+		margin: auto;
 	}
 	.progress_box{
+		width: 100%;
+		box-sizing: border-box;
 		background-color: #232323;
 		padding: 40rpx 0;
 		display: flex;
@@ -94,6 +144,7 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
+		margin-top: auto;
 	}
 	.progress_box .t{
 		color: #fff;font-size: 32rpx;
@@ -161,5 +212,37 @@
 	}
 	.successs .s{
 		font-size: 28rpx;color: #fff;
+	}
+	
+	.save_tips{
+		width: 560rpx;height: 504rpx;
+		background-color: #fff;
+		border-radius: 16rpx;
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+	}
+	.save_tips .icon_success{
+		width: 120rpx;height: 120rpx;
+		margin-top: 50rpx;
+	}
+	.save_tips .t{
+		font-size: 36rpx;color: #000;font-weight: bold;
+		margin: 16rpx 0;
+	}
+	.save_tips .s{
+		color: #FD2C55;
+		font-size: 28rpx;
+		padding: 0 36rpx;
+		text-align: center;
+	}
+	.save_tips .confrim{
+		margin-top: auto;
+		border-top: 1px solid rgba(22,24,35,0.12);
+		font-size: 32rpx;color: #000;font-weight: bold;
+		height: 92rpx;
+		text-align: center;
+		line-height: 92rpx;
+		width: 100%;
 	}
 </style>

@@ -7,7 +7,7 @@
 					{{userInfo.nickName?userInfo.nickName:'匿名用户'}}
 				</view>	
 				<view class="desc">
-					剩余制作机会：{{userInfo.production_num}}次
+					剩余制作机会：{{userInfo.make_num}}次
 				</view>	
 			</view>
 			
@@ -50,15 +50,25 @@
 				<image src="@/static/me_arrow@2x.png" class="icon_arrow"></image>
 			</navigator>
 		</view>	
+
+		<uni-popup ref="popup_logout" type="dialog">
+			<view class="dialog">
+				<view class="dialog_title">是否要退出登录</view>
+				<view class="dialog_btn_box">
+					<view class="dialog_btn dialog_cencel" @click="cencel">取消</view>
+					<view class="dialog_btn dialog_confirm" @click="confirm">知道了</view>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script setup>
 	import fetchWork from "../../services";
 	import {ref } from "vue";
-    import { onShow } from "@dcloudio/uni-app";
+    import { onShow,onReady } from "@dcloudio/uni-app";
 	const userInfo = ref({});
-
+	const popup_logout = ref(null)
 	const getUserInfo = async ()=>{
 		try{
 			const res = await fetchWork('/v1.user/get_info',{},'POST');
@@ -85,20 +95,28 @@
 			}
 		})
 	}
-	const logout = async ()=>{
+	const logout = ()=>{
+		popup_logout.value.open()
+	}
+	const cencel = ()=>{
+		popup_logout.value.close ()
+	}
+	const confirm =  ()=>{
+		popup_logout.value.close ()
 		uni.removeStorageSync('userInfo');
 		userInfo.value.nickName = "";
 		userInfo.value.avatarUrl = "";
 	}
-
 	onShow(()=>{
 		const userInfo_data = uni.getStorageSync('userInfo');
 		userInfo.value.nickName = userInfo_data && userInfo_data.nickName;
 		userInfo.value.avatarUrl =  userInfo_data && userInfo_data.avatarUrl;
 		getUserInfo()
+		
 	})
+	
 </script>
-
+ 
 <style scoped>
 	
 	.myself{

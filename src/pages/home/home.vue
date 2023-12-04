@@ -20,8 +20,13 @@
 			<picture-list type="picture" ref="picture"></picture-list>
 		</view>
 	</view>
-	<uni-popup ref="popup" type="dialog">
-		<uni-popup-dialog  content="暂无相关创作者，请换个口令搜索" title="" cancelText="" confirmText="知道了" :duration="2000" @close="close" @confirm="confirm"></uni-popup-dialog>
+	<uni-popup ref="popup">
+		<view class="dialog">
+			<view class="dialog_title">暂无相关创作者，请换个口令搜索</view>
+			<view class="dialog_btn_box">
+				<view class="dialog_btn dialog_confirm" @click="confirm">知道了</view>
+			</view>
+		</view>
 	</uni-popup>
 </template>
 
@@ -42,6 +47,9 @@
             picture.value.more();
         }
     })
+	const confirm = ()=>{
+		popup.value.close()
+	}
 	const search = ()=>{
 		popup.value.open()
 	}

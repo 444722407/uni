@@ -256,6 +256,7 @@
 		check_id.value = id;
 	}
 	const goMake = ()=>{
+		popup_pay.value.close()
 		uni.navigateTo({
 			url:'/pages/make/make?tempImage=' + tempImage.value + '&id=2',
 			success:()=>{
@@ -313,22 +314,7 @@
 </script>
 
 <style scoped>
-	:global(.uni-dialog-title-text){
-		font-size: 32rpx !important;
-		font-weight: bold !important;
-		color: #000 !important;
-	}
-	:global(.uni-dialog-title){
-		display: flex !important;
-	}
-	:global(.uni-dialog-button:nth-child(1)){
-		display: flex !important;
-	}
-	:global(.uni-border-left){
-		border-left-color: #f0f0f0 !important;
-		border-left-style: solid !important;
-		border-left-width: 1px !important;
-	}
+
 	.draw{
 		height: 100vh;
 		display: flex;
