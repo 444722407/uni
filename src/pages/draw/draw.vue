@@ -33,10 +33,15 @@
 			</view>
 		</view>
 
-		<uni-popup ref="popup_img" :safe-area="false">
+		<uni-popup ref="popup_img" :safe-area="false" @change="changePopupImg">
 			<view class="preview_box">
 				<view class="t">请预览制作效果</view>
-				<image :src="tempImage" class="tempImage" mode="widthFix" :style="{width:width-20 + 'px'}"></image>
+
+				<view class="img_box" :style="{width:width-20 + 'px'}">
+					<image :src="tempImage" class="tempImage" mode="widthFix"></image>
+					<image  src="@/static/wallpaper_watermark.png" class="tempImage_sy" mode="widthFix" :style="{width:width-20 + 'px'}"></image>
+				</view>
+
 				<view class="s">点击【确认提交】可保存高清无水印作品</view>
 				<view class="preview_btn_box">
 					<view class="goback" @click="toBack"><image src="@/static/make_back.png" class="icon_back"></image> 返回修改</view>
@@ -102,6 +107,7 @@
 	
 
 	const temp_theme = ref([]);     
+	const sy = ref({});
 
 	onLoad((options)=>{
 		tt.setSwipeBackMode(0);
@@ -120,11 +126,9 @@
 				width.value = 1080 / ratio.value;
 
 				const res = await fetchWork('/v1.wallpaper/get_detail',{id:id.value},'POST');
-			
-				// 如果不是会员增加水印
-				if(true){
-					res.picture_info.push({"type":"bg","url":"../../static/wallpaper_watermark.png","y":0,"x":0,"w":1080,"h":2336,"rotate":0,"index":9999,"id":-9527})
-				}
+
+				
+		
 				temp_theme.value = res.picture_info;
 
 				temp_theme.value.map((item)=>{
@@ -137,8 +141,18 @@
 				})
 			
 				temp_theme.value.sort((a, b) => a.index - b.index);
-		
-				canvas.value.initByArr(temp_theme.value)
+
+				sy.value = {
+					"type":"bg",
+					"url":"../../static/wallpaper_watermark.png",
+					"y":0,"x":0,
+					"w":parseFloat((1080 / ratio.value).toFixed(2)),
+					"h":parseFloat((2336 / ratio.value).toFixed(2)),
+					"rotate":0,
+					"index":9999,
+					"id":-9527
+				};
+				canvas.value.initByArr(temp_theme.value,sy.value)
 				
 			}).exec();
 	
@@ -193,7 +207,7 @@
 								item.url = url;
 							}
 						})
-						canvas.value.initByArr(temp_theme.value)
+						canvas.value.initByArr(temp_theme.value,sy.value)
 					}
 				})
 	
@@ -249,8 +263,15 @@
 		popup_img.value.close('bottom')
 		popup_pay.value.open('center')
 	}
+	// 返回修改
 	const toBack = ()=>{
+		canvas.value.initByArr(temp_theme.value,sy.value);
 		popup_img.value.close('bottom')
+	}
+	const changePopupImg = (e)=>{
+		if(!e.show){
+			canvas.value.initByArr(temp_theme.value,sy.value);
+		}
 	}
 	const changePay = (id)=>{
 		check_id.value = id;
@@ -284,7 +305,7 @@
 				}
 			})
 		
-			canvas.value.initByArr(temp_theme.value)
+			canvas.value.initByArr(temp_theme.value,sy.value)
 			popup_text.value.close()
 		}
 	
@@ -308,7 +329,7 @@
 			item.x = item.x / ratio.value;
 			item.y = item.y / ratio.value;
 		})
-		canvas.value.initByArr(temp_theme.value)
+		canvas.value.initByArr(temp_theme.value,sy.value)
 		
 	}
 </script>
@@ -455,10 +476,22 @@
 		align-items: center;
 		justify-content: center;
 	}
-	.preview_box .tempImage{
-		width: 420rpx;
-		display: block;
+	.preview_box .img_box{
+		position: relative;
 		margin-top: 40rpx;
+	}
+	.preview_box .tempImage{
+		width: 100%;
+		display: block;
+		
+	}
+	.preview_box .tempImage_sy{
+		width: 100%;
+		display: block;
+		position: absolute;
+		z-index: 9;
+		left: 0;
+		top: 0;
 	}
 	.preview_box .t{
 		font-size: 40rpx;

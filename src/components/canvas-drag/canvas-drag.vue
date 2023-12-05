@@ -316,13 +316,16 @@ export default  {
       this.draw();
       this.recordHistory();
     },
-    initByArr(newArr) {
+    initByArr(newArr,sy) {
     
       this.drawArr = [];
-  
+      
       newArr.forEach((item, index) => {
         this.drawArr.push(new dragGraph(item, this.ctx, this.factor));
       });
+
+      // 增加水印
+      this.drawArr.push(new dragGraph(sy,this.ctx, this.factor))
       
       this.draw();
     },
@@ -518,14 +521,18 @@ export default  {
                     item.selected = false;
                     return item;
                 });
+                const index =  this.drawArr.findIndex((item)=>item.id == -9527);
+                this.drawArr.splice(index,1)
+             
                 this.draw().then(() => {
                   
                     uni.canvasToTempFilePath({
                         canvasId: 'canvas-drag',
                         width:parseInt(this.width),
                         height:parseInt(this.height),
-                        destWidth:parseInt(this.width * 3.5),
-                        destHeight:parseInt(this.height * 3.5),
+                        destWidth:parseInt(this.width * 5),
+                        destHeight:parseInt(this.height * 5),
+                        fileType:"jpg",
                         success: (res) => {
                             resolve(res.tempFilePath);
                         },
