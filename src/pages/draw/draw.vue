@@ -80,7 +80,8 @@
 	import {ref,getCurrentInstance } from "vue";
 	import fetchWork from '@/services'
 	import { onLoad,onReady } from "@dcloudio/uni-app";
-	const app = getApp()
+	const app = getApp();
+	const id = ref("");
 	const width = ref(0);
 	const height = ref(0);
 	const ratio = ref(0);
@@ -102,8 +103,9 @@
 
 	const temp_theme = ref([]);     
 
-	onLoad( async ()=>{
+	onLoad((options)=>{
 		tt.setSwipeBackMode(0);
+		id.value = options.id;
 		
 	})
 	const scaleCanvas = ()=>{
@@ -117,7 +119,7 @@
 				height.value = this_height; 
 				width.value = 1080 / ratio.value;
 
-				const res = await fetchWork('/v1.wallpaper/get_detail',{id:2},'POST');
+				const res = await fetchWork('/v1.wallpaper/get_detail',{id:id.value},'POST');
 			
 				// 如果不是会员增加水印
 				if(true){
@@ -142,11 +144,9 @@
 	
 	}
 	onReady(async ()=>{
-		
-		
-		scaleCanvas()
-	
-	
+		if(id.value){
+			scaleCanvas()
+		}
 	})
 	
 	const selectImg = (id,type)=>{

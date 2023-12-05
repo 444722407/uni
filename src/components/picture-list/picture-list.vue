@@ -6,7 +6,7 @@
             </view>
         </view>
         <!-- 加载完成才显示有没有数据 -->
-        <no-data v-else-if="status != 'loading'" marginTop="100" text="没有相关结果"></no-data>
+        <no-data v-else-if="status != 'loading'" :marginTop="100" text="没有相关结果"></no-data>
         
         <uni-load-more :status="status" :contentText="contentText" v-if="status"/>    
     </view>
@@ -33,70 +33,23 @@
 						});
 	
 	const list = ref([]);
-
-	const more = ()=>{
-		status.value = "loading"
-		const res = [{
-				src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己",
-				status:1
-			},
-			{
-                src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己",
-				status:2
-			},{
-				src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己",
-				status:1
-			},
-			{
-                src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己",
-				status:2
-			},{
-				src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己",
-				status:1
-			},
-			{
-                src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己",
-				status:2
-			},{
-				src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己",
-				status:1
-			},
-			{
-                src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己",
-				status:2
-			},{
-				src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己人生靠自己",
-				status:1
-			},
-			{
-                src:props.type == 'picture'?"https://fakeimg.pl/324x576/ffffff/":"https://fakeimg.pl/324x324/ffffff/",
-				name:"人生靠自己",
-				status:2
-			}];	
-
-		setTimeout(() => {
-			if(res.length == 0){
-				status.value= "";
-				return;
-			}
+	onMounted(()=>{
+		
+	})
+	const more = (res)=>{
+	
+		if(res && res.length!= 0){
 			list.value = page.value == 1 ? res:[...list.value,...res];
 			status.value = res.length < 10? 'no-more':'more';
 			page.value ++;
 			is_load.value = res.length == 10;
-		}, 1000);
+		}else{
+			status.value= "";
+			return;
+		}
+	
 	}
-	onMounted(()=>{
-		more()
-	})
+	
 	const search = ()=>{
 		list.value = [];
 		status.value = "";

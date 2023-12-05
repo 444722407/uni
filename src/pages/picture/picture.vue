@@ -21,7 +21,7 @@
 
 <script setup>
 	import {ref} from "vue";
-	import { onReachBottom} from "@dcloudio/uni-app";
+	import { onReady , onReachBottom} from "@dcloudio/uni-app";
 	const navList = ref(['全部','上新','励志壁纸','励志壁纸','祝福壁纸','1','123']);
 	const left = ref(0);
 	const navId = ref(0);
@@ -32,6 +32,9 @@
 	}
 	const picture = ref(null);
 
+	onReady(async ()=>{
+		picture.value.more()
+	})
 	onReachBottom(()=>{
 		if(picture.value.is_load){
 			picture.value.more();

@@ -48,15 +48,15 @@
 		time.value = +new Date();
 		tempImage.value = optinos.tempImage;
 
-		// const uploadTask  = fetchWorkImage('/v1.upload/image',optinos.tempImage,async (res)=>{
-		// 	const data = JSON.parse(res.data)
-		// 	// 制作数据
-		// 	await fetchWork('/v1.wallpaper/make',{
-		// 		wallpaper_id:optinos.id,
-		// 		picture_info:JSON.stringify(app.globalData.temp_theme),
-		// 		preview_img:data.data.path
-		// 	},'POST')
-		// })
+		const uploadTask  = fetchWorkImage('/v1.upload/image',optinos.tempImage,async (res)=>{
+			const data = JSON.parse(res.data)
+			// 制作数据
+			await fetchWork('/v1.wallpaper/make',{
+				wallpaper_id:optinos.id,
+				picture_info:JSON.stringify(app.globalData.temp_theme),
+				preview_img:data.data.path
+			},'POST')
+		})
 
 		
 

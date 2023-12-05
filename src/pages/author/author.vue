@@ -1,11 +1,11 @@
 <template>
     <view class="head">
-      <image src="@/static/creator_bg.jpg" class="bg" mode="widthFix"></image>
+      <image :src="authorInfo.background_img_url" class="bg" mode="widthFix"></image>
       <view class="user_box">
-        <image class="author" src="https://fakeimg.pl/144x144/ffffff/"></image>
+        <image class="author" :src="authorInfo.avatar_url"></image>
         <view class="aside">
-          <view class="name">马可波罗</view>
-          <view class="copy">创作者口令：0876  <image src="@/static/author_copy@2x.png" class="icon"></image></view>
+          <view class="name">{{authorInfo.nickname}}</view>
+          <view class="copy" @click="copy(authorInfo.code_word)">创作者口令：{{authorInfo.code_word}}  <image src="@/static/author_copy@2x.png" class="icon"></image></view>
         </view>
       </view>
     </view>
@@ -14,8 +14,8 @@
           <view class="nav" :class="{active:navId == 0}" @click="changeNav(0)">壁纸</view>
           <view class="nav" :class="{active:navId == 1}" @click="changeNav(1)">头像</view>
       </view>
-      <picture-list type="picture" v-if="navId == 0" ref="picture"></picture-list>
-      <picture-list type="avatar"  v-if="navId == 1" ref="avatar"></picture-list>
+      <picture-list type="picture" v-show="navId == 0" ref="picture"></picture-list>
+      <picture-list type="avatar"  v-show="navId == 1" ref="avatar"></picture-list>
   </view>
 
   
@@ -23,13 +23,40 @@
 
 <script setup >
   import {ref} from "vue";
-  import { onReachBottom } from "@dcloudio/uni-app";
+  import { onLoad,onReachBottom } from "@dcloudio/uni-app";
+  import fetchWork from '@/services'
   const picture = ref(null);
   const avatar = ref(null);
   const navId = ref(0)
+  const authorInfo = ref({});
+
   const changeNav = (id)=>{
       navId.value = id;
   } 
+  onLoad(async(options)=>{
+    const creator_id = options.creator_id;
+    if(creator_id){
+       fetchWork('/v1.creator/get_detail',{creator_id}).then((res)=>{
+
+        authorInfo.value = res;
+       }).catch((msg)=>{
+          uni.showToast({
+            title: msg,
+            icon: 'none'
+          });
+       })
+
+       fetchWork('/v1.creator/get_wallpaper_list',{creator_id}).then((res)=>{
+          picture.value.more(res.list);
+       }).catch((msg)=>{
+          uni.showToast({
+            title: msg,
+            icon: 'none'
+          });
+       })
+
+    }
+  })
   onReachBottom(()=>{
       if(picture.value.is_load && navId.value == 0){
           picture.value.more();
@@ -39,9 +66,18 @@
           avatar.value.more();
           return;
       }
-     
-      
   })
+  const copy = (value)=>{
+    uni.setClipboardData({
+      data: value,
+      success: function () {
+        uni.showToast({
+            title: '复制成功',
+            icon: 'none'
+          });
+      }
+    });
+  }
 </script>
 
 <style scoped>

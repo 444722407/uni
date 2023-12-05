@@ -10,8 +10,8 @@
 		<view class="user_box">
 			<view class="title">优质创作者</view>
 			<view class="author_list">
-				<navigator url="/pages/author/author" v-for="(item,index) in [1,2,3,4,5]" :key="index" >
-					<image class="author" src="https://fakeimg.pl/108x108/ffffff/"></image>
+				<navigator :url="'/pages/author/author?creator_id=' + item.id" v-for="item in users" :key="item.id" >
+					<image class="author" :src="item.avatar_url"></image>
 				</navigator>
 			</view>
 		</view>
@@ -33,14 +33,20 @@
 <script setup>
 	import {ref,onMounted } from "vue";
     import { onLoad, onReachBottom} from "@dcloudio/uni-app";
+	import fetchWork from '@/services'
+
 	const value = ref("")
     const picture = ref(null);
+	const users = ref([]);
+
 	const popup = ref(null);
 	onMounted(()=>{
 		console.log('onMounted')
 	})
-	onLoad(()=>{
-		console.log('onLoad')
+	onLoad(async ()=>{
+		const res = await fetchWork('/v1.index/index');
+		users.value = res.quality_creator;
+		picture.value.more(res.choosy_picture)
 	})
     onReachBottom(()=>{
         if(picture.value.is_load){
@@ -50,8 +56,16 @@
 	const confirm = ()=>{
 		popup.value.close()
 	}
-	const search = ()=>{
-		popup.value.open()
+	const search = async ()=>{
+		if(value.value){
+			fetchWork('/v1.index/search_code_word',{code_word:value.value},'POST').then((res)=>{
+				uni.navigateTo({
+					url:"/pages/author/author?creator_id=" + res.id
+				})
+			}).catch(()=>{
+				popup.value.open()
+			})
+		}
 	}
 </script>
 

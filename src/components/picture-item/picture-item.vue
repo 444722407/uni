@@ -1,12 +1,12 @@
 <template>
-    <navigator class="box" :url="type == 'picture'?'/pages/draw/draw':'/pages/avatar/detail'" open-type="navigate" hover-class="navigator-hover">
-        <image :src="props.item.src" class="item" :class="[type == 'picture'?'item_h':'']" mode="widthFix"></image>
+    <navigator class="box" :url="type == 'picture'?'/pages/draw/draw?id=' + props.item.id :'/pages/avatar/detail'" open-type="navigate" hover-class="navigator-hover">
+        <image :src="props.item.preview_img_url" class="item" :class="[type == 'picture'?'item_h':'']" mode="widthFix"></image>
         <view class="bottom" v-if="type == 'picture'">
             <view class="status">
-                <image src="@/static/tag_hot@2x.png" class="icon" v-if="props.item.status == 1"></image>
-                <image src="@/static/tag_new@2x.png" class="icon" v-if="props.item.status == 2"></image>
+                <image src="@/static/tag_hot@2x.png" class="icon" v-if="props.item.tag == '爆款'"></image>
+                <image src="@/static/tag_new@2x.png" class="icon" v-if="props.item.tag == '免费'"></image>
             </view>
-            <view class="name">{{ props.item.name }}</view>
+            <view class="name">{{ props.item.title }}</view>
         </view>
     </navigator>
 </template>

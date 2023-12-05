@@ -15,21 +15,18 @@ export default function fetchWork(url="", data={}, method="GET",text){
       header: format_header,
       method,
       success: function(res){
-    
-           const data = res.data;
+          const data = res.data;
           if(data.code == 1){
             resolve(data.data)
           }else{
-            if(data.msg){
-              uni.showToast({
-                title: data.msg,
-                icon: 'none'
-              });
-            }
+            // if(data.msg){
+            //   uni.showToast({
+            //     title: data.msg,
+            //     icon: 'none'
+            //   });
+            // }
             reject(data.msg)
           }
-         
-       
       },
       fail:function(errMsg){
         console.log(errMsg)
