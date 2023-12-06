@@ -77,6 +77,9 @@
 			is_progress.value = false;
 			const res =	await fetchWork('/v1.wallpaper/get_user_make_wallpaper',{make_id:options.make_id},'POST');
 			number.value = res.modify_num;
+
+			
+			
 			return
 		}
 
@@ -153,9 +156,25 @@
 			url:"/pages/draw/draw?make_id=" + make_id.value
 		})
 	}
-
+	const down = ()=>{
+		return new Promise((resolve)=>{
+			if(tempImage.value.includes("http")){
+				uni.downloadFile({
+					url:tempImage.value,
+					success:(res)=>{
+						tempImage.value = res.tempFilePath;
+						resolve()
+					}
+				})
+			}else{
+				resolve()
+			}
+			
+	})
+	 }
 	const save = ()=>{
-		uni.saveImageToPhotosAlbum({
+		down().then(()=>{
+			uni.saveImageToPhotosAlbum({
 			filePath:tempImage.value,
 			success:(res)=>{
 				save_mask.value.open();
@@ -180,7 +199,7 @@
 				}
 			}
 		})
-		
+	})
 	}
 	const hideSave = ()=>{
 		save_mask.value.close();
@@ -202,6 +221,7 @@
 		width: 430rpx;
 		display: block;
 		margin: auto;
+		height: 0;
 	}
 	.progress_box{
 		width: 100%;

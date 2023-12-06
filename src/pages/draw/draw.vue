@@ -268,7 +268,8 @@
 	}
 	const toPay = async ()=>{
 		const res =  await fetchWork('/v1.trade/check',{id:id.value},'POST');
-		if(res.make_num && res.is_buy){
+		
+		if(res.make_num == 0 || res.is_buy){
 			popup_img.value.close('bottom')
 			popup_pay.value.open('center')
 		}else{
