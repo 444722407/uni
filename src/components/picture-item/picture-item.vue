@@ -36,6 +36,7 @@
         align-items: center;
         overflow: hidden;
         margin-top: 15rpx;
+        height: 60rpx;
     }
     .icon{
         width: 64rpx;height: 36rpx;
@@ -48,4 +49,5 @@
         text-overflow: ellipsis;
         font-size: 26rpx;color: #fff;
     }
+    
 </style>

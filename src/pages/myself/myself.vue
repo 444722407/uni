@@ -55,7 +55,7 @@
 			<view class="dialog">
 				<view class="dialog_title">是否要退出登录</view>
 				<view class="dialog_btn_box">
-					<view class="dialog_btn dialog_cencel" @click="cencel">取消</view>
+					<view class="dialog_btn dialog_cancel" @click="cancel">取消</view>
 					<view class="dialog_btn dialog_confirm" @click="confirm">知道了</view>
 				</view>
 			</view>
@@ -72,7 +72,7 @@
 	const getUserInfo = async ()=>{
 		try{
 			const res = await fetchWork('/v1.user/get_info',{},'POST');
-			userInfo.value.production_num = res.production_num;
+			userInfo.value.make_num = res.make_num;
 		}catch(err){
 			console.log(err)
 		}
@@ -98,7 +98,7 @@
 	const logout = ()=>{
 		popup_logout.value.open()
 	}
-	const cencel = ()=>{
+	const cancel = ()=>{
 		popup_logout.value.close ()
 	}
 	const confirm =  ()=>{

@@ -79,6 +79,13 @@ export default {
     padding: 60rpx 40rpx;
     text-align: center;
   }
+  .dialog_subtitle{
+    font-size: 28rpx;
+    color: #000;
+    text-align: center;
+    margin-top: -20rpx;
+    padding: 0 70rpx 40rpx;
+  }
   .dialog_btn_box{
     border-top: 1px solid rgba(22,24,35,0.12);
     display: flex;
@@ -91,7 +98,7 @@ export default {
     height: 94rpx;
     line-height: 94rpx;
   }
-  .dialog .dialog_cencel{
+  .dialog .dialog_cancel{
     border-right: 1px solid rgba(22,24,35,0.12);
   }
   .uni-dialog-title-text{

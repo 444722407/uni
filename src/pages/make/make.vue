@@ -10,18 +10,32 @@
 		</view>
 		<view class="successs" v-else>
 			<view class="s">制作记录只保留7天，请您尽快保存</view>
-			<view class="s">当前作品还有<text style="color: #FFD718;">3</text>次修改机会</view>
+			<view class="s" v-if="number">当前作品还有<text style="color: #FFD718;">{{number}}</text>次修改机会</view>
 			<view class="save_box">
-				<view class="goback" @click="toBack"><image src="@/static/works_modify.png" class="icon_back"></image>再次修改</view>
+				<view class="goback" @click="toBack" v-if="number"><image src="@/static/works_modify.png" class="icon_back"></image>再次修改</view>
+				<button class="goback share" @click="toBack" v-else open-type="share"><image src="@/static/works_modify.png" class="icon_back"></image>分享</button>
+
 				<view class="confrim" @click="save"><image src="@/static/works_download.png" class="icon_save"></image>保存到系统相册</view>
 			</view>
 		</view>
+		
 		<uni-popup ref="save_mask" >
 			<view class="save_tips">
 				<image src="@/static/works_saved.png" class="icon_success"></image>
 				<view class="t">保存成功</view>
 				<view class="s">请在手机相册或照片内查看，如果未找到，可尝试在手机文件内查找，部分机型需要等待3分钟才能找到！</view>
 				<view class="confrim" @click="hideSave">知道了</view>
+			</view>
+		</uni-popup>
+
+		<uni-popup ref="edit_mask" >
+			<view class="dialog">
+				<view class="dialog_title">再次修改</view>
+				<view class="dialog_subtitle">当前作品仅有<text style="color: #FD2C55;">{{ number }}</text>次修改机会，请慎重使用</view>
+				<view class="dialog_btn_box">
+					<view class="dialog_btn dialog_cencel" @click="cancel">取消</view>
+					<view class="dialog_btn dialog_confirm" @click="confirm">使用</view>
+				</view>
 			</view>
 		</uni-popup>
 
@@ -33,29 +47,71 @@
 	import { onLoad , onReady} from "@dcloudio/uni-app";
 	import fetchWork,{fetchWorkImage} from '@/services'
 	const app = getApp();
-	
+
+	const number = ref(null);
 	const tempImage = ref('');
 	const is_progress = ref(true);
 	const time = ref(0);
 	const animationData  = ref({})
 	
-	const is_save = ref(false);
-
+	
+	const edit_mask = ref(null);
 	const save_mask = ref(null);
 
-	onLoad( async (optinos)=>{
-		// 图片上传
-		time.value = +new Date();
-		tempImage.value = optinos.tempImage;
+	const make_id = ref(undefined);
+	const record = ref(undefined);
+	const id = ref(undefined);
 
-		const uploadTask  = fetchWorkImage('/v1.upload/image',optinos.tempImage,async (res)=>{
+	onLoad( async (options)=>{
+
+		time.value = +new Date();
+		tempImage.value = options.tempImage;
+
+		record.value = options.record;
+		id.value = options.id;
+		make_id.value = options.make_id;
+		
+
+		// 记录进来 不走上传与制作
+		if(options.record){
+			is_progress.value = false;
+			const res =	await fetchWork('/v1.wallpaper/get_user_make_wallpaper',{make_id:options.make_id},'POST');
+			number.value = res.modify_num;
+			return
+		}
+
+
+		// 图片上传
+		const uploadTask  = fetchWorkImage('/v1.upload/image',options.tempImage,async (res)=>{
 			const data = JSON.parse(res.data)
 			// 制作数据
-			await fetchWork('/v1.wallpaper/make',{
-				wallpaper_id:optinos.id,
-				picture_info:JSON.stringify(app.globalData.temp_theme),
-				preview_img:data.data.path
-			},'POST')
+			if(options.id){
+				console.log('make')
+				const res = await fetchWork('/v1.wallpaper/make',{
+					wallpaper_id:options.id,
+					picture_info:JSON.stringify(app.globalData.temp_theme),
+					preview_img:data.data.path
+				},'POST')
+				make_id.value = res.make_id;
+				number.value = res.modify_num;
+			}
+			// 编辑数据
+			if(options.make_id){
+				console.log('edit')
+				try{
+					const res = await fetchWork('/v1.wallpaper/edit',{
+						make_id:options.make_id,
+						picture_info:JSON.stringify(app.globalData.temp_theme),
+						preview_img:data.data.path
+					},'POST')
+					number.value = res.modify_num;
+				}catch(msg){
+					uni.showToast({
+						title: msg,
+						icon: 'none'
+					});
+				}
+			}
 		})
 
 		
@@ -83,8 +139,21 @@
 		is_progress.value = false;
 	}
 	const toBack = ()=>{
-		uni.navigateBack()
+		if(number.value >=0){
+			edit_mask.value.open()
+		}
 	}
+	const cancel = ()=>{
+		edit_mask.value.close()
+	}
+	const confirm = ()=>{
+		edit_mask.value.close()
+		// 再次编辑
+		uni.redirectTo({
+			url:"/pages/draw/draw?make_id=" + make_id.value
+		})
+	}
+
 	const save = ()=>{
 		uni.saveImageToPhotosAlbum({
 			filePath:tempImage.value,
@@ -126,7 +195,7 @@
 		justify-content: center;
 		align-items: center;
 		box-sizing: border-box;
-		padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
+		padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
 		background-color:#161616;
 	}
 	.tempImage{
@@ -183,6 +252,7 @@
 		width: 240rpx;
 		height: 92rpx;
 		margin-right:20rpx;
+		color: #fff;
 	}
 	.save_box .icon_back{
 		width: 32rpx;height: 32rpx;
@@ -208,7 +278,6 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		margin-top: 40rpx;
 	}
 	.successs .s{
 		font-size: 28rpx;color: #fff;

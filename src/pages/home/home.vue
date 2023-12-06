@@ -17,7 +17,7 @@
 		</view>
 		<view class="picture_box">
 			<view class="title">精选图片</view>
-			<picture-list type="picture" ref="picture"></picture-list>
+			<picture-list type="picture" :list="picture" :status="status"></picture-list>
 		</view>
 	</view>
 	<uni-popup ref="popup">
@@ -31,28 +31,24 @@
 </template>
 
 <script setup>
-	import {ref,onMounted } from "vue";
+	import {ref } from "vue";
     import { onLoad, onReachBottom} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
 	const value = ref("")
-    const picture = ref(null);
 	const users = ref([]);
-
 	const popup = ref(null);
-	onMounted(()=>{
-		console.log('onMounted')
-	})
+
+	const picture = ref([]);
+	const status = ref("loading");
+
 	onLoad(async ()=>{
 		const res = await fetchWork('/v1.index/index');
 		users.value = res.quality_creator;
-		picture.value.more(res.choosy_picture)
+		picture.value =res.choosy_picture;
+		status.value = '';
 	})
-    onReachBottom(()=>{
-        if(picture.value.is_load){
-            picture.value.more();
-        }
-    })
+  
 	const confirm = ()=>{
 		popup.value.close()
 	}

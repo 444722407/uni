@@ -4,33 +4,61 @@
             <view class="nav" :class="{active:navId == 0}" @click="changeNav(0)">壁纸</view>
             <view class="nav" :class="{active:navId == 1}" @click="changeNav(1)">头像</view>
         </view>
-        <picture-list type="picture" v-if="navId == 0" ref="picture"></picture-list>
-        <picture-list type="avatar"  v-if="navId == 1" ref="avatar"></picture-list>
+        <picture-list type="picture" v-show="navId == 0"  :list="picture" :status="status"></picture-list>
+        <picture-list type="avatar"  v-show="navId == 1" ></picture-list>
     </view>
     
 </template>
 
 <script setup >
     import {ref} from "vue";
-    import { onReachBottom } from "@dcloudio/uni-app";
-    const picture = ref(null);
-    const avatar = ref(null);
+    import { onShow,onReachBottom } from "@dcloudio/uni-app";
+	import fetchWork from '@/services'
+
+    const picture = ref([]);
+    const avatar = ref([]);
+
     const navId = ref(0)
-    const changeNav = (id)=>{
-        navId.value = id;
-    } 
+
+    const status = ref("loading");
+    const page = ref(1);
+    const is_load = ref(false);
+
+    const pictureMore = async ()=>{
+
+        const res = await fetchWork('/v1.user/get_wallpaper_browse_record',{page:page.value});
+    
+        if(res && res.list.length!= 0){
+			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
+			status.value = res.list.length < 10? 'no-more':'more';
+			page.value ++;
+			is_load.value = res.list.length == 10;
+		}else{
+			status.value= "";
+			return;
+		}
+    }
+    onShow(()=>{
+        picture.value = [];
+        page.value = 1;
+        pictureMore()
+	})
+
     onReachBottom(()=>{
+  
         if(picture.value.is_load && navId.value == 0){
-            picture.value.more();
+            pictureMore();
             return;
         }
         if(avatar.value.is_load && navId.value == 1){
             avatar.value.more();
             return;
         }
-       
         
     })
+    const changeNav = (id)=>{
+        navId.value = id;
+    } 
 </script>
 
 <style scoped>

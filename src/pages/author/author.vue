@@ -14,8 +14,8 @@
           <view class="nav" :class="{active:navId == 0}" @click="changeNav(0)">壁纸</view>
           <view class="nav" :class="{active:navId == 1}" @click="changeNav(1)">头像</view>
       </view>
-      <picture-list type="picture" v-show="navId == 0" ref="picture"></picture-list>
-      <picture-list type="avatar"  v-show="navId == 1" ref="avatar"></picture-list>
+      <picture-list type="picture" v-show="navId == 0" :list="picture" :status="status"></picture-list>
+      <picture-list type="avatar"  v-show="navId == 1"></picture-list>
   </view>
 
   
@@ -25,10 +25,13 @@
   import {ref} from "vue";
   import { onLoad,onReachBottom } from "@dcloudio/uni-app";
   import fetchWork from '@/services'
-  const picture = ref(null);
-  const avatar = ref(null);
+  const picture = ref([]);
+  const avatar = ref([]);
   const navId = ref(0)
   const authorInfo = ref({});
+
+  const status = ref("loading");
+  
 
   const changeNav = (id)=>{
       navId.value = id;
@@ -47,7 +50,8 @@
        })
 
        fetchWork('/v1.creator/get_wallpaper_list',{creator_id}).then((res)=>{
-          picture.value.more(res.list);
+          picture.value= res.list;
+          status.value = "";
        }).catch((msg)=>{
           uni.showToast({
             title: msg,
@@ -57,16 +61,7 @@
 
     }
   })
-  onReachBottom(()=>{
-      if(picture.value.is_load && navId.value == 0){
-          picture.value.more();
-          return;
-      }
-      if(avatar.value.is_load && navId.value == 1){
-          avatar.value.more();
-          return;
-      }
-  })
+
   const copy = (value)=>{
     uni.setClipboardData({
       data: value,

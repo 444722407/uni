@@ -9,19 +9,19 @@
 			</view>
 		</view>
 
-		<view class="list" v-if="list.length">
-			<view v-for="(item,index) in list" :key="index" class="item" @click="handlerItem(item)">
-				<image :src="item.imgUrl" class="img"></image>
+		<view class="list" v-if="picture.length">
+			<view v-for="item in picture" :key="item.id" class="item" @click="handlerItem(item)">
+				<image :src="item.preview_img_url" class="img" mode="aspectFill"></image>
 				<view class="aside">
-					<view class="name">{{ item.name }}</view>
-					<view class="time">{{ item.time }}</view>
-					<view class="btn" v-if="item.status == 1">前往下载</view>
-					<view class="btn btn_disabled" v-if="item.status == 2">前往下载</view>
+					<view class="name">{{ item.title }}</view>
+					<view class="time">{{ item.updated_at }}</view>
+					<view class="btn" v-if="item.is_expire == 0">前往下载</view>
+					<view class="btn btn_disabled" v-if="item.is_expire == 1">前往下载</view>
 				</view>
 			</view>
 		</view>
 		
-		<no-data v-else-if="status != 'loading'"></no-data>
+		<no-data v-else-if="status != 'loading'" :marginTop="100"></no-data>
 		<uni-load-more :status="status" :contentText="contentText" v-else-if="status != 'no-more'"/>  
 
 		<uni-popup ref="popup">
@@ -39,47 +39,53 @@
 <script setup>
 	
 	import { ref,reactive } from "vue";
-	import { onLoad } from "@dcloudio/uni-app";
-	const status = ref("");
+	import { onShow } from "@dcloudio/uni-app";
+	import fetchWork from '@/services'
+
+	const picture = ref([]);
+	const status = ref("loading");
 	const page = ref(1);
+	const is_load = ref(false);
 	const popup = ref(null);
 
 	const contentText = reactive({
-							contentdown: '上滑加载更多',
-							contentrefresh: '加载中',
-							contentnomore: '没有更多了'
-						});
+			contentdown: '上滑加载更多',
+			contentrefresh: '加载中',
+			contentnomore: '没有更多了'
+		});
+
 	
-	const list = ref([]);
-
-	onLoad(()=>{
-		const res = [{
-				imgUrl:"https://fakeimg.pl/200x200/ffffff/",
-				name:"人生靠自己",
-				time:"2023-11-10 19:45:20",
-				status:1
-			},
-			{
-				imgUrl:"https://fakeimg.pl/200x200/ffffff/",
-				name:"人生靠自己",
-				time:"2023-11-10 19:45:20", 
-				status:2
-			}];
 		
-		status.value = "loading";	
-
-		setTimeout(() => {
-			list.value = page.value == 1 ? res:[...list.value,...res];
-			status.value = res.length < 10? 'no-more':'more';
+    const more = async ()=>{
+		const res = await fetchWork('/v1.user/get_wallpaper_make_record',{page:page.value});
+	
+		if(res && res.list.length!= 0){
+			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
+			status.value = res.list.length < 10? 'no-more':'more';
 			page.value ++;
-		}, 200);
+			is_load.value = res.list.length == 10;
+		}else{
+			status.value= "";
+			return;
+		}
+	}
+	onShow(()=>{
+		picture.value = [];
+        page.value = 1;
+		is_load.value = false;
+		status.value = "loading";
+		more();
 	})
 	const confirm = ()=>{
 		popup.value.close();
 	}
 	const handlerItem = function(item){
-		if(item.status == 2){
+		if(item.is_expire == 1){
 			popup.value.open();
+		}else{
+			uni.navigateTo({
+				url:"/pages/make/make?make_id=" + item.id + "&tempImage=" +  item.preview_img_url + "&record=1"
+			})
 		}
 	}
 	

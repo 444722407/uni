@@ -82,11 +82,13 @@
 </template>
 
 <script setup>
-	import {ref,getCurrentInstance } from "vue";
+	import {ref,getCurrentInstance,toRaw } from "vue";
 	import fetchWork from '@/services'
 	import { onLoad,onReady } from "@dcloudio/uni-app";
 	const app = getApp();
 	const id = ref("");
+	const make_id = ref("");
+
 	const width = ref(0);
 	const height = ref(0);
 	const ratio = ref(0);
@@ -112,6 +114,7 @@
 	onLoad((options)=>{
 		tt.setSwipeBackMode(0);
 		id.value = options.id;
+		make_id.value = options.make_id;
 		
 	})
 	const scaleCanvas = ()=>{
@@ -124,11 +127,16 @@
 				
 				height.value = this_height; 
 				width.value = 1080 / ratio.value;
+				var res = {};
 
-				const res = await fetchWork('/v1.wallpaper/get_detail',{id:id.value},'POST');
+				if(id.value){
+					res =  await fetchWork('/v1.wallpaper/get_detail',{id:id.value},'POST');
+				}
+				if(make_id.value){
+					res =  await fetchWork('/v1.wallpaper/get_user_make_wallpaper',{make_id:make_id.value},'POST');
+				}
+			
 
-				
-		
 				temp_theme.value = res.picture_info;
 
 				temp_theme.value.map((item)=>{
@@ -158,7 +166,7 @@
 	
 	}
 	onReady(async ()=>{
-		if(id.value){
+		if(id.value || make_id.value){
 			scaleCanvas()
 		}
 	})
@@ -254,16 +262,20 @@
 	}
 	const toImage = ()=>{
 		canvas.value.export().then((res)=>{
-			
 			tempImage.value =  res;
 			popup_img.value.open('bottom')
 		})
 	}
-	const toPay = ()=>{
-		popup_img.value.close('bottom')
-		popup_pay.value.open('center')
+	const toPay = async ()=>{
+		const res =  await fetchWork('/v1.trade/check',{id:id.value},'POST');
+		if(res.make_num && res.is_buy){
+			popup_img.value.close('bottom')
+			popup_pay.value.open('center')
+		}else{
+			goMake()
+		}
 	}
-	// 返回修改
+	
 	const toBack = ()=>{
 		canvas.value.initByArr(temp_theme.value,sy.value);
 		popup_img.value.close('bottom')
@@ -278,10 +290,22 @@
 	}
 	const goMake = ()=>{
 		popup_pay.value.close()
-		uni.navigateTo({
-			url:'/pages/make/make?tempImage=' + tempImage.value + '&id=2',
+		
+		uni.redirectTo({
+			url: id.value?`/pages/make/make?tempImage=${tempImage.value}&id=${id.value}`:`/pages/make/make?tempImage=${tempImage.value}&make_id=${make_id.value}`,
 			success:()=>{
-				app.globalData.temp_theme = temp_theme.value;
+				const data = JSON.parse(JSON.stringify(toRaw(temp_theme.value)));
+
+				data.map((item)=>{
+					item.w = Math.round(item.w * ratio.value);
+					item.h = Math.round(item.h * ratio.value);
+					item.x = Math.round(item.x * ratio.value);
+					item.y = Math.round(item.y * ratio.value);
+				})
+				
+				data.sort((a, b) => a.index - b.index);
+		
+				app.globalData.temp_theme = data;
 			}
 		})
 	}
