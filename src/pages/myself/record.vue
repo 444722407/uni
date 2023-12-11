@@ -84,7 +84,7 @@
 			popup.value.open();
 		}else{
 			uni.navigateTo({
-				url:"/pages/make/make?make_id=" + item.id + "&tempImage=" +  item.preview_img_url + "&record=1"
+				url:"/pages/make/make?make_id=" + item.id + "&tempImage=" +  item.preview_img_url + "&record=1&title=" + item.title
 			})
 		}
 	}

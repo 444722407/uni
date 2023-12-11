@@ -109,14 +109,26 @@
 	
 
 	const temp_theme = ref([]);     
+	const charge_status = ref(1);
+	const title = ref("")
+
 	const sy = ref({});
+
+
 
 	onLoad((options)=>{
 		tt.setSwipeBackMode(0);
 		id.value = options.id;
 		make_id.value = options.make_id;
+		getPayList()
 		
 	})
+	const getPayList = async ()=>{
+		const res =  await fetchWork('/v1.project/wallpaper_pay_list',{},'POST');
+		console.log(res);
+	}
+	
+
 	const scaleCanvas = ()=>{
 
 			const query = uni.createSelectorQuery().in(getCurrentInstance());
@@ -135,8 +147,10 @@
 				if(make_id.value){
 					res =  await fetchWork('/v1.wallpaper/get_user_make_wallpaper',{make_id:make_id.value},'POST');
 				}
-			
+				title.value = res.title;
+				charge_status.value = res.charge_status?res.charge_status:-1;
 
+				uni.setNavigationBarTitle({title:res.title})
 				temp_theme.value = res.picture_info;
 
 				temp_theme.value.map((item)=>{
@@ -267,9 +281,9 @@
 		})
 	}
 	const toPay = async ()=>{
-		const res =  await fetchWork('/v1.trade/check',{id:id.value},'POST');
-		
-		if(res.make_num == 0 || res.is_buy){
+		const res =  await fetchWork('/v1.trade/check');
+	
+		if(res.make_num == 0 || res.is_buy || charge_status.value == 0){
 			popup_img.value.close('bottom')
 			popup_pay.value.open('center')
 		}else{
@@ -290,10 +304,20 @@
 		check_id.value = id;
 	}
 	const goMake = ()=>{
+
+
+		tt.requestOrder({
+			success:(res)=>{
+
+			},
+			fail:(res)=>{
+				console.log(res)
+			}
+		})
 		popup_pay.value.close()
 		
 		uni.redirectTo({
-			url: id.value?`/pages/make/make?tempImage=${tempImage.value}&id=${id.value}`:`/pages/make/make?tempImage=${tempImage.value}&make_id=${make_id.value}`,
+			url: id.value?`/pages/make/make?tempImage=${tempImage.value}&id=${id.value}&title=${title.value}`:`/pages/make/make?tempImage=${tempImage.value}&make_id=${make_id.value}&title=${title.value}`,
 			success:()=>{
 				const data = JSON.parse(JSON.stringify(toRaw(temp_theme.value)));
 

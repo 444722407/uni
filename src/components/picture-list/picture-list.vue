@@ -1,7 +1,7 @@
 <template>
     <view class="box">
         <view class="list" v-if="list.length">
-            <view v-for="(item,index) in list" :key="index" class="item">
+            <view v-for="(item,index) in list" :key="item.id" class="item">
                 <picture-item :item="item" :type="props.type"></picture-item>
             </view>
         </view>

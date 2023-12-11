@@ -1,40 +1,12 @@
 <script>
-import fetchWork from './services';
+
 export default {
   globalData:{
     system:{},
     temp_theme:[]
   },
   methods:{
-      checkLogin(){
-        const token = uni.getStorageSync('token');
-        if(token){
-          uni.checkSession({
-            complete: (res)=>{
-              if(res.errMsg != 'checkSession:ok'){
-                this.userLogin();
-              }
-            }
-          })
-        }else{
-          this.userLogin();
-        }
-    },
-    userLogin(){
-      uni.login({
-      force: true,
-      success(res) {
-        const code = res.code;
-        fetchWork("/v1.auth/silent_login",{code},'POST').then((res)=>{
-          const token = res.token;
-          uni.setStorageSync('token', token);
-        })
-      },
-      fail(res) {
-        console.log(`login 调用失败`);
-      },
-    })
-    },
+     
     getSystem(){
       const system =  uni.getSystemInfoSync();
       this.globalData.system =system;
@@ -43,7 +15,6 @@ export default {
   
   onLaunch: function () {
     console.log('App Launch')
-    this.checkLogin();
     this.getSystem();
   },
   onShow: function () {

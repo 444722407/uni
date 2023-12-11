@@ -70,16 +70,14 @@
 		record.value = options.record;
 		id.value = options.id;
 		make_id.value = options.make_id;
-		
+
+		uni.setNavigationBarTitle({title:options.title})
 
 		// 记录进来 不走上传与制作
 		if(options.record){
 			is_progress.value = false;
 			const res =	await fetchWork('/v1.wallpaper/get_user_make_wallpaper',{make_id:options.make_id},'POST');
 			number.value = res.modify_num;
-
-			
-			
 			return
 		}
 

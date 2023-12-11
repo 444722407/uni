@@ -10,7 +10,7 @@
 		<view class="user_box">
 			<view class="title">优质创作者</view>
 			<view class="author_list">
-				<navigator :url="'/pages/author/author?creator_id=' + item.id" v-for="item in users" :key="item.id" >
+				<navigator :url="'/pages/author/author?creator_id=' + item.id" v-for="item in users" :key="item.id">
 					<image class="author" :src="item.avatar_url"></image>
 				</navigator>
 			</view>
@@ -31,109 +31,171 @@
 </template>
 
 <script setup>
-	import {ref } from "vue";
-    import { onLoad, onReachBottom} from "@dcloudio/uni-app";
-	import fetchWork from '@/services'
+import { ref } from "vue";
+import { onLoad, onReachBottom } from "@dcloudio/uni-app";
+import fetchWork from '@/services'
 
-	const value = ref("")
-	const users = ref([]);
-	const popup = ref(null);
 
-	const picture = ref([]);
-	const status = ref("loading");
+const app = getApp();
 
-	onLoad(async ()=>{
-		const res = await fetchWork('/v1.index/index');
-		users.value = res.quality_creator;
-		picture.value =res.choosy_picture;
-		status.value = '';
-	})
-  
-	const confirm = ()=>{
-		popup.value.close()
-	}
-	const search = async ()=>{
-		if(value.value){
-			fetchWork('/v1.index/search_code_word',{code_word:value.value},'POST').then((res)=>{
-				uni.navigateTo({
-					url:"/pages/author/author?creator_id=" + res.id
-				})
-			}).catch(()=>{
-				popup.value.open()
+const value = ref("")
+const users = ref([]);
+const popup = ref(null);
+
+const picture = ref([]);
+const status = ref("loading");
+
+onLoad(async () => {
+	await checkLogin();
+	
+	const res = await fetchWork('/v1.index/index');
+	users.value = res.quality_creator;
+	picture.value = res.choosy_picture;
+	status.value = '';
+
+
+})
+const checkLogin = () => {
+	return new Promise(async (resolve, reject) => {
+		const token = uni.getStorageSync('token');
+		if (token) {
+			uni.checkSession({
+				complete: async (res) => {
+					if (res.errMsg != 'checkSession:ok') {
+						await userLogin();
+					}
+					resolve()
+				}
 			})
+		} else {
+			await userLogin();
+			resolve()
 		}
+	})
+
+}
+
+const userLogin = () => {
+	return new Promise((resolve, reject) => {
+		uni.login({
+			force: true,
+			success(res) {
+				const code = res.code;
+				fetchWork("/v1.auth/silent_login", { code }, 'POST').then((res) => {
+					const token = res.token;
+					uni.setStorageSync('token', token);
+					resolve()
+				})
+			},
+			fail(res) {
+				console.log(`login 调用失败`);
+				reject(err)
+			},
+		})
+	})
+
+}
+const confirm = () => {
+	popup.value.close()
+}
+const search = async () => {
+	if (value.value) {
+		fetchWork('/v1.index/search_code_word', { code_word: value.value }, 'POST').then((res) => {
+			uni.navigateTo({
+				url: "/pages/author/author?creator_id=" + res.id
+			})
+		}).catch(() => {
+			popup.value.open()
+		})
 	}
+}
 </script>
 
 <style scoped>
-	.bg{
-		width: 100%;
-		height: 634rpx;
-		position: absolute;
-		top:0;
-		left: 0;
-		z-index: -1;
-	}
-	.logo{
-		width: 440rpx;height: 200rpx;
-		margin: 54rpx auto 0;
-		display: block;
-	}
-	.search_box{
-		width: 632rpx;height: 112rpx;
-		margin: 70rpx auto 0;
-		border: 1rpx solid rgba(255,255,255,0.5);
-		background-color: rgba(255,255,255,0.2);
-		border-radius: 62rpx;
-		box-shadow: 0rpx 20rpx 24rpx 0rpx rgba(0,0,0,0.2);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-	.icon{
-		width: 32rpx;height: 32rpx;margin-left: 44rpx;
-	}
-	.input{
-		flex:1;
-		height: 100%;
-		font-size: 36rpx;
-		padding: 0 32rpx;
-	}
-	.input::-webkit-input-placeholder{
-		color: rgba(255,255,255,0.5);
-	}
-	.btn{
-		width: 178rpx;
-		height: 96rpx;
-		background: #FE44B7;
-		border-radius: 62rpx;
-		color: #fff;
-		font-size: 40rpx;
-		margin-right: 8rpx;
-		text-align: center;
-		line-height: 96rpx;
-	}
+.bg {
+	width: 100%;
+	height: 634rpx;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+}
 
-	.user_box{
-		margin-top: 84rpx;
-	}
-	.user_box .author_list{
-		display: flex;
-		align-items: center;
-		margin-top: 36rpx;
-		padding: 0 16rpx;
-	}
-	.user_box .author{
-		width: 108rpx;height: 108rpx;
-		border: 4rpx solid rgba(255,255,255,0.8);
-		margin: 0 16rpx;
-		border-radius: 50%;
-		display: block;
-	}
-	.picture_box{
-		margin-top: 70rpx;
-	}
-	.title{
-		font-size: 32rpx;padding: 0 34rpx;
-	}
+.logo {
+	width: 440rpx;
+	height: 200rpx;
+	margin: 54rpx auto 0;
+	display: block;
+}
+
+.search_box {
+	width: 632rpx;
+	height: 112rpx;
+	margin: 70rpx auto 0;
+	border: 1rpx solid rgba(255, 255, 255, 0.5);
+	background-color: rgba(255, 255, 255, 0.2);
+	border-radius: 62rpx;
+	box-shadow: 0rpx 20rpx 24rpx 0rpx rgba(0, 0, 0, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.icon {
+	width: 32rpx;
+	height: 32rpx;
+	margin-left: 44rpx;
+}
+
+.input {
+	flex: 1;
+	height: 100%;
+	font-size: 36rpx;
+	padding: 0 32rpx;
+}
+
+.input::-webkit-input-placeholder {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.btn {
+	width: 178rpx;
+	height: 96rpx;
+	background: #FE44B7;
+	border-radius: 62rpx;
+	color: #fff;
+	font-size: 40rpx;
+	margin-right: 8rpx;
+	text-align: center;
+	line-height: 96rpx;
+}
+
+.user_box {
+	margin-top: 84rpx;
+}
+
+.user_box .author_list {
+	display: flex;
+	align-items: center;
+	margin-top: 36rpx;
+	padding: 0 16rpx;
+}
+
+.user_box .author {
+	width: 108rpx;
+	height: 108rpx;
+	border: 4rpx solid rgba(255, 255, 255, 0.8);
+	margin: 0 16rpx;
+	border-radius: 50%;
+	display: block;
+}
+
+.picture_box {
+	margin-top: 70rpx;
+}
+
+.title {
+	font-size: 32rpx;
+	padding: 0 34rpx;
+}
 </style>

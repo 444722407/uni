@@ -92,6 +92,12 @@
 			"style": {
 				"navigationBarTitleText": "制作"
 			}
+		},
+		{
+			"path": "pages/search/search",
+			"style": {
+				"navigationBarTitleText": "搜索"
+			}
 		}
 	],
 	"globalStyle": {

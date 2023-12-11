@@ -1,47 +1,43 @@
 <template>
 	<view class="picture">
 		<view class="fixed">
-			<navigator class="search_box" url="/pages/search/search">
+			<view class="search_box">
 				<image src="@/static/home_search@2x.png" class="icon"></image>
-				<view type="text" class="input">请输入关键字搜索</view>
+				<input type="text" class="input" placeholder="请输入关键字搜索" autofocus v-model="value"/>
 				<view class="btn" @click="search">搜索</view>
-			</navigator>
-			<view class="nav">
-				<scroll-view class="scroll_box" scroll-x="true" :scroll-left="left" scroll-with-animation="true">
-					<view v-for="(item,index) in navList" :key="item.id" class="item" :class="{active:navId == item.id}" @click="changNav(item.id,index)">{{ item.name }}</view>
-				</scroll-view>
 			</view>
 		</view>
-		<view style="height: 256rpx;"></view>
-		<view class="picture_box" style="margin-top: -20rpx;">
+		<view style="height: 156rpx;"></view>
+
+		<view class="picture_box" style="margin-top: -20rpx;" v-show="is_result">
+            <view class="title">精选图片</view>
 			<picture-list type="picture" :list="picture" :status="status"></picture-list>
 		</view>
+
+        <view class="picture_box" style="margin-top: -20rpx;" v-show="!is_result">
+            <view class="title">精选图片</view>
+			<picture-list type="picture" :list="picture" :status="status"></picture-list>
+		</view>
+
 	</view>
 </template>
 
 <script setup>
 	import {ref} from "vue";
-	import { onLoad,onReady,onReachBottom} from "@dcloudio/uni-app";
+	import { onLoad} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
-	const navList = ref([]);
-	const left = ref(0);
 	const navId = ref(0);
-
+	const value = ref("");
 
 	const picture = ref([]);
     const status = ref("loading");
     const page = ref(1);
     const is_load = ref(false);
+    const is_result = ref(false);
 
 	onLoad(async ()=>{
-		const res = await fetchWork('/v1.wallpaper/get_category_list');
-		
-		navList.value = res.list;
 	
-		navList.value.unshift({id:0,name:"全部"},{id:-9527,name:"上新"});
-
-		pictureMore();
 		
 	})
 	const pictureMore = async ()=>{
@@ -58,31 +54,7 @@
 		}
 
 	}
-	const popMore = async () =>{
-		const res = await fetchWork('/v1.wallpaper/get_new_list');
-		picture.value = res.list;
-		status.value = "";
-	}
 	
-	const changNav = (id,index)=>{
-		navId.value = id;
-		left.value = index>3?index* 60:0;
-		status.value = 'loading';
-		page.value = 1;
-		picture.value = [];
-		if(id == -9527){
-			popMore();
-		}else{
-			pictureMore();
-		}
-		
-	}
-	onReachBottom(()=>{
-		if(is_load.value){
-            pictureMore();
-            return;
-        }
-	})
 </script>
 
 <style scoped>
@@ -112,9 +84,6 @@
 		height: 100%;
 		font-size: 36rpx;
 		padding: 0 32rpx;
-		display: flex;
-		align-items: center;
-		color: rgba(255,255,255,0.5);
 	}
 	.input::-webkit-input-placeholder{
 		color: rgba(255,255,255,0.5);
@@ -173,4 +142,8 @@
 			width: 40rpx;
 		}
 	}
+    .title {
+        font-size: 32rpx;
+        padding: 34rpx 34rpx 0;
+    }
 </style>

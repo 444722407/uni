@@ -15,11 +15,10 @@
     import { onShow,onReachBottom } from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
-    const picture = ref([]);
     const avatar = ref([]);
-
     const navId = ref(0)
 
+    const picture = ref([]);
     const status = ref("loading");
     const page = ref(1);
     const is_load = ref(false);
@@ -46,14 +45,11 @@
 
     onReachBottom(()=>{
   
-        if(picture.value.is_load && navId.value == 0){
+        if(is_load.value){
             pictureMore();
             return;
         }
-        if(avatar.value.is_load && navId.value == 1){
-            avatar.value.more();
-            return;
-        }
+  
         
     })
     const changeNav = (id)=>{
