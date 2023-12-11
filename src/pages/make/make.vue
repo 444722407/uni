@@ -128,7 +128,7 @@
 		var duration = +new Date() - time.value;
 		console.log(duration)
 		var animation = uni.createAnimation({
-			duration:duration*10,
+			duration:duration + 1000,
 			timingFunction: 'ease',
 			
 		})

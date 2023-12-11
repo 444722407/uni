@@ -1,6 +1,6 @@
 <template>
 	<view class="home">
-		<image src="@/static/home_bg@2x.png" class="bg" mode="bottom"></image>
+		<!-- <image src="@/static/home_bg@2x.png" class="bg" mode="bottom"></image> -->
 		<image src="@/static/home_logo@2x.png" class="logo"></image>
 		<view class="search_box">
 			<image src="@/static/home_search@2x.png" class="icon"></image>
@@ -195,7 +195,8 @@ const search = async () => {
 }
 
 .title {
-	font-size: 32rpx;
+	font-size: 36rpx;
 	padding: 0 34rpx;
+	font-weight: bold;
 }
 </style>

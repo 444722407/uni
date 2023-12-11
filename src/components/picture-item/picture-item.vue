@@ -3,8 +3,8 @@
         <image :src="props.item.preview_img_url" class="item" :class="[type == 'picture'?'item_h':'']" mode="widthFix"></image>
         <view class="bottom" v-if="type == 'picture'">
             <view class="status">
-                <image src="@/static/tag_hot@2x.png" class="icon" v-if="props.item.tag == '爆款'"></image>
-                <image src="@/static/tag_new@2x.png" class="icon" v-if="props.item.tag == '免费'"></image>
+                <image src="@/static/tag_hot@2x.png" class="icon" v-if="props.item.tag == '爆款'" mode="widthFix"></image>
+                <image src="@/static/tag_new@2x.png" class="icon" v-if="props.item.tag == '免费'" mode="widthFix"></image>
             </view>
             <view class="name">{{ props.item.title }}</view>
         </view>
@@ -22,7 +22,7 @@
 <style scoped>
     .box{
         width: 100%;
-        margin-bottom: 15rpx;
+        margin-bottom: 10rpx;
     }
     .item{
         width: 100%;
@@ -35,11 +35,10 @@
         display: flex;
         align-items: center;
         overflow: hidden;
-        margin-top: 15rpx;
-        height: 60rpx;
+        height: 50rpx;
     }
     .icon{
-        width: 64rpx;height: 36rpx;
+        width: 64rpx;
         margin-right: 8rpx;
     }
     .name{

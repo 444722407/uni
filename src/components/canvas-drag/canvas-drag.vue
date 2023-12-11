@@ -37,7 +37,7 @@ const dragGraph = function({ x = 0, y = 0, w, h, type, text, index,id, fontSize 
   this.selected = selected;
   this.factor = factor;
   this.sourceId = sourceId;
-  this.MIN_WIDTH = 20;
+  this.MIN_WIDTH = 30;
   this.MIN_FONTSIZE = 10;
   this.index = index;
   this.moveIndex = index;
@@ -63,12 +63,12 @@ dragGraph.prototype = {
       this.ctx.setStrokeStyle(STROKE_COLOR);
       if (this.type === "text") {
         this.ctx.strokeRect(this.x, this.y, this.w, this.h);
-        this.ctx.drawImage(DELETE_ICON2, this.x - 15, this.y - 15, 60, 39);
-        this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 36, 36);
+        this.ctx.drawImage(DELETE_ICON2, this.x - 15, this.y - 15, 40, 25);
+        this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 24, 24);
       } else if (this.type === "image") {
         this.ctx.strokeRect(this.x, this.y, this.w, this.h);
-        this.ctx.drawImage(DELETE_ICON, this.x - 15, this.y - 15, 60, 39);
-        this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 36, 36);
+        this.ctx.drawImage(DELETE_ICON, this.x - 15, this.y - 15, 40, 25);
+        this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 24, 24);
       }
     }
     this.ctx.restore();
@@ -109,13 +109,13 @@ dragGraph.prototype = {
   isInGraph(x, y) {
     if(this.type == "bg") return false;
     
-    const delW = 60;
-    const delH = 39;
+    const delW = 40;
+    const delH = 25;
     const transformedDelCenter = this._rotatePoint(this.x, this.y, this.centerX, this.centerY, this.rotate);
     const transformDelX = transformedDelCenter[0] - delW / 2;
     const transformDelY = transformedDelCenter[1] - delH / 2;
-    const scaleW = 36;
-    const scaleH = 36;
+    const scaleW = 24;
+    const scaleH = 24;
     const transformedScaleCenter = this._rotatePoint(this.x + this.w, this.y + this.h, this.centerX, this.centerY, this.rotate);
     const transformScaleX = transformedScaleCenter[0] - scaleW / 2;
     const transformScaleY = transformedScaleCenter[1] - scaleH / 2;
@@ -185,7 +185,7 @@ dragGraph.prototype = {
    * @param {*} currentGraph 当前图层的信息
    */
   transform(px, py, x, y, currentGraph) {
-
+   
     this.centerX = this.x + this.w / 2;
     this.centerY = this.y + this.h / 2;
     
