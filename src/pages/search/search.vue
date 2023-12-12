@@ -3,7 +3,7 @@
 		<view class="fixed">
 			<view class="search_box">
 				<image src="@/static/home_search@2x.png" class="icon"></image>
-				<input type="text" class="input" placeholder="请输入关键字搜索" autofocus v-model="value"/>
+				<input type="text" class="input" placeholder="请输入关键字搜索" :focus="true" v-model="value"/>
 				<view class="btn" @click="search">搜索</view>
 			</view>
 		</view>

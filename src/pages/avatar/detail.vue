@@ -11,7 +11,7 @@
 		</view>
         <button open-type="share" class="share"><image src="@/static/share@2x.png" class="icon_share"></image></button>
 
-        <uni-popup ref="popup">
+        <uni-popup ref="popup" :mask-click="false">
             <view class="down_tips" v-if="is_ios">
                 <image class="icon_close" src="@/static/avatar_popup_close@2x.png" @click="close"></image>
                 <view class="tips_subtitle">苹果用户暂不支持购买</view>

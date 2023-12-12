@@ -106,9 +106,21 @@ button {
   border-top: 1px solid rgba(22, 24, 35, 0.12);
   display: flex;
 }
+.dialog_input{
+  display: block;
+  width: 80%;
+  margin: -30rpx auto 30rpx;
+  height: 80rpx;
+  border: 1px solid rgba(22, 24, 35, 0.12);
+  color: #000;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  box-sizing: border-box;
+  padding: 0 20rpx;
+}
+
 
 .dialog_btn_box .dialog_btn {
-  color: #000;
   font-size: 32rpx;
   flex: 1;
   text-align: center;
@@ -118,6 +130,11 @@ button {
 
 .dialog .dialog_cancel {
   border-right: 1px solid rgba(22, 24, 35, 0.12);
+  color: #000;
+}
+.dialog .dialog_confirm {
+  font-weight: bold;
+  color: #FD2C55;
 }
 
 .uni-dialog-title-text {

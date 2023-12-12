@@ -1,6 +1,6 @@
 <template>
 	<view class="make">
-		<image :src="tempImage" class="tempImage" mode="widthFix"></image>
+		<image :src="tempImage" class="tempImage" mode="heightFix"></image>
 		<view class="progress_box" v-if="is_progress">
 			<view class="t">正在制作中，请不要离开页面</view>
 			<view class="progress_wrap">
@@ -19,7 +19,7 @@
 			</view>
 		</view>
 		
-		<uni-popup ref="save_mask" >
+		<uni-popup ref="save_mask" :mask-click="false">
 			<view class="save_tips">
 				<image src="@/static/works_saved.png" class="icon_success"></image>
 				<view class="t">保存成功</view>
@@ -28,12 +28,12 @@
 			</view>
 		</uni-popup>
 
-		<uni-popup ref="edit_mask" >
+		<uni-popup ref="edit_mask" :mask-click="false">
 			<view class="dialog">
 				<view class="dialog_title">再次修改</view>
 				<view class="dialog_subtitle">当前作品仅有<text style="color: #FD2C55;">{{ number }}</text>次修改机会，请慎重使用</view>
 				<view class="dialog_btn_box">
-					<view class="dialog_btn dialog_cencel" @click="cancel">取消</view>
+					<view class="dialog_btn dialog_cancel" @click="cancel">取消</view>
 					<view class="dialog_btn dialog_confirm" @click="confirm">使用</view>
 				</view>
 			</view>
@@ -117,12 +117,12 @@
 
 		
 
-		// uploadTask.onProgressUpdate((res)=>{
-		// 	width.value = res.progress;
-		// 	if (res.progress  == 100){
-		// 		is_progress.value = false;
-		// 	}
-		// })
+		uploadTask.onProgressUpdate((res)=>{
+			width.value = res.progress;
+			if (res.progress  == 100){
+				is_progress.value = false;
+			}
+		})
 	})
 	onReady(()=>{
 		var duration = +new Date() - time.value;
@@ -212,14 +212,14 @@
 		justify-content: center;
 		align-items: center;
 		box-sizing: border-box;
-		padding-bottom: calc(60rpx + env(safe-area-inset-bottom));
+		padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 		background-color:#161616;
 	}
 	.tempImage{
-		width: 430rpx;
+		width: 0;
 		display: block;
 		margin: auto;
-		height: 0;
+		flex: 1;
 	}
 	.progress_box{
 		width: 100%;
@@ -258,7 +258,7 @@
 		display: flex;
 		align-items: center;
 		font-size: 32rpx;color: #fff;
-		margin-top: 45rpx;
+		margin-top: 25rpx;
 	}
 	
 	.save_box .goback{
@@ -296,6 +296,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		padding-top: 20rpx;
 	}
 	.successs .s{
 		font-size: 28rpx;color: #fff;

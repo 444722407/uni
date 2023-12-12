@@ -51,12 +51,12 @@
 			</navigator>
 		</view>	
 
-		<uni-popup ref="popup_logout" type="dialog">
+		<uni-popup ref="popup_logout" type="dialog" :mask-click="false">
 			<view class="dialog">
 				<view class="dialog_title">是否要退出登录</view>
 				<view class="dialog_btn_box">
 					<view class="dialog_btn dialog_cancel" @click="cancel">取消</view>
-					<view class="dialog_btn dialog_confirm" @click="confirm">知道了</view>
+					<view class="dialog_btn dialog_confirm" @click="confirm">退出</view>
 				</view>
 			</view>
 		</uni-popup>

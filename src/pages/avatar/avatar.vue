@@ -88,7 +88,7 @@
 		margin-top: 60rpx;
 	}
 	.title{
-		font-size: 32rpx;padding: 0 34rpx;
+		font-size: 36rpx;padding: 0 34rpx;font-weight: bold;
 	}
 	.clear{
 		width: 32rpx;height: 32rpx;

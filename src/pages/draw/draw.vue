@@ -13,7 +13,7 @@
 		</view>
 		<view class="menu_img" v-show="navId == 0">
 			<template v-for="(item, index) in temp_theme">
-				<view class="item" v-if="item.type == 'image'" :key="index" @click.stop="selectImg(item.id)">
+				<view class="item" v-if="item.type == 'image'" :key="item.id" @click.stop="selectImg(item.id)">
 					<view class="mask" v-if="item.selected" @click.stop="changeImg(item.id, item.type)">
 						<image src="@/static/make_pic_mask.png" class="mask_img"></image>
 					</view>
@@ -39,7 +39,7 @@
 			</navigator>
 		</view>
 
-		<uni-popup ref="popup_img" :safe-area="false" @change="changePopupImg">
+		<uni-popup ref="popup_img" :safe-area="false" @change="changePopupImg" >
 			<view class="preview_box">
 				<view class="t">请预览制作效果</view>
 
@@ -79,10 +79,17 @@
 		</uni-popup>
 
 
-		<uni-popup ref="popup_text" type="dialog">
-			<uni-popup-dialog ref="inputClose" :before-close="true" mode="input" title="修改内容" :value="font_item.text"
-				@confirm="dialogConfirm" @close="dialogClose">
-			</uni-popup-dialog>
+		<uni-popup ref="popup_text" :mask-click="false">
+
+			<view class="dialog">
+				<view class="dialog_title">修改内容</view>
+				<input class="dialog_input" v-model="font_item.text" placeholder="输入文本" :maxlength="18"/>
+				<view class="dialog_btn_box">
+					<view class="dialog_btn dialog_cancel" @click="dialogClose">取消</view>
+					<view class="dialog_btn dialog_confirm" @click="dialogConfirm">确定</view>
+				</view>
+			</view>
+		
 		</uni-popup>
 
 	</view>
@@ -161,7 +168,7 @@ const scaleCanvas = () => {
 		}
 		title.value = res.title;
 		charge_status.value = res.charge_status ? res.charge_status : -1;
-
+		
 		uni.setNavigationBarTitle({ title: res.title })
 		temp_theme.value = res.picture_info;
 
@@ -252,7 +259,7 @@ const changeImg = (id, type) => {
 	} else {
 		navId.value = 1;
 		const fliterArr = temp_theme.value.filter((item) => item.id == id);
-		font_item.value = fliterArr[0]
+		font_item.value = JSON.parse(JSON.stringify(toRaw(fliterArr[0])));
 		popup_text.value.open();
 
 	}
@@ -295,7 +302,7 @@ const toImage = () => {
 	})
 }
 const toPay = async () => {
-	// charge_status:1 收费
+	// charge_status:1 收费  -1编辑进来
 	if(charge_status.value == 1){
 		const res = await fetchWork('/v1.trade/check');
 		if (res.make_num == 0) {
@@ -332,7 +339,7 @@ const goMake = async () => {
 	})
 
 	try {
-		const result = await fetchWork("/v1.trade/create", { project_id: project_id.value }, "POST");
+		const result = await fetchWork("/v1.trade/create", { project_id: project_id.value,wallpaper_id:id.value }, "POST");
 		console.log(result)
 		tt.requestOrder({
 			data: result.tiktok_params.data,
@@ -401,23 +408,24 @@ const successJump = () => {
 		}
 	})
 }
-const dialogConfirm = async (value) => {
+const dialogConfirm = async () => {
 
-	if (value) {
+	if (font_item.value.text) {
 		const res = await fetchWork('/v1.font/render_text', {
 			font_id: font_item.value.font_id,
-			text: value,
+			text: font_item.value.text,
 			font_color: font_item.value.font_color,
-			font_size: Math.round(font_item.value.font_size)
-
+			font_size: Math.round(font_item.value.font_size),
+			shadow_color:font_item.value.shadow_color?font_item.value.shadow_color:""
 		}, 'POST');
 
-		font_item.value.text = value;
+		
 		temp_theme.value.map((item) => {
 			if (item.id == font_item.value.id) {
 				item.url = res.base64;
 				item.w = res.weight / ratio.value;
 				item.h = res.height / ratio.value;
+				item.text = font_item.value.text;
 			}
 		})
 
@@ -460,7 +468,7 @@ const toExport = () => {
 	flex-direction: column;
 	overflow: hidden;
 	box-sizing: border-box;
-	padding-bottom: calc(50rpx + env(safe-area-inset-bottom));
+	padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
 }
 
 .canvas_box {
