@@ -33,10 +33,10 @@
 
 		<view class="btn_box">
 			<view class="btn" @click="toImage">立即制作</view>
-			<view class="jump">
+			<navigator class="jump" url="/pages/myself/record">
 				<image src="@/static/make_history.png" class="icon_hisory"></image>
 				制作记录
-			</view>
+			</navigator>
 		</view>
 
 		<uni-popup ref="popup_img" :safe-area="false" @change="changePopupImg">
@@ -295,15 +295,20 @@ const toImage = () => {
 	})
 }
 const toPay = async () => {
-	const res = await fetchWork('/v1.trade/check');
-
-
-	if ((res.make_num == 0 || res.is_buy) && charge_status.value == 1) {
-		popup_img.value.close('bottom')
-		popup_pay.value.open('center')
-	} else {
+	// charge_status:1 收费
+	if(charge_status.value == 1){
+		const res = await fetchWork('/v1.trade/check');
+		if (res.make_num == 0) {
+			popup_img.value.close('bottom')
+			popup_pay.value.open('center')
+		} 
+		else {
+			successJump()
+		}
+	}else{
 		successJump()
 	}
+	
 }
 
 const toBack = () => {

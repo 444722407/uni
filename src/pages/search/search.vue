@@ -9,21 +9,26 @@
 		</view>
 		<view style="height: 156rpx;"></view>
 
-		<view class="picture_box" style="margin-top: -20rpx;" v-show="is_result">
-            <view class="title">精选图片</view>
-			<picture-list type="picture" :list="picture" :status="status"></picture-list>
+		<view class="picture_box" v-show="is_result">
+            <view class="title">搜索结果</view>
+			<picture-list type="picture" :list="picture" :status="status" text="没有相关结果，换个词重新搜索吧"></picture-list>
 		</view>
 
-        <view class="picture_box" style="margin-top: -20rpx;" v-show="!is_result">
-            <view class="title">精选图片</view>
-			<picture-list type="picture" :list="picture" :status="status"></picture-list>
+        <view class="picture_box" v-show="!is_result">
+            <view class="title">猜你想找</view>
+			<view class="hot_keys">
+				<navigator class="item_search" v-for="item in [1,2,3,4,5]">
+					<image src="@/static/icon_hot_search.png" class="icon_hot_search"></image>
+					人生靠自己
+				</navigator>
+			</view>
 		</view>
 
 	</view>
 </template>
 
 <script setup>
-	import {ref} from "vue";
+	import {ref,watch} from "vue";
 	import { onLoad} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
@@ -36,10 +41,26 @@
     const is_load = ref(false);
     const is_result = ref(false);
 
+	watch(value,(newQuestion)=>{
+	
+		if(newQuestion == ""){
+			is_result.value = false;
+		}
+	})
 	onLoad(async ()=>{
 	
 		
 	})
+	const search = async () => {
+	if (value.value) {
+		fetchWork('/v1.wallpaper/search', { search: value.value }).then((res) => {
+			picture.value = res.list;
+			is_result.value = true;
+			status.value = ''; 
+		})
+	}
+}
+	
 	const pictureMore = async ()=>{
 		const res = await fetchWork('/v1.wallpaper/get_list',{page:page.value,category_id:navId.value});
 		
@@ -84,6 +105,7 @@
 		height: 100%;
 		font-size: 36rpx;
 		padding: 0 32rpx;
+		color: #fff;
 	}
 	.input::-webkit-input-placeholder{
 		color: rgba(255,255,255,0.5);
@@ -134,6 +156,7 @@
 		margin-left: -20rpx;
 		animation: ani_width .1s;
 	}
+	
 	@keyframes ani_width{
 		0%{
 			width: 0;
@@ -143,7 +166,32 @@
 		}
 	}
     .title {
-        font-size: 32rpx;
-        padding: 34rpx 34rpx 0;
+        font-size: 36rpx;
+        padding: 0 34rpx;
+		font-weight: bold;
     }
+	.hot_keys{
+		display: flex;
+		flex-wrap: wrap;
+		padding: 18rpx;
+	}
+	.hot_keys .item_search {
+		width: 332rpx;height: 80rpx;
+		display: flex;
+		align-items: center;
+		background-color: #232323;
+		padding: 0 20rpx;
+		box-sizing: border-box;
+		border-radius: 16rpx;
+		color: #FFD717;
+		font-size: 28rpx;
+		margin: 12rpx;
+	}
+	.hot_keys .icon_hot_search{
+		width: 32rpx;height: 32rpx;
+		margin-right: 24rpx;
+	}
+	.picture_box{
+		margin-top: 40rpx;
+	}
 </style>

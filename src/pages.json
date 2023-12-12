@@ -9,8 +9,7 @@
 		{
 			"path": "pages/home/home",
 			"style": {
-				"navigationBarTitleText": "图王定制",
-				"backgroundColor": "#1A1D53"
+				"navigationBarTitleText": "图王定制"
 			}
 		},
 		{

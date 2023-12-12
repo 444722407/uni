@@ -70,10 +70,10 @@
 		}
 	}
 	onShow(()=>{
-		picture.value = [];
-        page.value = 1;
+		page.value = 1;
 		is_load.value = false;
 		status.value = "loading";
+		picture.value = [];
 		more();
 	})
 	const confirm = ()=>{

@@ -26,6 +26,7 @@
     }
     .item{
         width: 100%;
+        height: 0;
         border-radius: 20rpx;
     }
     .item_h{

@@ -530,8 +530,8 @@ export default  {
                         canvasId: 'canvas-drag',
                         width:parseInt(this.width),
                         height:parseInt(this.height),
-                        destWidth:parseInt(this.width * 2),
-                        destHeight:parseInt(this.height * 2),
+                        destWidth:1080,
+                        destHeight:2336,
                         fileType:"jpg",
                         success: (res) => {
                             resolve(res.tempFilePath);

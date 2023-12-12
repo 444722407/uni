@@ -32,7 +32,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { onLoad, onReachBottom } from "@dcloudio/uni-app";
+import { onLoad } from "@dcloudio/uni-app";
 import fetchWork from '@/services'
 
 
@@ -46,55 +46,13 @@ const picture = ref([]);
 const status = ref("loading");
 
 onLoad(async () => {
-	await checkLogin();
-	
+	await app.globalData.checkLogin();
 	const res = await fetchWork('/v1.index/index');
 	users.value = res.quality_creator;
 	picture.value = res.choosy_picture;
 	status.value = '';
-
-
 })
-const checkLogin = () => {
-	return new Promise(async (resolve, reject) => {
-		const token = uni.getStorageSync('token');
-		if (token) {
-			uni.checkSession({
-				complete: async (res) => {
-					if (res.errMsg != 'checkSession:ok') {
-						await userLogin();
-					}
-					resolve()
-				}
-			})
-		} else {
-			await userLogin();
-			resolve()
-		}
-	})
 
-}
-
-const userLogin = () => {
-	return new Promise((resolve, reject) => {
-		uni.login({
-			force: true,
-			success(res) {
-				const code = res.code;
-				fetchWork("/v1.auth/silent_login", { code }, 'POST').then((res) => {
-					const token = res.token;
-					uni.setStorageSync('token', token);
-					resolve()
-				})
-			},
-			fail(res) {
-				console.log(`login 调用失败`);
-				reject(err)
-			},
-		})
-	})
-
-}
 const confirm = () => {
 	popup.value.close()
 }
