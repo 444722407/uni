@@ -12,7 +12,7 @@
 			</view>
 		</view>
 		<view class="menu_img" v-show="navId == 0">
-			<template v-for="(item, index) in temp_theme">
+			<template v-for="(item,index) in temp_theme" :key="index">
 				<view class="item" v-if="item.type == 'image'" :key="item.id" @click.stop="selectImg(item.id)">
 					<view class="mask" v-if="item.selected" @click.stop="changeImg(item.id, item.type)">
 						<image src="@/static/make_pic_mask.png" class="mask_img"></image>
@@ -24,7 +24,7 @@
 
 		<view class="menu_text" v-show="navId == 1">
 			<scroll-view scroll-x="true" class="scroll_w">
-				<template v-for="item in temp_theme">
+				<template v-for="(item,index) in temp_theme" :key="index">
 					<view class="input_box" :class="{ active: item.selected }" v-if="item.type == 'text'" :key="item.id"
 						@click.stop="selectImg(item.id)">{{ item.text }}</view>
 				</template>

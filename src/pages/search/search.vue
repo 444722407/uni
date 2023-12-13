@@ -17,9 +17,9 @@
         <view class="picture_box" v-show="!is_result">
             <view class="title">猜你想找</view>
 			<view class="hot_keys">
-				<view class="item_search" v-for="item in [1,2,3,4,5]" @click="toResult('人生靠自己')">
+				<view class="item_search" v-for="item in keys" @click="toResult(item)" :key="item">
 					<image src="@/static/icon_hot_search.png" class="icon_hot_search"></image>
-					人生靠自己
+					{{item}}
 				</view>
 			</view>
 		</view>
@@ -32,23 +32,22 @@
 	import { onLoad} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
-	const navId = ref(0);
 	const value = ref("");
-
+	const keys = ref([]);
 	const picture = ref([]);
     const status = ref("loading");
-    const page = ref(1);
-    const is_load = ref(false);
+
     const is_result = ref(false);
 
 	watch(value,(newQuestion)=>{
-	
 		if(newQuestion == ""){
 			is_result.value = false;
 		}
 	})
 	onLoad(async ()=>{
-	
+		fetchWork('/v1.wallpaper/get_guest_want_keyword').then((res) => {
+			keys.value = res;
+		})
 		
 	})
 	const search = async () => {
