@@ -61,7 +61,7 @@
 	const make_id = ref(undefined);
 	const record = ref(undefined);
 	const id = ref(undefined);
-
+	const title = ref("")
 	onLoad( async (options)=>{
 
 		time.value = +new Date();
@@ -70,8 +70,8 @@
 		record.value = options.record;
 		id.value = options.id;
 		make_id.value = options.make_id;
-
-		uni.setNavigationBarTitle({title:options.title})
+		title.value = options.title
+		
 
 		// 记录进来 不走上传与制作
 		if(options.record){
@@ -113,6 +113,15 @@
 					});
 				}
 			}
+			var duration = +new Date() - time.value;
+			console.log(duration)
+			var animation = uni.createAnimation({
+				duration:duration,
+				timingFunction: 'ease',
+				
+			})
+			animation.width('100%').step();
+			animationData.value = animation.export()
 		})
 
 		
@@ -125,15 +134,8 @@
 		// })
 	})
 	onReady(()=>{
-		var duration = +new Date() - time.value;
-		console.log(duration)
-		var animation = uni.createAnimation({
-			duration:duration + 1000,
-			timingFunction: 'ease',
-			
-		})
-		animation.width('100%').step();
-		animationData.value = animation.export()
+		uni.setNavigationBarTitle({title:title.value})
+		
 	})
 	const end = ()=>{
 		console.log('end')

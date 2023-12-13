@@ -242,15 +242,19 @@ const changeImg = (id, type) => {
 				uni.getImageInfo({
 					src: url,
 					success: (image) => {
-
-						temp_theme.value.map((item) => {
-							if (item.id == id) {
-
-								item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
-								item.url = url;
+						uni.saveFile({
+							tempFilePath: url,
+							success: function (sava_img) {
+								temp_theme.value.map((item) => {
+									if (item.id == id) {
+										item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
+										item.url = sava_img.savedFilePath;
+									}
+								})
+								canvas.value.initByArr(temp_theme.value, sy.value)
 							}
-						})
-						canvas.value.initByArr(temp_theme.value, sy.value)
+						});
+						
 					}
 				})
 
@@ -390,6 +394,7 @@ const goMake = async () => {
 	}
 }
 const successJump = () => {
+	console.log(JSON.parse(JSON.stringify(toRaw(temp_theme.value))))
 	uni.redirectTo({
 		url: id.value ? `/pages/make/make?tempImage=${tempImage.value}&id=${id.value}&title=${title.value}` : `/pages/make/make?tempImage=${tempImage.value}&make_id=${make_id.value}&title=${title.value}`,
 		success: () => {
