@@ -40,7 +40,7 @@ const dragGraph = function({ x = 0, y = 0, w, h, type, text, index,id, fontSize 
   this.MIN_WIDTH = 30;
   this.MIN_FONTSIZE = 10;
   this.index = index;
-  this.moveIndex = index;
+  // this.moveIndex = index;
   this.id = id;
 };
 dragGraph.prototype = {
@@ -57,7 +57,20 @@ dragGraph.prototype = {
     
     this.ctx.drawImage(this.url, this.x, this.y, this.w, this.h);
    
-  
+    // if (this.selected) {
+    //   this.ctx.setLineDash([5, 5], 5);
+    //   this.ctx.setLineWidth(2);
+    //   this.ctx.setStrokeStyle(STROKE_COLOR);
+    //   if (this.type === "text") {
+    //     this.ctx.strokeRect(this.x, this.y, this.w, this.h);
+    //     this.ctx.drawImage(DELETE_ICON2, this.x - 15, this.y - 15, 40, 25);
+    //     this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 24, 24);
+    //   } else if (this.type === "image") {
+    //     this.ctx.strokeRect(this.x, this.y, this.w, this.h);
+    //     this.ctx.drawImage(DELETE_ICON, this.x - 15, this.y - 15, 40, 25);
+    //     this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 24, 24);
+    //   }
+    // }
     
     this.ctx.restore();
   },
@@ -318,27 +331,38 @@ export default  {
       this.draw();
     },
     draw() {
-    
+      
       this.drawArr.forEach((item) => {
         item.paint();
       });
-      var item =  this.drawArr.filter((item)=>item.selected);
-      if(item.length) item = item[0];
-      if(item.selected){
-        item.ctx.setLineDash([5, 5], 5);
-        item.ctx.setLineWidth(2);
-        item.ctx.setStrokeStyle(STROKE_COLOR);
-          if (item.type === "text") {
-            item.ctx.strokeRect(item.x, item.y, item.w, item.h);
-            item.ctx.drawImage(DELETE_ICON2, item.x - 15, item.y - 15, 40, 25);
-            item.ctx.drawImage(DRAG_ICON, item.x + item.w - 15, item.y + item.h - 15, 24, 24);
-          } else if (item.type === "image") {
-            item.ctx.strokeRect(item.x, item.y, item.w, item.h);
-            item.ctx.drawImage(DELETE_ICON, item.x - 15, item.y - 15, 40, 25);
-            item.ctx.drawImage(DRAG_ICON, item.x + item.w - 15, item.y + item.h - 15, 24, 24);
-          }
-        }
 
+      this.drawArr.forEach((item) => {
+
+          if(item.selected){
+            item.ctx.save()     
+            item.ctx.translate(item.centerX, item.centerY);
+            item.ctx.rotate(item.rotate * Math.PI / 180);
+            item.ctx.translate(-item.centerX, -item.centerY);
+        
+            item.ctx.setLineDash([5, 5], 5);
+            item.ctx.setLineWidth(2);
+            item.ctx.setStrokeStyle(STROKE_COLOR);
+            if (item.type === "text") {
+              item.ctx.strokeRect(item.x, item.y, item.w, item.h);
+              item.ctx.drawImage(DELETE_ICON2, item.x - 15, item.y - 15, 40, 25);
+              item.ctx.drawImage(DRAG_ICON, item.x + item.w - 15, item.y + item.h - 15, 24, 24);
+            } else if (item.type === "image") {
+              item.ctx.strokeRect(item.x, item.y, item.w, item.h);
+              item.ctx.drawImage(DELETE_ICON, item.x - 15, item.y - 15, 40, 25);
+              item.ctx.drawImage(DRAG_ICON, item.x + item.w - 15, item.y + item.h - 15, 24, 24);
+            }
+            item.ctx.restore()
+          }
+        
+      });
+ 
+      
+      
     
       return new Promise((resolve) => {
         this.ctx.draw(false, () => {
@@ -422,6 +446,7 @@ export default  {
           currentGraph.x = currentGraph.centerX - this.currentGraph.w / 2;
           currentGraph.y = currentGraph.centerY - this.currentGraph.h / 2;
         } else if (currentGraph.action === "transform") {
+       
           currentGraph.transform(this.currentTouch.x, this.currentTouch.y, x, y, this.currentGraph);
         }
         currentGraph._rotateSquare();
@@ -535,9 +560,9 @@ export default  {
                         canvasId: 'canvas-drag',
                         width:parseInt(this.width),
                         height:parseInt(this.height),
-                        destWidth:parseInt(this.width * 2),
-                        destHeight:parseInt(this.height * 2),
-                        fileType:"jpg",
+                        destWidth:1080,
+                        destHeight:2336,
+                        fileType:"png",
                         success: (res) => {
                             resolve(res.tempFilePath);
                         },
