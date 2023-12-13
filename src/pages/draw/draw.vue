@@ -217,7 +217,7 @@ const selectImg = (id, type) => {
 }
 // canvas选中元素后 同桌父组件更新按钮
 const selectImgId = (id, type) => {
-
+	
 	if (type == 'image') {
 		navId.value = 0;
 	} else {
@@ -431,6 +431,12 @@ const dialogConfirm = async () => {
 
 		canvas.value.initByArr(temp_theme.value, sy.value)
 		popup_text.value.close()
+	}else{
+		uni.showToast({
+			title:"文字不能为空",
+			mask:true,
+			icon:'none'
+		})
 	}
 
 }

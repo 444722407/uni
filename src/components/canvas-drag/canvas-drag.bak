@@ -57,7 +57,20 @@ dragGraph.prototype = {
     
     this.ctx.drawImage(this.url, this.x, this.y, this.w, this.h);
    
-  
+    if (this.selected) {
+      this.ctx.setLineDash([5, 5], 5);
+      this.ctx.setLineWidth(2);
+      this.ctx.setStrokeStyle(STROKE_COLOR);
+      if (this.type === "text") {
+        this.ctx.strokeRect(this.x, this.y, this.w, this.h);
+        this.ctx.drawImage(DELETE_ICON2, this.x - 15, this.y - 15, 40, 25);
+        this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 24, 24);
+      } else if (this.type === "image") {
+        this.ctx.strokeRect(this.x, this.y, this.w, this.h);
+        this.ctx.drawImage(DELETE_ICON, this.x - 15, this.y - 15, 40, 25);
+        this.ctx.drawImage(DRAG_ICON, this.x + this.w - 15, this.y + this.h - 15, 24, 24);
+      }
+    }
     
     this.ctx.restore();
   },
@@ -320,25 +333,9 @@ export default  {
     draw() {
     
       this.drawArr.forEach((item) => {
+        
         item.paint();
       });
-      var item =  this.drawArr.filter((item)=>item.selected);
-      if(item.length) item = item[0];
-      if(item.selected){
-        item.ctx.setLineDash([5, 5], 5);
-        item.ctx.setLineWidth(2);
-        item.ctx.setStrokeStyle(STROKE_COLOR);
-          if (item.type === "text") {
-            item.ctx.strokeRect(item.x, item.y, item.w, item.h);
-            item.ctx.drawImage(DELETE_ICON2, item.x - 15, item.y - 15, 40, 25);
-            item.ctx.drawImage(DRAG_ICON, item.x + item.w - 15, item.y + item.h - 15, 24, 24);
-          } else if (item.type === "image") {
-            item.ctx.strokeRect(item.x, item.y, item.w, item.h);
-            item.ctx.drawImage(DELETE_ICON, item.x - 15, item.y - 15, 40, 25);
-            item.ctx.drawImage(DRAG_ICON, item.x + item.w - 15, item.y + item.h - 15, 24, 24);
-          }
-        }
-
     
       return new Promise((resolve) => {
         this.ctx.draw(false, () => {
@@ -361,7 +358,7 @@ export default  {
         
         if (action) {
           item.action = action;
-          // item.index = 99999;
+          item.index = 99999;
           item.selected = true;
           this.$emit('selectImgId',item.id,item.type)
           this.tempGraphArr.push(item);
@@ -398,13 +395,13 @@ export default  {
               this.currentGraph = Object.assign({}, this.tempGraphArr[lastIndex]);
             }
           } else {
-            // this.tempGraphArr[i].index = this.tempGraphArr[i].moveIndex;
+            this.tempGraphArr[i].index = this.tempGraphArr[i].moveIndex;
             this.tempGraphArr[i].action = false;
             this.tempGraphArr[i].selected = false;
           }
         }
       }
-      // this.sortArr();
+      this.sortArr();
       this.draw();
     },
     move(e) {
@@ -425,18 +422,18 @@ export default  {
           currentGraph.transform(this.currentTouch.x, this.currentTouch.y, x, y, this.currentGraph);
         }
         currentGraph._rotateSquare();
-        // this.sortArr();
+        this.sortArr();
         this.draw();
       }
     },
     end(e) {
-      // const index = this.drawArr.findIndex((item)=>item.action == "move" || item.action == "transform");
+      const index = this.drawArr.findIndex((item)=>item.action == "move" || item.action == "transform");
    
-      // if(index != -1){
+      if(index != -1){
       
-      //   this.drawArr[index].index =  this.drawArr[index].moveIndex;
-      //   this.getData(this.drawArr[index])
-      // }
+        this.drawArr[index].index =  this.drawArr[index].moveIndex;
+        this.getData(this.drawArr[index])
+      }
 
       this.tempGraphArr = [];
       if (isMove) {
@@ -502,19 +499,19 @@ export default  {
 
       this.drawArr.map((item)=>{
         if(item.id == id){
-          // item.index = 99999;
+          item.index = 99999;
           item.selected = true;
         }
       });
-      // this.sortArr();
+      this.sortArr();
       this.draw();
 
-      // this.drawArr.map((item)=>{
-      //   if(item.id == id){
-      //     item.index = item.moveIndex;
-      //     item.selected = false;
-      //   }
-      // });
+      this.drawArr.map((item)=>{
+        if(item.id == id){
+          item.index = item.moveIndex;
+          item.selected = false;
+        }
+      });
     },
     getData(item){
         this.$emit('getData',item)

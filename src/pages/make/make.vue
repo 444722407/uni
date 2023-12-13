@@ -117,12 +117,12 @@
 
 		
 
-		uploadTask.onProgressUpdate((res)=>{
-			width.value = res.progress;
-			if (res.progress  == 100){
-				is_progress.value = false;
-			}
-		})
+		// uploadTask.onProgressUpdate((res)=>{
+		// 	width.value = res.progress;
+		// 	if (res.progress  == 100){
+		// 		is_progress.value = false;
+		// 	}
+		// })
 	})
 	onReady(()=>{
 		var duration = +new Date() - time.value;

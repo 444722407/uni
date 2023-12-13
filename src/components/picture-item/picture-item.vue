@@ -22,7 +22,7 @@
 <style scoped>
     .box{
         width: 100%;
-        margin-bottom: 10rpx;
+        margin-bottom: 20rpx;
     }
     .item{
         width: 100%;

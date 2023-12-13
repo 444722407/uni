@@ -17,10 +17,10 @@
         <view class="picture_box" v-show="!is_result">
             <view class="title">猜你想找</view>
 			<view class="hot_keys">
-				<navigator class="item_search" v-for="item in [1,2,3,4,5]">
+				<view class="item_search" v-for="item in [1,2,3,4,5]" @click="toResult('人生靠自己')">
 					<image src="@/static/icon_hot_search.png" class="icon_hot_search"></image>
 					人生靠自己
-				</navigator>
+				</view>
 			</view>
 		</view>
 
@@ -53,27 +53,16 @@
 	})
 	const search = async () => {
 	if (value.value) {
-		fetchWork('/v1.wallpaper/search', { search: value.value }).then((res) => {
-			picture.value = res.list;
-			is_result.value = true;
-			status.value = ''; 
-		})
-	}
-}
-	
-	const pictureMore = async ()=>{
-		const res = await fetchWork('/v1.wallpaper/get_list',{page:page.value,category_id:navId.value});
-		
-        if(res && res.list.length!= 0){
-			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
-			status.value = res.list.length < 10? 'no-more':'more';
-			page.value ++;
-			is_load.value = res.list.length == 10;
-		}else{
-			status.value= "";
-			return;
+			fetchWork('/v1.wallpaper/search', { search: value.value }).then((res) => {
+				picture.value = res.list;
+				is_result.value = true;
+				status.value = ''; 
+			})
 		}
-
+	}
+	const toResult = (key)=>{
+		value.value = key;
+		search()
 	}
 	
 </script>
