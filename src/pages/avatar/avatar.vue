@@ -3,7 +3,7 @@
 		<image src="@/static/avatar_logo@2x.png" class="logo"></image>
 		<view class="search_box">
 			<image src="@/static/home_search@2x.png" class="icon"></image>
-			<input type="text" class="input" placeholder="输入您的姓氏" v-model="value">
+			<input type="text" class="input" placeholder="输入您的姓氏" v-model="value" maxlength="16">
 			<image src="@/static/avatar_search_clear@2x.png" class="clear" @click="clear" v-if="value"></image>
 			<view class="btn" @click="search">立即匹配</view>
 		</view>

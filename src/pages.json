@@ -47,7 +47,8 @@
 		{
 			"path": "pages/myself/record",
 			"style": {
-				"navigationBarTitleText": "制作记录"
+				"navigationBarTitleText": "制作记录",
+				"enablePullDownRefresh":true
 			}
 		},
 		{

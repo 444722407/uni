@@ -267,8 +267,8 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 24rpx;
-		width: 240rpx;
-		height: 92rpx;
+		width: 260rpx;
+		height: 108rpx;
 		margin-right:20rpx;
 		color: #fff;
 	}
@@ -288,8 +288,8 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 24rpx;
-		width: 310rpx;
-		height: 92rpx;
+		width: 392rpx;
+		height: 108rpx;
 	}
 	.successs{
 		display: flex;

@@ -39,7 +39,7 @@
 <script setup>
 	
 	import { ref,reactive } from "vue";
-	import { onShow } from "@dcloudio/uni-app";
+	import { onLoad,onPullDownRefresh  } from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
 	const picture = ref([]);
@@ -68,13 +68,22 @@
 			status.value= "";
 			return;
 		}
+		uni.stopPullDownRefresh()
 	}
-	onShow(()=>{
+	onLoad(()=>{
 		page.value = 1;
 		is_load.value = false;
 		status.value = "loading";
 		picture.value = [];
 		more();
+	})
+	onPullDownRefresh(()=>{
+		page.value = 1;
+		is_load.value = false;
+		status.value = "loading";
+		picture.value = [];
+		more();
+
 	})
 	const confirm = ()=>{
 		popup.value.close();
