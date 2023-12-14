@@ -42,17 +42,7 @@
 		contentnomore: '没有更多了'
 	});
 	
-	
-	// const search = ()=>{
-	// 	list.value = [];
-	// 	status.value = "";
-	// 	is_load.value = false;
-	// }
-	// defineExpose({
-	// 	more,
-	// 	search,
-	// 	is_load
-	// })
+
 </script>
 
 <style scoped>

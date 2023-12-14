@@ -19,12 +19,15 @@ export default function fetchWork(url="", data={}, method="GET",text){
           if(data.code == 1){
             resolve(data.data)
           }else{
-            // if(data.msg){
-            //   uni.showToast({
-            //     title: data.msg,
-            //     icon: 'none'
-            //   });
-            // }
+            if(url != "/v1.index/search_code_word"){
+               if(data.msg){
+                  uni.showToast({
+                    title: data.msg,
+                    icon: 'none'
+                  });
+                }
+            }
+           
             reject(data.msg)
           }
       },

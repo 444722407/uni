@@ -70,25 +70,20 @@
 	const userInfo = ref({});
 	const popup_logout = ref(null)
 	const getUserInfo = async ()=>{
-		try{
-			const res = await fetchWork('/v1.user/get_info',{},'POST');
-			userInfo.value.make_num = res.make_num;
-		}catch(err){
-			console.log(err)
-		}
+		
+		const res = await fetchWork('/v1.user/get_info',{},'POST');
+		userInfo.value.make_num = res.make_num;
+		
 	}
 	const updateUserInfo = async ()=>{
 		tt.getUserProfile({
 			success:async (res)=>{
-				try{
-					await fetchWork('/v1.auth/login',res.userInfo,'POST');
-					userInfo.value.nickName = res.userInfo.nickName;
-					userInfo.value.avatarUrl =  res.userInfo.avatarUrl;
-					uni.setStorageSync('userInfo',userInfo.value)
+			
+				await fetchWork('/v1.auth/login',res.userInfo,'POST');
+				userInfo.value.nickName = res.userInfo.nickName;
+				userInfo.value.avatarUrl =  res.userInfo.avatarUrl;
+				uni.setStorageSync('userInfo',userInfo.value)
 
-				}catch(err){
-					console.log(err)
-				}
 			},
 			fail:(err)=>{
 				console.log(err)

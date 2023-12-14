@@ -99,19 +99,13 @@
 			// 编辑数据
 			if(options.make_id){
 				console.log('edit')
-				try{
-					const res = await fetchWork('/v1.wallpaper/edit',{
-						make_id:options.make_id,
-						picture_info:JSON.stringify(app.globalData.temp_theme),
-						preview_img:data.data.path
-					},'POST')
-					number.value = res.modify_num;
-				}catch(msg){
-					uni.showToast({
-						title: msg,
-						icon: 'none'
-					});
-				}
+				const res = await fetchWork('/v1.wallpaper/edit',{
+					make_id:options.make_id,
+					picture_info:JSON.stringify(app.globalData.temp_theme),
+					preview_img:data.data.path
+				},'POST')
+				number.value = res.modify_num;
+				
 			}
 			var duration = +new Date() - time.value;
 			console.log(duration)

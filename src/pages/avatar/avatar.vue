@@ -9,39 +9,47 @@
 		</view>
 		<view class="picture_box">
 			<view class="title">{{is_search?'热门头像':'为您匹配以下头像'}}</view>
-			<picture-list type="avatar" ref="picture" @search="search"></picture-list>
+			<picture-list type="picture" :list="picture" :status="status"></picture-list>
 		</view>
 	</view>
 </template>
 
 <script setup>
-	import {ref,watch } from "vue";
-    import { onReachBottom} from "@dcloudio/uni-app";
-	const value = ref("")
-    const picture = ref(null);
-	const is_search = ref(false);
+	import {ref} from "vue";
+	import { onLoad,onReachBottom} from "@dcloudio/uni-app";
+	import fetchWork from '@/services'
 
-	watch(is_search,()=>{
-		// 没有搜索就还原数组
-		if(!is_search.value){
-			picture.value.more();
-		}
-		// 搜索过不能下拉加载
-		picture.value.is_load = !is_search.value;
+	const value = ref("")
+	const picture = ref([]);
+    const status = ref("loading");
+    const page = ref(1);
+    const is_load = ref(false);
+
+	onLoad(async ()=>{
+		pictureMore();
+		
 	})
-    onReachBottom(()=>{
-        if(picture.value.is_load){
-            picture.value.more();
+	const pictureMore = async ()=>{
+		const res = await fetchWork('/v1.avatar/data_list',{page:page.value,limit:10,avatarName:value.value},'POST');
+		
+        if(res && res.list.length!= 0){
+			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
+			status.value = res.list.length < 10? 'no-more':'more';
+			page.value ++;
+			is_load.value = res.list.length == 10;
+		}else{
+			status.value= "";
+			return;
+		}
+
+	}
+
+	onReachBottom(()=>{
+		if(is_load.value){
+            pictureMore();
+            return;
         }
-    })
-	const search = ()=>{
-		picture.value.search()
-		is_search.value = true;
-	}
-	const clear = ()=>{
-		value.value = "";
-		is_search.value = false;
-	}
+	})
 </script>
 
 <style scoped>

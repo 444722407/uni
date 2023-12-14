@@ -42,21 +42,11 @@
        fetchWork('/v1.creator/get_detail',{creator_id}).then((res)=>{
 
         authorInfo.value = res;
-       }).catch((msg)=>{
-          uni.showToast({
-            title: msg,
-            icon: 'none'
-          });
        })
 
        fetchWork('/v1.creator/get_wallpaper_list',{creator_id}).then((res)=>{
           picture.value= res.list;
           status.value = "";
-       }).catch((msg)=>{
-          uni.showToast({
-            title: msg,
-            icon: 'none'
-          });
        })
 
     }
