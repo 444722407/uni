@@ -1,13 +1,13 @@
 <template>
 	<view class="detail">
 		<image :src="avatarInfo.avatar_thumb" class="detail_img"></image>
-        <navigator  :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name " open-type="redirect" hover-class="navigator-hover" class="jump">
+        <navigator  :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name " open-type="navigate" hover-class="navigator-hover" class="jump">
             {{avatarInfo.series_name}} <image src="@/static/avatar_arrow@2x.png" class="icon"></image>
         </navigator>
         <view class="down" @click="show"><image src="@/static/avatar_download@2x.png" class="icon"></image>下载高清无水印原图</view>
 		<view class="picture_box">
 			<view class="title">更多推荐</view>
-			<picture-list type="avatar" :list="picture" :status="status"></picture-list>
+			<picture-list type="avatar" :list="picture" :status="status" jumpType="redirect"></picture-list>
 		</view>
         <button open-type="share" class="share"><image src="@/static/share@2x.png" class="icon_share"></image></button>
 
@@ -68,7 +68,7 @@
 			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
 			status.value = res.list.length < 10? 'no-more':'more';
 			page.value ++;
-			is_load.value = res.list.length == 10;
+			is_load.value = picture.value.length < res.total;
 		}else{
 			status.value= "";
 			return;

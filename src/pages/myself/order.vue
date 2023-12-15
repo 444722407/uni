@@ -5,6 +5,10 @@
 			<view v-for="(item,index) in list" :key="item.id" class="item" >
 				<view class="title">
 					<view class="count">{{item.subject}}</view>
+					<view class="status status2" v-if="item.status == 1">
+						<image src="@/static/order_fail@2x.png" class="icon"></image>
+						{{item.status_label}}
+					</view>
 					<view class="status status1" v-if="item.status == 2">
 						<image src="@/static/order_paid@2x.png" class="icon"></image>
 						{{item.status_label}}
@@ -50,7 +54,7 @@
 			list.value = page.value == 1 ? res.list:[...list.value,...res.list];
 			status.value = res.list.length < 10? 'no-more':'more';
 			page.value ++;
-			is_load.value = res.list.length == 10;
+			is_load.value = list.value.length < res.total;
 		}else{
 			status.value= "";
 			return;
