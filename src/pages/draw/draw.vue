@@ -320,6 +320,7 @@ const toImage = () => {
 const toPay = async () => {
 	// charge_status:1 收费  -1编辑进来
 	if(charge_status.value == 1){
+	
 		const res = await fetchWork('/v1.trade/check');
 		if (res.make_num == 0) {
 			popup_img.value.close('bottom')
@@ -349,11 +350,18 @@ const changePay = (index) => {
 	project_id.value = payList.value[index].id;
 }
 const goMake = async () => {
+	if (app.globalData.system.osName.indexOf('ios') != -1) {
+		uni.showToast({
+			title:"IOS 暂不支持购买",
+			icon:"none"
+		})
+		return;
+	}
 	uni.showLoading({
 		title: '请稍等',
 		mask: true
 	})
-
+	
 	try {
 		const result = await fetchWork("/v1.trade/create", { project_id: project_id.value,wallpaper_id:id.value }, "POST");
 		console.log(result)

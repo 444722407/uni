@@ -54,7 +54,7 @@
 			list.value = page.value == 1 ? res.list:[...list.value,...res.list];
 			status.value = res.list.length < 10? 'no-more':'more';
 			page.value ++;
-			is_load.value = list.value.length < res.total;
+			is_load.value = res.list.length == 10;
 		}else{
 			status.value= "";
 			return;

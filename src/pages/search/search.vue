@@ -14,7 +14,7 @@
 			<picture-list type="picture" :list="picture" :status="status" text="没有相关结果，换个词重新搜索吧"></picture-list>
 		</view>
 
-        <view class="picture_box" v-show="!is_result">
+        <view class="picture_box" v-show="!is_result && keys.length">
             <view class="title">猜你想找</view>
 			<view class="hot_keys">
 				<view class="item_search" v-for="item in keys" @click="toResult(item)" :key="item">

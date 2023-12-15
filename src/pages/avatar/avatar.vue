@@ -37,7 +37,7 @@
 			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
 			status.value = res.list.length < 10? 'no-more':'more';
 			page.value ++;
-			is_load.value = picture.value.length < res.total;
+			is_load.value = res.list.length == 10;
 		}else{
 			status.value= "";
 			return;
@@ -45,12 +45,15 @@
 
 	}
 	const search = async ()=>{
-		picture.value = [];
-		page.value = 1;
-		is_load.value = false;
-		status.value = "loading";
-		is_search.value = true;
-		pictureMore()
+		if(value.value){
+			picture.value = [];
+			page.value = 1;
+			is_load.value = false;
+			status.value = "loading";
+			is_search.value = true;
+			pictureMore()
+		}
+		
 	}
 	const clear = ()=>{
 		picture.value = [];
