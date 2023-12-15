@@ -8,8 +8,8 @@
 			<view class="btn" @click="search">立即匹配</view>
 		</view>
 		<view class="picture_box">
-			<view class="title">{{is_search?'热门头像':'为您匹配以下头像'}}</view>
-			<picture-list type="picture" :list="picture" :status="status"></picture-list>
+			<view class="title">{{is_search?'为您匹配以下头像':'热门头像'}}</view>
+			<picture-list type="avatar" :list="picture" :status="status"></picture-list>
 		</view>
 	</view>
 </template>
@@ -24,6 +24,7 @@
     const status = ref("loading");
     const page = ref(1);
     const is_load = ref(false);
+    const is_search = ref(false);
 
 	onLoad(async ()=>{
 		pictureMore();
@@ -43,11 +44,26 @@
 		}
 
 	}
-
+	const search = async ()=>{
+		picture.value = [];
+		page.value = 1;
+		is_load.value = false;
+		status.value = "loading";
+		is_search.value = true;
+		pictureMore()
+	}
+	const clear = ()=>{
+		picture.value = [];
+		page.value = 1;
+		is_load.value = false;
+		status.value = "loading";
+		is_search.value = false;
+		value.value = "";
+		pictureMore()
+	}
 	onReachBottom(()=>{
 		if(is_load.value){
             pictureMore();
-            return;
         }
 	})
 </script>

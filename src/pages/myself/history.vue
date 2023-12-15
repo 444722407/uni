@@ -47,7 +47,6 @@
   
         if(is_load.value){
             pictureMore();
-            return;
         }
   
         

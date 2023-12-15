@@ -23,7 +23,7 @@
 
 <script setup >
   import {ref} from "vue";
-  import { onLoad,onReachBottom } from "@dcloudio/uni-app";
+  import { onLoad } from "@dcloudio/uni-app";
   import fetchWork from '@/services'
   const picture = ref([]);
   const avatar = ref([]);

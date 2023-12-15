@@ -2,7 +2,7 @@
     <view class="box">
         <view class="list" v-if="list.length">
             <view v-for="(item,index) in list" :key="item.id" class="item">
-                <picture-item :item="item" :type="props.type"></picture-item>
+                <picture-item :item="item" :type="props.type" :jumpType="props.jumpType"></picture-item>
             </view>
         </view>
         <!-- 加载完成才显示有没有数据 -->
@@ -33,6 +33,10 @@
         text:{
             type:String,
 			default:'没有相关结果'
+        },
+        jumpType:{
+            type:String,
+            default:"navigate"
         }
     })
 
@@ -55,7 +59,7 @@
         padding: 0 18rpx;
     }
     .item{
-        margin: 0 16rpx;
+        margin: 0 14rpx;
         width: v-bind("props.size + 'rpx'");
         overflow: hidden;
     }

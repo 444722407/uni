@@ -60,7 +60,10 @@
 		getList()
 	})
 	onReachBottom(()=>{
-		getList()
+		if(is_load.value){
+			getList()
+		}
+		
 	})
 
 </script>

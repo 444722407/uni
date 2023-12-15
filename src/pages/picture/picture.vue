@@ -80,7 +80,6 @@
 	onReachBottom(()=>{
 		if(is_load.value){
             pictureMore();
-            return;
         }
 	})
 </script>

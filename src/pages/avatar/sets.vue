@@ -7,39 +7,66 @@
 			<view class="btn" @click="search">搜索</view>
 		</view>
 		<view class="picture_box">
-			<picture-list type="avatar" ref="picture" size="208" @search="search"></picture-list>
+			<picture-list type="avatar" :list="picture" :status="status" size="208" jumpType="redirect"></picture-list>
 		</view>
 	</view>
 </template>
 
 <script setup>
-	import {ref,watch } from "vue";
-    import { onReachBottom} from "@dcloudio/uni-app";
-	const value = ref("")
-    const picture = ref(null);
-	const is_search = ref(false);
+	import {ref} from "vue";
+	import { onLoad,onReachBottom} from "@dcloudio/uni-app";
+	import fetchWork from '@/services'
 
-	watch(is_search,()=>{
-		// 没有搜索就还原数组
-		if(!is_search.value){
-			picture.value.more();
-		}
-		// 搜索过不能下拉加载
-		picture.value.is_load = !is_search.value;
+	const seriesId = ref("");
+	const value = ref("")
+	const picture = ref([]);
+    const status = ref("loading");
+    const page = ref(1);
+    const is_load = ref(false);
+    const is_search = ref(false);
+
+	onLoad(async (options)=>{
+		seriesId.value = options.seriesId;
+		pictureMore();
+		uni.setNavigationBarTitle({title:options.title})
 	})
-    onReachBottom(()=>{
-        if(picture.value.is_load){
-            picture.value.more();
-        }
-    })
-	const search = ()=>{
-		picture.value.search()
+
+	const pictureMore = async ()=>{
+		const res = await fetchWork('/v1.avatar/series',{page:page.value,limit:10,seriesId:seriesId.value,avatarName:value.value},'POST');
+		
+        if(res && res.list.length!= 0){
+			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
+			status.value = res.list.length < 10? 'no-more':'more';
+			page.value ++;
+			is_load.value = res.list.length == 10;
+		}else{
+			status.value= "";
+			return;
+		}
+
+	}
+	const search = async ()=>{
+		picture.value = [];
+		page.value = 1;
+		is_load.value = false;
+		status.value = "loading";
 		is_search.value = true;
+		pictureMore()
 	}
 	const clear = ()=>{
-		value.value = "";
+		picture.value = [];
+		page.value = 1;
+		is_load.value = false;
+		status.value = "loading";
 		is_search.value = false;
+		value.value = "";
+		pictureMore()
 	}
+	onReachBottom(()=>{
+		if(is_load.value){
+            pictureMore();
+        }
+	})
 </script>
 
 <style scoped>

@@ -97,7 +97,7 @@
 
 <script setup>
 import { ref, getCurrentInstance, toRaw } from "vue";
-import fetchWork from '@/services'
+import fetchWork,{fetchWorkImage} from '@/services'
 import { onLoad, onReady } from "@dcloudio/uni-app";
 const app = getApp();
 const id = ref("");
@@ -254,7 +254,19 @@ const changeImg = (id, type) => {
 								canvas.value.initByArr(temp_theme.value, sy.value)
 							}
 						});
-						
+						// fetchWorkImage('/v1.upload/image',url,(result)=>{
+						// 	const imgData = JSON.parse(result.data);
+							
+						// 	temp_theme.value.map((item) => {
+						// 			if (item.id == id) {
+						// 				item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
+						// 				item.url = imgData.data.url;
+						// 				item.path = imgData.data.path;
+						// 			}
+						// 		})
+						// 	console.log(temp_theme.value)	
+						// 	canvas.value.initByArr(temp_theme.value, sy.value)
+						// })
 					}
 				})
 

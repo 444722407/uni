@@ -1,13 +1,13 @@
 <template>
 	<view class="detail">
-		<image src="https://fakeimg.pl/324x324/ffffff/" class="detail_img"></image>
-        <navigator  url="/pages/avatar/sets" open-type="navigate" hover-class="navigator-hover" class="jump">
-            卡通米老鼠系列 <image src="@/static/avatar_arrow@2x.png" class="icon"></image>
+		<image :src="avatarInfo.avatar_thumb" class="detail_img"></image>
+        <navigator  :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name " open-type="redirect" hover-class="navigator-hover" class="jump">
+            {{avatarInfo.series_name}} <image src="@/static/avatar_arrow@2x.png" class="icon"></image>
         </navigator>
         <view class="down" @click="show"><image src="@/static/avatar_download@2x.png" class="icon"></image>下载高清无水印原图</view>
 		<view class="picture_box">
 			<view class="title">更多推荐</view>
-			<picture-list type="avatar" ref="picture"></picture-list>
+			<picture-list type="avatar" :list="picture" :status="status"></picture-list>
 		</view>
         <button open-type="share" class="share"><image src="@/static/share@2x.png" class="icon_share"></image></button>
 
@@ -45,23 +45,57 @@
 </template>
 
 <script setup>
-	import {ref,onMounted} from "vue";
-    import { onLoad, onReachBottom} from "@dcloudio/uni-app";
-    const picture = ref(null);
+	import {ref} from "vue";
+    import { onLoad,onReady, onReachBottom} from "@dcloudio/uni-app";
+    import fetchWork from '@/services'
+    const avatarInfo = ref({});
+    const id = ref("");
+    const title = ref("")
+    const picture = ref([]);
+    const status = ref("loading");
+    const page = ref(1);
+    const is_load = ref(false);
+
     const popup = ref(null);
     const is_ios = ref(false);
     const is_number = ref(0);
     const app = getApp();
 
-    onLoad(()=>{
+    const pictureMore = async ()=>{
+		const res = await fetchWork('/v1.avatar/suggest',{page:page.value,limit:10,avatarId:id.value},'POST');
+		
+        if(res && res.list.length!= 0){
+			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
+			status.value = res.list.length < 10? 'no-more':'more';
+			page.value ++;
+			is_load.value = res.list.length == 10;
+		}else{
+			status.value= "";
+			return;
+		}
+
+	}
+    
+    onLoad(async (options)=>{
         if(app.globalData.system.osName.indexOf('ios') != -1){
             is_ios.value = true;
         }
-       
+        id.value = options.id;
+        title.value = options.title;
+
+        pictureMore();
+        const res = await fetchWork('/v1.avatar/detail',{avatarId:id.value},'POST');
+        avatarInfo.value = res;
+        uni.setNavigationBarTitle({title:title.value})
     })
+    onReady(async ()=>{
+       
+   
+    })
+
     onReachBottom(()=>{
-        if(picture.value.is_load){
-            picture.value.more();
+        if(is_load.value){
+            pictureMore();
         }
     })
     const show = ()=>{
