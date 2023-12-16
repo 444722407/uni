@@ -43,7 +43,7 @@
                 </view>
                 <view class="btn" @click="pay">立即支付</view>
                 <view class="xy_box">支付前请阅读
-                    <navigator url="/pages/" open-type="navigate" hover-class="navigator-hover" class="xy">《付费制作协议》
+                    <navigator url="/pages/web/web?url=https://tuwang.taihela.com/payterms.html" open-type="navigate" hover-class="navigator-hover" class="xy">《付费制作协议》
                     </navigator>
                 </view>
             </view>
@@ -122,7 +122,7 @@ onLoad(async (options) => {
     id.value = options.id;
     title.value = options.title;
     uni.setNavigationBarTitle({ title: title.value })
-
+    
     pictureMore();
     checkNumber();
     getAvatarInfo();
@@ -132,7 +132,7 @@ onLoad(async (options) => {
 })
 onReady(async () => {
 
-
+  
 })
 
 onReachBottom(() => {

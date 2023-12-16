@@ -74,7 +74,11 @@
 				</view>
 
 				<view class="btn" @click="goMake">立即制作</view>
-				<view class="tips">支付前请阅读 <text class="xy">《付费制作协议》</text>支付后不支持退款</view>
+				<view class="tips">
+					支付前请阅读 
+					<navigator url="/pages/web/web?url=https://tuwang.taihela.com/payterms.html" open-type="navigate" class="xy">《付费制作协议》</navigator>
+					支付后不支持退款
+				</view>
 			</view>
 		</uni-popup>
 
@@ -812,6 +816,7 @@ const hideTips = ()=>{
 
 .popup_pay .xy {
 	color: #fff;
+	display: inline-block;
 }
 .dialog_tips{
 	margin-top: -30rpx;
