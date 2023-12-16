@@ -9,7 +9,7 @@
 		{
 			"path": "pages/home/home",
 			"style": {
-				"navigationBarTitleText": "图王定制"
+				"navigationBarTitleText": ""
 			}
 		},
 		{

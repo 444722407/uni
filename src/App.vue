@@ -50,6 +50,7 @@ export default {
     getSystem() {
       const system = uni.getSystemInfoSync();
       this.globalData.system = system;
+      this.globalData.system.safeAreaInsets.bottom = this.globalData.system.safeAreaInsets.bottom > 20? this.globalData.system.safeAreaInsets.bottom-20:0;
     },
     
   },

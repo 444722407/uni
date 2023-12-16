@@ -7,7 +7,7 @@
 		<view class="menu_nav">
 			<view class="item" :class="{ active: navId == 0 }" @click="changeNav(0)">换图片</view>
 			<view class="item" :class="{ active: navId == 1 }" @click="changeNav(1)">换文字</view>
-			<view class="help" @click="toExport">
+			<view class="help" @click="showTips">
 				<image src="@/static/icon_when.png" class="icon_help"></image> 操作说明
 			</view>
 		</view>
@@ -81,12 +81,30 @@
 
 		<uni-popup ref="popup_text" :mask-click="false">
 
-			<view class="dialog">
+			<view class="dialog" style="margin-top: -30vh;">
 				<view class="dialog_title">修改内容</view>
 				<input class="dialog_input" v-model="font_item.text" placeholder="输入文本" :maxlength="18"/>
 				<view class="dialog_btn_box">
 					<view class="dialog_btn dialog_cancel" @click="dialogClose">取消</view>
 					<view class="dialog_btn dialog_confirm" @click="dialogConfirm">确定</view>
+				</view>
+			</view>
+		
+		</uni-popup>
+
+		<uni-popup ref="popup_tips" :mask-click="false">
+
+			<view class="dialog">
+				<view class="dialog_title">操作说明</view>
+				<view class="dialog_tips">
+					<view class="cell">1. 按住<image src="@/static/scale.png" style="width: 48rpx;height: 48rpx;" class="icon_cell_tips"></image>可缩放、可旋转</view>
+					<view class="cell">2. 点击<image src="@/static/replace.png" style="width: 80rpx;height: 52rpx;" class="icon_cell_tips"></image>可更换照片</view>
+					<view class="cell">3. 点击<image src="@/static/replace2.png" style="width: 80rpx;height: 52rpx;" class="icon_cell_tips"></image>可更换文字</view>
+					<view class="cell">4. 编辑状态下按住可移动位置</view>
+					<view class="cell">5. 制作完成可保存高清无水印图片</view>
+				</view>
+				<view class="dialog_btn_box">
+					<view class="dialog_btn dialog_confirm" @click="hideTips">知道了</view>
 				</view>
 			</view>
 		
@@ -117,6 +135,7 @@ const navId = ref(0);
 const popup_text = ref(null);
 const popup_img = ref(null);
 const popup_pay = ref(null);
+const popup_tips = ref(null);
 
 const font_item = ref({});
 
@@ -468,38 +487,23 @@ const dialogConfirm = async () => {
 const dialogClose = () => {
 	popup_text.value.close()
 }
-const toExport = () => {
-	temp_theme.value.map((item) => {
-		item.w = item.w * ratio.value;
-		item.h = item.h * ratio.value;
-		item.x = item.x * ratio.value;
-		item.y = item.y * ratio.value;
-	})
+const showTips = () => {
+	popup_tips.value.open()
 
-	temp_theme.value.sort((a, b) => a.index - b.index);
-
-	temp_theme.value.map((item) => {
-		item.w = item.w / ratio.value;
-		item.h = item.h / ratio.value;
-		item.x = item.x / ratio.value;
-		item.y = item.y / ratio.value;
-	})
-	canvas.value.initByArr(temp_theme.value, sy.value)
-
+}
+const hideTips = ()=>{
+	popup_tips.value.close()
 }
 </script>
 
 <style scoped>
-:global(.uni-popup-dialog){
-	margin-top: -25vh;
-}
+
 .draw {
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
 	box-sizing: border-box;
-	padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
 }
 
 .canvas_box {
@@ -589,6 +593,7 @@ const toExport = () => {
 	padding: 0 60rpx 0;
 	display: flex;
 	align-items: center;
+	padding-bottom: v-bind("app.globalData.system.safeAreaInsets.bottom + 10 + 'px'");
 }
 
 .btn {
@@ -808,4 +813,20 @@ const toExport = () => {
 .popup_pay .xy {
 	color: #fff;
 }
+.dialog_tips{
+	margin-top: -30rpx;
+	margin-bottom: 40rpx;
+}
+.dialog_tips .cell{
+	display: flex;
+	align-items: center;
+	color: #000;
+	font-size: 28rpx;
+	padding: 15rpx 50rpx;
+	
+}
+.dialog_tips .icon_cell_tips{
+	margin: 0 12rpx;
+}
+
 </style>

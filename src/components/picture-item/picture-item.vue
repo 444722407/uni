@@ -46,6 +46,7 @@
     }
     .icon{
         width: 64rpx;
+        display: block;
         margin-right: 8rpx;
     }
     .name{

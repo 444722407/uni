@@ -11,7 +11,9 @@
 
 		<view class="list" v-if="picture.length">
 			<view v-for="item in picture" :key="item.id" class="item" @click="handlerItem(item)">
-				<image :src="item.preview_img_url" class="img" mode="aspectFill"></image>
+				<view class="img_box">
+					<image :src="item.preview_img_url" class="img" mode="aspectFill"></image>
+				</view>
 				<view class="aside">
 					<view class="name">{{ item.title }}</view>
 					<view class="time">{{ item.updated_at }}</view>
@@ -117,6 +119,11 @@
 		padding: 40rpx;
 		background-color: #262626;margin-top: 40rpx;
 		border-radius: 32rpx;
+	}
+	.item .img_box{
+		width: 200rpx;height: 200rpx;
+		border-radius: 16rpx;
+		background-color: #303030;
 	}
 	.item .img{
 		width: 200rpx;height: 200rpx;

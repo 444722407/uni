@@ -208,7 +208,6 @@
 		justify-content: center;
 		align-items: center;
 		box-sizing: border-box;
-		padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 		background-color:#161616;
 	}
 	.tempImage{
@@ -228,6 +227,7 @@
 		justify-content: center;
 		overflow: hidden;
 		margin-top: auto;
+		padding-bottom: v-bind("app.globalData.system.safeAreaInsets.bottom + 10 + 'px'");
 	}
 	.progress_box .t{
 		color: #fff;font-size: 32rpx;
