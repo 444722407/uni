@@ -28,14 +28,14 @@
         <uni-popup ref="popup" :mask-click="false">
            
 
-            <view class="down_tips" v-if="number > 0">
+            <view class="down_tips" v-if="checkData.makeNum > 0">
                 <image class="icon_close" src="@/static/avatar_popup_close@2x.png" @click="close"></image>
-                <view class="tips_subtitle">剩余制作机会{{ number }}次</view>
+                <view class="tips_subtitle">剩余制作机会{{ checkData.makeNum }}次</view>
                 <view class="tips_title">将消耗1次制作机会</view>
                 <view class="btn" @click="down">确定下载</view>
             </view>
 
-            <view class="down_tips" v-else-if="number <= 0 && !is_ios">
+            <view class="down_tips" v-else-if="checkData.makeNum <= 0 && !is_ios">
                 <image class="icon_close" src="@/static/avatar_popup_close@2x.png" @click="close"></image>
                 <view class="tips_subtitle">下载高清无水印头像</view>
                 <view class="tips_title" v-for="(item) in payList" :key="item.id">
@@ -69,7 +69,7 @@ const app = getApp();
 
 const avatarInfo = ref({});
 const payList = ref([]);
-const number = ref(0);
+const checkData = ref({});
 
 const id = ref("");
 const title = ref("")
@@ -105,10 +105,9 @@ const pictureMore = async () => {
 
 }
 // 制作次数
-const getNumber = async () => {
-    const res = await fetchWork('/v1.trade/check');
-    number.value = res.make_num;
-
+const checkNumber = async () => {
+    const res = await fetchWork('/v1.avatar/downCheck', {avatarId:id.value}, 'POST');
+    checkData.value = res;
 }
 
 const getPayList = async () => {
@@ -125,7 +124,7 @@ onLoad(async (options) => {
     uni.setNavigationBarTitle({ title: title.value })
 
     pictureMore();
-    getNumber();
+    checkNumber();
     getAvatarInfo();
     getPayList();
 
@@ -147,7 +146,7 @@ const down = async () => {
 		title: '请稍等',
 		mask: true
 	})
-
+   
 
     const imgData = await fetchWork('/v1.avatar/download', {avatarId:id.value}, 'POST');
     const url = imgData.avatarImage;
@@ -159,7 +158,6 @@ const down = async () => {
             uni.saveImageToPhotosAlbum({
 				filePath:res.tempFilePath,
 				success:()=>{
-                    getNumber()
                     uni.hideLoading()
                     popup.value.close()
 					save_mask.value.open();
@@ -184,7 +182,10 @@ const down = async () => {
 							icon:"none"
 						})
 					}
-				}
+				},
+                complete:()=>{
+                    checkNumber()
+                }
 			})
             
         }
@@ -194,7 +195,13 @@ const hideSave = ()=>{
 	save_mask.value.close();
 }
 const show = () => {
-    popup.value.open('center')
+    // paid_state = 1是免费 0是付费
+    if(checkData.value.paid_state == 1 || checkData.value.dawn7Day==1){
+        down()
+    }else{
+        popup.value.open('center')
+    }
+    
 }
 const close = () => {
     popup.value.close()
