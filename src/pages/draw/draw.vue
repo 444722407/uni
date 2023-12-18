@@ -296,7 +296,37 @@ const changeImg = (id, type) => {
 				uni.getImageInfo({
 					src: url,
 					success: (image) => {
+						uni.compressImage({
+							src:url,
+							quality:50,
+							success: minData => {
+								console.log(minData)
+								fetchWorkImage('/v1.upload/image',minData.tempFilePath,(result)=>{
 						
+								const imgData = JSON.parse(result.data);
+							
+								if(imgData.code == -1){
+									popup_error.value.open();
+									error_text.value = imgData.msg;
+									uni.hideLoading();
+									// canvas.value.initByArr(temp_theme.value, sy.value);
+									return;
+								} 
+								
+								
+								temp_theme.value.map((item) => {
+										if (item.id == id) {
+											item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
+											item.url = imgData.data.url;
+											item.path = imgData.data.path;
+										}
+									})
+								
+								canvas.value.initByArr(temp_theme.value, sy.value);
+								uni.hideLoading()
+							})
+							}
+						})
 						// uni.saveFile({
 						// 	tempFilePath: url,
 						// 	success: function (sava_img) {
@@ -309,30 +339,7 @@ const changeImg = (id, type) => {
 						// 		canvas.value.initByArr(temp_theme.value, sy.value)
 						// 	}
 						// });
-						fetchWorkImage('/v1.upload/image',url,(result)=>{
 						
-							const imgData = JSON.parse(result.data);
-						
-							if(imgData.code == -1){
-								popup_error.value.open();
-								error_text.value = imgData.msg;
-								uni.hideLoading();
-								// canvas.value.initByArr(temp_theme.value, sy.value);
-								return;
-							} 
-							
-							
-							temp_theme.value.map((item) => {
-									if (item.id == id) {
-										item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
-										item.url = imgData.data.url;
-										item.path = imgData.data.path;
-									}
-								})
-							
-							canvas.value.initByArr(temp_theme.value, sy.value);
-							uni.hideLoading()
-						})
 					}
 				})
 
