@@ -226,16 +226,16 @@ dragGraph.prototype = {
 export default  {
   data() {
     return {
-      history: [],
+      history: []
     };
   },
   emits:['getData','changeImg','selectImgId'],
   components: {},
   props: {
-    graph: {
-      type: Object,
-      default: () => ({})
-    },
+    // graph: {
+    //   type: Object,
+    //   default: () => ({})
+    // },
     bgColor: {
       type: String,
       default: ""
@@ -262,20 +262,21 @@ export default  {
     }
   },
   watch: {
-    graph: {
-      handler: "onGraphChange",
-      deep: true
-    }
+    // graph: {
+    //   handler: "onGraphChange",
+    //   deep: true
+    // }
   },
   beforeMount() {
-
+    
     if (typeof this.drawArr === 'undefined') {
         this.drawArr = [];
     }
-
+   
     this.ctx = uni.createCanvasContext('canvas-drag', this);
     this.draw();
   },
+  
   methods: {
     toPx(rpx) {
       return rpx * this.factor;
@@ -455,13 +456,13 @@ export default  {
       }
     },
     end(e) {
-      // const index = this.drawArr.findIndex((item)=>item.action == "move" || item.action == "transform");
+      const index = this.drawArr.findIndex((item)=>item.action == "move" || item.action == "transform");
    
-      // if(index != -1){
+      if(index != -1){
       
-      //   this.drawArr[index].index =  this.drawArr[index].moveIndex;
-      //   this.getData(this.drawArr[index])
-      // }
+        // this.drawArr[index].index =  this.drawArr[index].moveIndex;
+        this.getData(this.drawArr[index])
+      }
 
       this.tempGraphArr = [];
       if (isMove) {
@@ -560,8 +561,8 @@ export default  {
                         canvasId: 'canvas-drag',
                         width:parseInt(this.width),
                         height:parseInt(this.height),
-                        destWidth:1080/2,
-                        destHeight:2336/2,
+                        destWidth:1080,
+                        destHeight:2336,
                         fileType:"png",
                         success: (res) => {
                             resolve(res.tempFilePath);

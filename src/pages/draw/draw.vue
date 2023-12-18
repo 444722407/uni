@@ -279,11 +279,7 @@ const changeImg = (id, type) => {
 	// 点击了左上角 换图 换字
 	
 	if (type == "image") {
-		uni.showLoading({
-			title:"图片安全检测中",
-			icon:"none",
-			mask:true
-		})
+		
 		navId.value = 0;
 		uni.chooseMedia({
 			count: 1,
@@ -291,10 +287,16 @@ const changeImg = (id, type) => {
 			sourceType: ['album', 'camera'],
 			camera: 'back',
 			success: (res) => {
+				uni.showLoading({
+					title:"图片安全检测中",
+					icon:"none",
+					mask:true
+				})
 				const url = res.tempFiles[0].tempFilePath;
 				uni.getImageInfo({
 					src: url,
 					success: (image) => {
+						
 						// uni.saveFile({
 						// 	tempFilePath: url,
 						// 	success: function (sava_img) {
@@ -315,7 +317,7 @@ const changeImg = (id, type) => {
 								popup_error.value.open();
 								error_text.value = imgData.msg;
 								uni.hideLoading();
-								canvas.value.initByArr(temp_theme.value, sy.value);
+								// canvas.value.initByArr(temp_theme.value, sy.value);
 								return;
 							} 
 							
