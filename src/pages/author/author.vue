@@ -15,7 +15,7 @@
           <view class="nav" :class="{active:navId == 1}" @click="changeNav(1)">头像</view>
       </view>
       <picture-list type="picture" v-show="navId == 0" :list="picture" :status="status"></picture-list>
-      <picture-list type="avatar"  v-show="navId == 1"></picture-list>
+      <picture-list type="avatar"  v-show="navId == 1" :list="[]" status=""></picture-list>
   </view>
 
   

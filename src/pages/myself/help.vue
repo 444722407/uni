@@ -1,27 +1,27 @@
 <template>
   <view class="help">
-    <navigator url="/pages/myself/detail?id=0" class="item_cell">
+    <!-- <navigator url="/pages/myself/detail?id=0" class="item_cell">
       1、图片无法保存或保存失败？
       <uni-icons type="right" size="14" style="margin-left: auto;" color="rgb(187, 187, 187)"></uni-icons>
     </navigator>
     <navigator url="/pages/myself/detail?id=0" class="item_cell">
       2、保存的壁纸如何设置为手机桌面？
       <uni-icons type="right" size="14" style="margin-left: auto;" color="rgb(187, 187, 187)"></uni-icons>
-    </navigator>
+    </navigator> -->
 
     <uni-collapse accordion @change="changItem">
       <uni-collapse-item :border="false" title-border="none" :class="{ active: itemValue == index }"
-        :title="index + 3 + '、' + item.title" v-for="(item, index) in list" :key="index">
+        :title="index +1 + '、' + item.title" v-for="(item, index) in list" :key="index">
         <text>{{ item.desc }}</text>
       </uni-collapse-item>
     </uni-collapse>
 
     <view style="height: 240rpx;"></view>
     <view class="btn_box">
-      <view class="btn">
+      <button class="btn" data-im-id="zhouxiaowa" open-type="im">
         <image src="@/static/help_chat@2x.png" class="wx"></image>
         联系人工客服
-      </view>
+      </button>
       <view class="s">工作时间：周一至周五（上午9点-下午6点）</view>
     </view>
 
@@ -31,6 +31,16 @@
 <script setup>
     import { ref } from "vue";
     const list = ref([
+      {
+        title: "图片无法保存或保存失败？",
+        desc: "确认已打开小程序的相册权限。如果仍然不行，请再确认已打开抖音APP的相册权限。如果两个权限都已打开仍然不能保存，请联系人工客服。",
+   
+      },
+      {
+        title: "保存的壁纸如何设置为手机桌面？",
+        desc: "保存壁纸之后，请打开你的手机相册，找到保存的壁纸，点击【更多】，点击【设为壁纸】，可以选择设置为锁屏壁纸或者桌面壁纸。",
+   
+      },
     {
       title: "保存的壁纸可以修改吗？",
       desc: "我们提供了3次免费修改机会，请找到你的制作记录，从制作记录打开作品，然后点击【再次修改】按钮进行修改。\r\n注意，当3次修改机会用完后将不可再修改，感谢大家的理解。",
@@ -153,6 +163,7 @@ const changItem = (e) => {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  
 }
 
 .help .btn {
@@ -163,6 +174,7 @@ const changItem = (e) => {
   height: 100rpx;
   background-image: linear-gradient(to right, #EF6929, #FD2C55);
   border-radius: 24rpx;
+  color: #fff;
 }
 
 .help .s {

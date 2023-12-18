@@ -44,11 +44,11 @@
 				联系客服
 				<image src="@/static/me_arrow@2x.png" class="icon_arrow"></image>
 			</navigator>
-			<navigator url="" class="item">
+			<!-- <navigator url="" class="item">
 				<image src="@/static/me_join@2x.png" class="icon_head"></image>
 				创作者入驻
 				<image src="@/static/me_arrow@2x.png" class="icon_arrow"></image>
-			</navigator>
+			</navigator> -->
 		</view>	
 
 		<uni-popup ref="popup_logout" type="dialog" :mask-click="false">

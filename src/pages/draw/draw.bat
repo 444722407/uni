@@ -97,6 +97,7 @@
 		</uni-popup>
 
 		<uni-popup ref="popup_tips" :mask-click="false">
+
 			<view class="dialog">
 				<view class="dialog_title">操作说明</view>
 				<view class="dialog_tips">
@@ -110,23 +111,8 @@
 					<view class="dialog_btn dialog_confirm" @click="hideTips">知道了</view>
 				</view>
 			</view>
+		
 		</uni-popup>
-
-
-		<uni-popup ref="popup_error" :mask-click="false">
-			<view class="dialog">
-				<view class="dialog_title">安全提示</view>
-				<view class="dialog_tips">
-					<view class="cell" style="text-align: center;">
-						{{ error_text }}
-					</view>
-				</view>
-				<view class="dialog_btn_box">
-					<view class="dialog_btn dialog_confirm" @click="hideError">知道了</view>
-				</view>
-			</view>
-		</uni-popup>
-
 
 	</view>
 </template>
@@ -154,8 +140,6 @@ const popup_text = ref(null);
 const popup_img = ref(null);
 const popup_pay = ref(null);
 const popup_tips = ref(null);
-const popup_error = ref(null);
-const error_text = ref("")
 
 const font_item = ref({});
 
@@ -279,11 +263,6 @@ const changeImg = (id, type) => {
 	// 点击了左上角 换图 换字
 	
 	if (type == "image") {
-		uni.showLoading({
-			title:"图片安全检测中",
-			icon:"none",
-			mask:true
-		})
 		navId.value = 0;
 		uni.chooseMedia({
 			count: 1,
@@ -295,49 +274,34 @@ const changeImg = (id, type) => {
 				uni.getImageInfo({
 					src: url,
 					success: (image) => {
-						// uni.saveFile({
-						// 	tempFilePath: url,
-						// 	success: function (sava_img) {
-						// 		temp_theme.value.map((item) => {
-						// 			if (item.id == id) {
-						// 				item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
-						// 				item.url = sava_img.savedFilePath;
-						// 			}
-						// 		})
-						// 		canvas.value.initByArr(temp_theme.value, sy.value)
-						// 	}
-						// });
-						fetchWorkImage('/v1.upload/image',url,(result)=>{
-						
-							const imgData = JSON.parse(result.data);
-						
-							if(imgData.code == -1){
-								popup_error.value.open();
-								error_text.value = imgData.msg;
-								uni.hideLoading();
-								canvas.value.initByArr(temp_theme.value, sy.value);
-								return;
-							} 
-							
-							
-							temp_theme.value.map((item) => {
+						uni.saveFile({
+							tempFilePath: url,
+							success: function (sava_img) {
+								temp_theme.value.map((item) => {
 									if (item.id == id) {
 										item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
-										item.url = imgData.data.url;
-										item.path = imgData.data.path;
+										item.url = sava_img.savedFilePath;
 									}
 								})
+								canvas.value.initByArr(temp_theme.value, sy.value)
+							}
+						});
+						// fetchWorkImage('/v1.upload/image',url,(result)=>{
+						// 	const imgData = JSON.parse(result.data);
 							
-							canvas.value.initByArr(temp_theme.value, sy.value);
-							uni.hideLoading()
-						})
+						// 	temp_theme.value.map((item) => {
+						// 			if (item.id == id) {
+						// 				item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
+						// 				item.url = imgData.data.url;
+						// 				item.path = imgData.data.path;
+						// 			}
+						// 		})
+						// 	console.log(temp_theme.value)	
+						// 	canvas.value.initByArr(temp_theme.value, sy.value)
+						// })
 					}
 				})
 
-			},
-			fail:(err)=>{
-				console.log(err)
-				uni.hideLoading()
 			}
 		})
 	} else {
@@ -504,33 +468,26 @@ const successJump = () => {
 const dialogConfirm = async () => {
 
 	if (font_item.value.text) {
-		try{
-			const res = await fetchWork('/v1.font/render_text', {
-				font_id: font_item.value.font_id,
-				text: font_item.value.text,
-				font_color: font_item.value.font_color,
-				font_size: Math.round(font_item.value.font_size),
-				shadow_color:font_item.value.shadow_color?font_item.value.shadow_color:""
-			}, 'POST');
-				
-			temp_theme.value.map((item) => {
-				if (item.id == font_item.value.id) {
-					item.url = res.base64;
-					item.w = res.weight / ratio.value;
-					item.h = res.height / ratio.value;
-					item.text = font_item.value.text;
-				}
-			})
+		const res = await fetchWork('/v1.font/render_text', {
+			font_id: font_item.value.font_id,
+			text: font_item.value.text,
+			font_color: font_item.value.font_color,
+			font_size: Math.round(font_item.value.font_size),
+			shadow_color:font_item.value.shadow_color?font_item.value.shadow_color:""
+		}, 'POST');
 
-			canvas.value.initByArr(temp_theme.value, sy.value)
-			popup_text.value.close()
+		
+		temp_theme.value.map((item) => {
+			if (item.id == font_item.value.id) {
+				item.url = res.base64;
+				item.w = res.weight / ratio.value;
+				item.h = res.height / ratio.value;
+				item.text = font_item.value.text;
+			}
+		})
 
-		}catch(err){
-			popup_error.value.open();
-			error_text.value = err;
-		}
-
-	
+		canvas.value.initByArr(temp_theme.value, sy.value)
+		popup_text.value.close()
 	}else{
 		uni.showToast({
 			title:"文字不能为空",
@@ -549,9 +506,6 @@ const showTips = () => {
 }
 const hideTips = ()=>{
 	popup_tips.value.close()
-}
-const hideError = ()=>{
-	popup_error.value.close()
 }
 </script>
 
