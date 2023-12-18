@@ -510,7 +510,7 @@ export default  {
         resolve(exportArr);
       });
     },
-  
+    
     clearCanvas() {
       this.ctx.clearRect(0, 0, this.toPx(this.width), this.toPx(this.height));
       this.ctx.draw();
