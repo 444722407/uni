@@ -314,16 +314,26 @@ const changeImg = (id, type) => {
 									return;
 								} 
 								
-								
+								// 绘制用本地图片绘制 速度快
 								temp_theme.value.map((item) => {
 										if (item.id == id) {
+											item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
+											item.url = url;
+											item.path =url;
+										}
+									})
+								
+								canvas.value.initByArr(temp_theme.value, sy.value);
+								// 绘制完后换成网络图片
+								temp_theme.value.map((item) => {
+									if (item.id == id) {
 											item.h = parseFloat((image.height * (item.w /image.width) ).toFixed(2));
 											item.url = imgData.data.url;
 											item.path = imgData.data.path;
 										}
 									})
-								
-								canvas.value.initByArr(temp_theme.value, sy.value);
+
+
 								uni.hideLoading()
 							})
 						// 	}

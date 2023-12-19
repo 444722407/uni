@@ -41,7 +41,7 @@
 <script setup>
 	
 	import { ref,reactive } from "vue";
-	import { onLoad,onPullDownRefresh  } from "@dcloudio/uni-app";
+	import { onLoad,onPullDownRefresh,onReachBottom } from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
 	const picture = ref([]);
@@ -86,6 +86,14 @@
 		picture.value = [];
 		more();
 
+	})
+	onReachBottom(()=>{
+  
+		if(is_load.value){
+			more();
+		}
+
+		
 	})
 	const confirm = ()=>{
 		popup.value.close();

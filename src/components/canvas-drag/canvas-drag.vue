@@ -372,7 +372,7 @@ methods: {
     });
    
     this.ctx2.draw()
-    
+  
     
   
     return new Promise((resolve) => {
