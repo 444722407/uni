@@ -1,7 +1,7 @@
 <template>
 	<view class="draw">
 		<view class="canvas_box">
-			<canvas-drag id="canvas-drag" :graph="graph" :width="width" :height="height" :enableUndo="true" ref="canvas"
+			<canvas-drag id="canvas-drag" :dx="dx" :width="width" :height="height" :enableUndo="true" ref="canvas"
 				@getData="getData" @changeImg="changeImg" @selectImgId="selectImgId"></canvas-drag>
 		</view>
 		<view class="menu_nav">
@@ -167,7 +167,7 @@ const payList = ref([]);
 const project_id = ref(-1);
 
 const sy = ref({});
-
+const dx = ref(0);
 
 
 onLoad((options) => {
@@ -203,7 +203,8 @@ const scaleCanvas = () => {
 		width.value = 1080 / ratio.value;
 
 		// 计算偏移量
-		const dx = this_width / 2;
+		dx.value = this_width / 2 - width.value/2;
+	
 
 		
 		var res = {};
@@ -296,12 +297,12 @@ const changeImg = (id, type) => {
 				uni.getImageInfo({
 					src: url,
 					success: (image) => {
-						uni.compressImage({
-							src:url,
-							quality:50,
-							success: minData => {
-								console.log(minData)
-								fetchWorkImage('/v1.upload/image',minData.tempFilePath,(result)=>{
+						// uni.compressImage({
+						// 	src:url,
+						// 	quality:50,
+						// 	success: minData => {
+						// 		console.log(minData)
+								fetchWorkImage('/v1.upload/image',url,(result)=>{
 						
 								const imgData = JSON.parse(result.data);
 							
@@ -325,8 +326,8 @@ const changeImg = (id, type) => {
 								canvas.value.initByArr(temp_theme.value, sy.value);
 								uni.hideLoading()
 							})
-							}
-						})
+						// 	}
+						// })
 						// uni.saveFile({
 						// 	tempFilePath: url,
 						// 	success: function (sava_img) {
