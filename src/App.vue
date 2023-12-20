@@ -2,6 +2,10 @@
 import fetchWork from '@/services'
 export default {
   globalData: {
+    videoAd:tt.createRewardedVideoAd({
+      adUnitId: 'ah1f2uj8j1ew9cqxc5'
+    }),
+    currentPage: {},
     system: {},
     temp_theme: [],
     checkLogin() {
@@ -52,12 +56,49 @@ export default {
       this.globalData.system = system;
       this.globalData.system.safeAreaInsets.bottom = this.globalData.system.safeAreaInsets.bottom > 20? this.globalData.system.safeAreaInsets.bottom-20:0;
     },
-    
+    playAd: function () {
+      let videoAd = this.globalData.videoAd
+
+      // 照抄的官方例子
+      videoAd
+        .show()
+        .then(() => {
+          console.log("广告显示成功");
+        })
+        .catch((err) => {
+          console.log("广告组件出现问题", err);
+          // 可以手动加载一次
+          videoAd.load().then(() => {
+            console.log("手动加载成功");
+            // 加载成功后需要再显示广告
+            return videoAd.show();
+          });
+        });
+  },
   },
 
   onLaunch: function () {
     console.log('App Launch');
+    if (this.globalData.videoAd) {
+
+    // onClose只监听一次
+    this.globalData.videoAd.onClose(res => {
+        if (res.isEnded) {
+          // 实现子子页面的closeAdFunction与cancelAdFunction方法
+          this.globalData.currentPage.closeAdFunction()
+        } else {
+          this.globalData.currentPage.cancelAdFunction()
+        }
+      })
+    }
+    this.globalData.videoAd.offError(err => {
+      console.log(err)
+      this.globalData.currentPage.errorAdFunction()
+    })
+
+    
     this.getSystem();
+  
   },
   onShow: function () {
     console.log('App Show')
@@ -85,6 +126,7 @@ button {
   width: 560rpx;
   background-color: #fff;
   border-radius: 16rpx;
+
 }
 
 .dialog_title {
@@ -148,4 +190,10 @@ button {
 .uni-button-color {
   color: #000000 !important;
   font-size: 32rpx !important;
-}</style>
+}
+
+
+</style>
+
+
+

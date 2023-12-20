@@ -127,6 +127,22 @@
 			</view>
 		</uni-popup>
 
+		<uni-popup ref="popup_ad" :mask-click="false">
+			<view class="dialog" style="width: 640rpx;">
+				<view class="dialog_title" style="font-size: 48rpx;">编辑完成</view>
+				<view class="dialog_tips">
+					<view class="cell" style="text-align: center;justify-content: center;font-size: 36rpx;color: #FD792C;">
+						观看广告视频免费提交制作
+					</view>
+				</view>
+				<view style="padding-bottom: 80rpx;">
+					<image src="@/static/ad_btn@2x.png" class="dialog_lookAd" @click="lookAd"></image>
+				</view>
+				<image src="@/static/ad_close@2x.png" class="dialog_closeAd" @click="hideAd"></image>
+				
+			</view>
+		</uni-popup>
+
 
 	</view>
 </template>
@@ -135,6 +151,8 @@
 import { ref, getCurrentInstance, toRaw } from "vue";
 import fetchWork,{fetchWorkImage} from '@/services'
 import { onLoad, onReady } from "@dcloudio/uni-app";
+
+
 const app = getApp();
 const id = ref("");
 const make_id = ref("");
@@ -143,7 +161,6 @@ const width = ref(0);
 const height = ref(0);
 const ratio = ref(0);
 
-const graph = ref({})
 const tempImage = ref("");
 const canvas = ref(null)
 
@@ -155,6 +172,8 @@ const popup_img = ref(null);
 const popup_pay = ref(null);
 const popup_tips = ref(null);
 const popup_error = ref(null);
+const popup_ad = ref(null);
+
 const error_text = ref("")
 
 const font_item = ref({});
@@ -175,9 +194,38 @@ onLoad((options) => {
 	id.value = options.id;
 	make_id.value = options.make_id;
 
+	app.globalData.currentPage.closeAdFunction = successAd;
+	app.globalData.currentPage.cancelAdFunction =failAd;
+	app.globalData.currentPage.errorAdFunction = successJump;
+
 	getPayList()
 
 })
+
+const successAd = ()=>{
+	console.log('successAd')
+	
+	tt.showToast({
+		title:"奖励领取成功",
+		icon:"none"
+	})
+	
+	popup_img.value.close('bottom');
+	popup_pay.value.close();
+	popup_ad.value.close();
+
+	setTimeout(() => {
+		successJump()
+	}, 1000);
+}
+const failAd = ()=>{
+	
+	console.log('failAd')
+	tt.showToast({
+		title:"未完成观看,暂未获得免费制作次数",
+		icon:"none"
+	})
+}
 const getPayList = async () => {
 	const res = await fetchWork('/v1.project/wallpaper_pay_list', {}, 'POST');
 	res.map((item) => item.check = false);
@@ -211,13 +259,15 @@ const scaleCanvas = () => {
 
 		if (id.value) {
 			res = await fetchWork('/v1.wallpaper/get_detail', { id: id.value }, 'POST');
+			charge_status.value = res.charge_status;
 		}
 		if (make_id.value) {
 			res = await fetchWork('/v1.wallpaper/get_user_make_wallpaper', { make_id: make_id.value }, 'POST');
+			charge_status.value = -1;
 		}
 		title.value = res.title;
-		charge_status.value = res.charge_status ? res.charge_status : -1;
 		
+	
 		uni.setNavigationBarTitle({ title: res.title })
 		temp_theme.value = res.picture_info;
 
@@ -415,14 +465,25 @@ const toPay = async () => {
 			popup_pay.value.open('center')
 		} 
 		else {
-			successJump()
+			 successJump()
 		}
+	}else if(charge_status.value == -1){
+		successJump()
 	}else{
+		// 免费的话去看广告
+		popup_ad.value.open('center')
+	}
+	
+}
+const lookAd = ()=>{
+	if(app.globalData.videoAd){
+		app.playAd()
+	}else{
+		// 没有广告实例 直接跳转
 		successJump()
 	}
 	
 }
-
 const toBack = () => {
 	canvas.value.initByArr(temp_theme.value, sy.value);
 	popup_img.value.close('bottom')
@@ -572,6 +633,9 @@ const hideTips = ()=>{
 }
 const hideError = ()=>{
 	popup_error.value.close()
+}
+const hideAd = ()=>{
+	popup_ad.value.close()
 }
 </script>
 
@@ -908,5 +972,17 @@ const hideError = ()=>{
 .dialog_tips .icon_cell_tips{
 	margin: 0 12rpx;
 }
-
+.dialog .dialog_lookAd{
+  width: 480rpx;
+  height: 120rpx;
+  margin:60rpx auto 0;
+  display: block;
+}
+.dialog .dialog_closeAd{
+	width: 72rpx;height: 72rpx;
+	position: absolute;
+	bottom: -100rpx;
+	left: 50%;
+	margin-left: -36rpx;
+}
 </style>

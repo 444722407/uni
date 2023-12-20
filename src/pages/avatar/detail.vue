@@ -2,7 +2,7 @@
     <view class="detail">
         <image :src="avatarInfo.avatar_thumb" class="detail_img"></image>
         <navigator :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name"
-            open-type="navigate" hover-class="navigator-hover" class="jump">
+            open-type="redirect" hover-class="navigator-hover" class="jump">
             {{ avatarInfo.series_name }} <image src="@/static/avatar_arrow@2x.png" class="icon"></image>
         </navigator>
         <view class="down" @click="show">

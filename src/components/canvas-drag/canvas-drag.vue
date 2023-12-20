@@ -572,8 +572,8 @@ methods: {
                       canvasId: 'canvas-drag',
                       width:parseInt(this.width),
                       height:parseInt(this.height),
-                      destWidth:1080,
-                      destHeight:2336,
+                      destWidth:1080/2,
+                      destHeight:2336/2,
                       fileType:"png",
                       success: (res) => {
                           resolve(res.tempFilePath);
