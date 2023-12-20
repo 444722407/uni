@@ -4,7 +4,7 @@
 		<view class="progress_box" v-if="is_progress">
 			<view class="t">正在制作中，请不要离开页面</view>
 			<view class="progress_wrap">
-				<view class="progress" :animation="animationData" @transitionend="end"></view>
+				<view class="progress" :style="'width:' + width + '%;'"></view>
 			</view>
 			<view class="s">马上就好了，请耐心等待</view>
 		</view>
@@ -54,7 +54,7 @@
 	const time = ref(0);
 	const animationData  = ref({})
 	
-	
+	const width = ref(0);
 	const edit_mask = ref(null);
 	const save_mask = ref(null);
 
@@ -107,25 +107,16 @@
 				number.value = res.modify_num;
 				
 			}
-			var duration = +new Date() - time.value;
-			console.log(duration)
-			var animation = uni.createAnimation({
-				duration:duration,
-				timingFunction: 'ease',
-				
-			})
-			animation.width('100%').step();
-			animationData.value = animation.export()
+			width.value = 100;
+			is_progress.value = false;
 		})
 
 		
 
-		// uploadTask.onProgressUpdate((res)=>{
-		// 	width.value = res.progress;
-		// 	if (res.progress  == 100){
-		// 		is_progress.value = false;
-		// 	}
-		// })
+		uploadTask.onProgressUpdate((res)=>{
+			width.value = res.progress - 10;
+
+		})
 	})
 	onReady(()=>{
 		uni.setNavigationBarTitle({title:title.value})
@@ -249,6 +240,7 @@
 		border-radius: 10rpx;
 		height: 100%;
 		width: 0%;
+		transition: width 2s; 
 	}
 	.save_box{
 		display: flex;

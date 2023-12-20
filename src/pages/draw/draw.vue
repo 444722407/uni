@@ -196,7 +196,7 @@ onLoad((options) => {
 
 	app.globalData.currentPage.closeAdFunction = successAd;
 	app.globalData.currentPage.cancelAdFunction =failAd;
-	app.globalData.currentPage.errorAdFunction = successJump;
+	app.globalData.currentPage.errorAdFunction = errorAd;
 
 	getPayList()
 
@@ -204,7 +204,6 @@ onLoad((options) => {
 
 const successAd = ()=>{
 	console.log('successAd')
-	
 	tt.showToast({
 		title:"奖励领取成功",
 		icon:"none"
@@ -219,12 +218,22 @@ const successAd = ()=>{
 	}, 1000);
 }
 const failAd = ()=>{
-	
 	console.log('failAd')
 	tt.showToast({
 		title:"未完成观看,暂未获得免费制作次数",
 		icon:"none"
 	})
+}
+
+const errorAd = (error)=>{
+	console.log(error)
+	tt.showToast({
+		title:"app版本太低,广告调用失败",
+		icon:"none"
+	})
+	setTimeout(() => {
+		successJump()
+	}, 1000);
 }
 const getPayList = async () => {
 	const res = await fetchWork('/v1.project/wallpaper_pay_list', {}, 'POST');
@@ -480,7 +489,13 @@ const lookAd = ()=>{
 		app.playAd()
 	}else{
 		// 没有广告实例 直接跳转
-		successJump()
+		tt.showToast({
+			title:"app版本太低,广告调用失败",
+			icon:"none"
+		})
+		setTimeout(() => {
+			successJump()
+		}, 1000);
 	}
 	
 }

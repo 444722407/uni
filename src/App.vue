@@ -92,8 +92,7 @@ export default {
       })
     }
     this.globalData.videoAd.offError(err => {
-      console.log(err)
-      this.globalData.currentPage.errorAdFunction()
+      this.globalData.currentPage.errorAdFunction(err)
     })
 
     
