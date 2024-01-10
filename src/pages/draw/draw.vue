@@ -26,7 +26,10 @@
 			<scroll-view scroll-x="true" class="scroll_w">
 				<template v-for="(item,index) in temp_theme" :key="index">
 					<view class="input_box" :class="{ active: item.selected }" v-if="item.type == 'text'" :key="item.id"
-						@click.stop="selectImg(item.id)">{{ item.text }}</view>
+						@click.stop="selectImg(item.id,item.type)"
+						:style="{width:onlyText==1?'100%':''}">
+						{{ item.text }}
+					</view>
 				</template>
 			</scroll-view>
 		</view>
@@ -42,19 +45,22 @@
 		<uni-popup ref="popup_img" :safe-area="false" @change="changePopupImg" >
 			<view class="preview_box">
 				<view class="t">请预览制作效果</view>
-
+				<view class="s">点击【确认提交】可保存高清无水印作品</view>
 				<view class="img_box" :style="{ width: width - 20 + 'px' }">
 					<image :src="tempImage" class="tempImage" mode="widthFix"></image>
 					<image src="@/static/wallpaper_watermark.png" class="tempImage_sy" mode="widthFix"
 						:style="{ width: width - 20 + 'px' }"></image>
 				</view>
 
-				<view class="s">点击【确认提交】可保存高清无水印作品</view>
+			
 				<view class="preview_btn_box">
 					<view class="goback" @click="toBack">
-						<image src="@/static/make_back.png" class="icon_back"></image> 返回修改
+						<image src="@/static/make_close@3x.png" class="icon_back"></image> 返回修改
 					</view>
-					<view class="confrim" @click="toPay">确认提交</view>
+					<view class="confrim" @click="toPay">
+						<image src="@/static/make_sure@3x.png" class="icon_back"></image> 确认提交
+					</view>
+					
 				</view>
 			</view>
 		</uni-popup>
@@ -128,7 +134,7 @@
 		</uni-popup>
 
 		<uni-popup ref="popup_ad" :mask-click="false">
-			<view class="dialog" style="width: 640rpx;">
+			<view class="dialog" style="width: 640rpx;border-radius: 40rpx;">
 				<view class="dialog_title" style="font-size: 48rpx;">编辑完成</view>
 				<view class="dialog_tips">
 					<view class="cell" style="text-align: center;justify-content: center;font-size: 36rpx;color: #FD792C;">
@@ -136,7 +142,7 @@
 					</view>
 				</view>
 				<view style="padding-bottom: 80rpx;">
-					<image src="@/static/ad_btn@2x.png" class="dialog_lookAd" @click="lookAd"></image>
+					<image src="@/static/ad_btn@3x.png" class="dialog_lookAd" @click="lookAd"></image>
 				</view>
 				<image src="@/static/ad_close@2x.png" class="dialog_closeAd" @click="hideAd"></image>
 				
@@ -180,6 +186,7 @@ const font_item = ref({});
 
 
 const temp_theme = ref([]);
+const onlyText = ref(0);
 const charge_status = ref(1);
 const title = ref("")
 const payList = ref([]);
@@ -288,6 +295,8 @@ const scaleCanvas = () => {
 			item.y = parseFloat((item.y / ratio.value).toFixed(2));
 
 		})
+		
+		onlyText.value = temp_theme.value.filter((item)=> item.type == 'text').length;
 
 		temp_theme.value.sort((a, b) => a.index - b.index);
 
@@ -317,10 +326,13 @@ const selectImg = (id, type) => {
 
 	temp_theme.value.map((item) => item.selected = false);
 	temp_theme.value.map((item) => item.selected = item.id == id);
+	canvas.value.selectImg(id);
 
-
-	canvas.value.selectImg(id)
-
+	if(type == 'text'){
+		const fliterArr = temp_theme.value.filter((item) => item.id == id);
+		font_item.value = JSON.parse(JSON.stringify(toRaw(fliterArr[0])));
+		popup_text.value.open();
+	}
 
 }
 // canvas选中元素后 同桌父组件更新按钮
@@ -815,7 +827,7 @@ const hideAd = ()=>{
 
 .preview_box {
 	padding: 40rpx 108rpx;
-	background-color: #383838;
+	background-color: #fff;
 	border-top-right-radius: 40rpx;
 	border-top-left-radius: 40rpx;
 	display: flex;
@@ -845,14 +857,15 @@ const hideAd = ()=>{
 }
 
 .preview_box .t {
-	font-size: 40rpx;
+	font-size: 48rpx;
 	font-weight: bold;
+	color: #000;
 }
 
 .preview_box .s {
-	color: #FFD717;
-	font-size: 24rpx;
-	margin-top: 40rpx;
+	color: #000;
+	font-size: 28rpx;
+	margin-top: 20rpx;
 }
 
 .preview_box .preview_btn_box {
@@ -864,7 +877,7 @@ const hideAd = ()=>{
 }
 
 .preview_box .goback {
-	background-color: #494949;
+	background-color: #EDEDED;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -872,11 +885,12 @@ const hideAd = ()=>{
 	width: 240rpx;
 	height: 92rpx;
 	margin-right: 20rpx;
+	color: #000;
 }
 
 .preview_box .icon_back {
-	width: 32rpx;
-	height: 32rpx;
+	width: 40rpx;
+	height: 40rpx;
 	margin-right: 5rpx;
 	margin-top: 3rpx;
 }
@@ -973,8 +987,9 @@ const hideAd = ()=>{
 	display: inline-block;
 }
 .dialog_tips{
-	margin-top: -30rpx;
+	margin-top: -60rpx;
 	margin-bottom: 40rpx;
+	font-weight: bold;
 }
 .dialog_tips .cell{
 	display: flex;
@@ -992,6 +1007,15 @@ const hideAd = ()=>{
   height: 120rpx;
   margin:60rpx auto 0;
   display: block;
+  animation: scale .25s ease-in-out infinite forwards alternate;
+}
+@keyframes scale{
+	0%{
+		transform: scale(0.95);
+	}
+	100%{
+		transform: scale(1.05);
+	}
 }
 .dialog .dialog_closeAd{
 	width: 72rpx;height: 72rpx;

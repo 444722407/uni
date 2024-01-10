@@ -1,10 +1,18 @@
 <template>
     <view class="detail">
-        <image :src="avatarInfo.avatar_thumb" class="detail_img"></image>
-        <navigator :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name"
-            open-type="redirect" hover-class="navigator-hover" class="jump">
-            {{ avatarInfo.series_name }} <image src="@/static/avatar_arrow@2x.png" class="icon"></image>
-        </navigator>
+        <view class="detail_imgBox">
+            <image :src="avatarInfo.avatar_thumb" class="detail_img"></image>
+            <view class="detail_aside">
+                <view class="name">{{ avatarInfo.series_name }}</view>
+                <navigator :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name"
+                    open-type="redirect" hover-class="navigator-hover" class="btn">
+                    查看专辑
+                </navigator>
+                <button open-type="share" class="btn">分享给朋友</button>
+            </view>
+        </view>
+       
+   
         <view class="down" @click="show">
             <image src="@/static/avatar_download@2x.png" class="icon"></image>下载高清无水印原图
         </view>
@@ -12,10 +20,6 @@
             <view class="title">更多推荐</view>
             <picture-list type="avatar" :list="picture" :status="status" jumpType="redirect"></picture-list>
         </view>
-        <button open-type="share" class="share">
-            <image src="@/static/share@2x.png" class="icon_share"></image>
-        </button>
-
         <uni-popup ref="save_mask" :mask-click="false">
 			<view class="save_tips">
 				<image src="@/static/works_saved.png" class="icon_success"></image>
@@ -265,31 +269,41 @@ const pay = async () => {
 </script>
 
 <style scoped>
+
+.detail_imgBox{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40rpx 32rpx;
+}
 .detail_img {
     width: 324rpx;
     height: 324rpx;
     border-radius: 20rpx;
-    margin: 36rpx auto;
+    margin-right: 30rpx;
     display: block;
 }
-
-.jump {
+.detail_aside .name{
+    font-size: 36rpx;color: #fff;font-weight: bold;
+    margin-left: 5rpx;
+}
+.detail_aside .btn{
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 32rpx;
+    width: 240rpx;
+    height: 80rpx;
+    background: #313131;
+    border-radius: 20rpx;
+    border: 1rpx solid #505050;
+    font-size: 28rpx;
+    color: #fff;
 }
-
-.jump .icon {
-    width: 32rpx;
-    height: 32rpx;
-    margin-left: 6rpx;
-    margin-top: 3rpx;
-}
-
 .down {
     width: 680rpx;
     height: 136rpx;
-    margin: 46rpx auto 0;
+    margin: 20rpx auto 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -312,16 +326,6 @@ const pay = async () => {
     margin-top: 60rpx;
 }
 
-.share {
-    position: fixed;
-    top: 36rpx;
-    left: 0;
-}
-
-.share .icon_share {
-    width: 132rpx;
-    height: 70rpx;
-}
 
 .down_tips {
     width: 640rpx;

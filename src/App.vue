@@ -79,6 +79,7 @@ export default {
 
   onLaunch: function () {
     console.log('App Launch');
+    
     if (this.globalData.videoAd) {
 
     // onClose只监听一次

@@ -122,10 +122,7 @@
 		uni.setNavigationBarTitle({title:title.value})
 		
 	})
-	const end = ()=>{
-		console.log('end')
-		is_progress.value = false;
-	}
+
 	const toBack = ()=>{
 		if(number.value >=0){
 			edit_mask.value.open()

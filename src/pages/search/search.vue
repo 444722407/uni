@@ -4,6 +4,7 @@
 			<view class="search_box">
 				<image src="@/static/home_search@2x.png" class="icon"></image>
 				<input type="text" class="input" placeholder="请输入关键字搜索" :focus="true" v-model="value" maxlength="16"/>
+				<image src="@/static/wp_search_clear.png" class="clear" @click="clear" v-if="value"></image>
 				<view class="btn" @click="search">搜索</view>
 			</view>
 		</view>
@@ -63,7 +64,12 @@
 		value.value = key;
 		search()
 	}
-	
+	const clear = ()=>{
+		picture.value = [];
+		status.value = "loading";
+		value.value = "";
+		search()
+	}
 </script>
 
 <style scoped>
@@ -78,7 +84,7 @@
 	.search_box{
 		width: 680rpx;height: 96rpx;
 		margin: 40rpx auto 0;
-		border: 1rpx solid #353535;
+		border: 1rpx solid #FFD717;
 		background-color: #232323;
 		border-radius: 48rpx;
 		display: flex;
@@ -181,5 +187,9 @@
 	}
 	.picture_box{
 		margin-top: 40rpx;
+	}
+	.clear{
+		width: 32rpx;height: 32rpx;
+		margin-right: 32rpx;
 	}
 </style>
