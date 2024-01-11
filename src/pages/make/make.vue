@@ -19,7 +19,7 @@
 			</view>
 		</view>
 		
-		<uni-popup ref="save_mask" :mask-click="false">
+		<uni-popup ref="save_mask" :mask-click="false" :animation="false">
 			<view class="save_tips">
 				<image src="@/static/works_saved.png" class="icon_success"></image>
 				<view class="t">保存成功</view>
@@ -28,7 +28,7 @@
 			</view>
 		</uni-popup>
 
-		<uni-popup ref="edit_mask" :mask-click="false">
+		<uni-popup ref="edit_mask" :mask-click="false" :animation="false">
 			<view class="dialog">
 				<view class="dialog_title">再次修改</view>
 				<view class="dialog_subtitle">当前作品仅有<text style="color: #FD2C55;">{{ number }}</text>次修改机会，请慎重使用</view>

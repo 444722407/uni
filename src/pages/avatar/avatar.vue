@@ -4,7 +4,10 @@
 		<view class="search_box">
 			<image src="@/static/home_search@2x.png" class="icon"></image>
 			<input type="text" class="input" placeholder="输入您的姓氏" v-model="value" maxlength="16">
-			<image src="@/static/avatar_search_clear@2x.png" class="clear" @click="clear" v-if="value"></image>
+		
+			<view class="clear_box" @click="clear" v-if="value">
+				<image src="@/static/avatar_search_clear@2x.png" class="clear"></image>
+			</view>
 			<view class="btn" @click="search">立即匹配</view>
 		</view>
 		<view class="picture_box">
@@ -56,13 +59,18 @@
 		
 	}
 	const clear = ()=>{
-		picture.value = [];
-		page.value = 1;
-		is_load.value = false;
-		status.value = "loading";
-		is_search.value = false;
 		value.value = "";
-		pictureMore()
+		uni.hideKeyboard();
+
+		if(is_search.value){
+			page.value = 1;
+			is_load.value = false;
+			status.value = "loading";
+			is_search.value = false;
+			picture.value = [];
+			pictureMore()
+		}
+		
 	}
 	onReachBottom(()=>{
 		if(is_load.value){
@@ -87,6 +95,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		position: relative;
 	}
 	.icon{
 		width: 32rpx;height: 32rpx;margin-left: 44rpx;
@@ -95,7 +104,7 @@
 		flex:1;
 		height: 100%;
 		font-size: 36rpx;
-		padding: 0 32rpx;
+		padding: 0 64rpx 0 32rpx;
 	}
 	.input::-webkit-input-placeholder{
 		color: rgba(255,255,255,0.5);
@@ -117,8 +126,17 @@
 	.title{
 		font-size: 36rpx;padding: 0 34rpx;font-weight: bold;
 	}
+	.clear_box{
+		position: absolute;
+		z-index: 999;
+		right: 200rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 120rpx;
+		height: 120rpx;
+	}
 	.clear{
 		width: 32rpx;height: 32rpx;
-		margin-right: 32rpx;
 	}
 </style>

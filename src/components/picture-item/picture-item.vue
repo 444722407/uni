@@ -14,7 +14,9 @@
         </view>
     </navigator>
 
-    <navigator class="box" :url="'/pages/avatar/detail?id=' + props.item.id + '&title=' + props.item.avatar_name" :open-type="props.jumpType" hover-class="navigator-hover" v-if="type =='avatar'">
+    <navigator class="box" :url="'/pages/avatar/detail?id=' + props.item.id + '&title=' + props.item.avatar_name" :open-type="props.jumpType" hover-class="navigator-hover" v-if="type =='avatar'"
+    style="margin-bottom: 40rpx;"
+    >
         <view class="lazy_img" v-if="is_load" style="height: 324rpx;"></view>
         <image :src="props.item.avatar_thumb" class="item" mode="widthFix" @load="load" :style="{opacity:is_load?'0':'1'}"></image>
     </navigator>
@@ -53,7 +55,7 @@
     }
     .lazy_img{
         width: 100%;
-        height: 576rpx;
+        height: 700rpx;
         background-color: #262626;
         border-radius: 20rpx;
     }

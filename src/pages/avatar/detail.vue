@@ -5,7 +5,7 @@
             <view class="detail_aside">
                 <view class="name">{{ avatarInfo.series_name }}</view>
                 <navigator :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name"
-                    open-type="redirect" hover-class="navigator-hover" class="btn">
+                    open-type="navigate" hover-class="navigator-hover" class="btn">
                     查看专辑
                 </navigator>
                 <button open-type="share" class="btn">分享给朋友</button>
@@ -20,7 +20,7 @@
             <view class="title">更多推荐</view>
             <picture-list type="avatar" :list="picture" :status="status" jumpType="redirect"></picture-list>
         </view>
-        <uni-popup ref="save_mask" :mask-click="false">
+        <uni-popup ref="save_mask" :mask-click="false" :animation="false">
 			<view class="save_tips">
 				<image src="@/static/works_saved.png" class="icon_success"></image>
 				<view class="t">保存成功</view>
@@ -29,7 +29,7 @@
 			</view>
 		</uni-popup>
 
-        <uni-popup ref="popup" :mask-click="false">
+        <uni-popup ref="popup" :mask-click="false" :animation="false">
            
 
             <view class="down_tips" v-if="checkData.makeNum > 0">
@@ -273,14 +273,13 @@ const pay = async () => {
 .detail_imgBox{
     display: flex;
     align-items: center;
-    justify-content: center;
     padding: 40rpx 32rpx;
 }
 .detail_img {
     width: 324rpx;
     height: 324rpx;
     border-radius: 20rpx;
-    margin-right: 30rpx;
+    margin-right: 32rpx;
     display: block;
 }
 .detail_aside .name{
@@ -296,7 +295,7 @@ const pay = async () => {
     height: 80rpx;
     background: #313131;
     border-radius: 20rpx;
-    border: 1rpx solid #505050;
+    border: 2px solid #505050;
     font-size: 28rpx;
     color: #fff;
 }

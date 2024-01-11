@@ -26,7 +26,7 @@
 		<no-data v-else-if="status != 'loading'" :marginTop="100"></no-data>
 		<uni-load-more :status="status" :contentText="contentText" v-else-if="status != 'no-more'"/>  
 
-		<uni-popup ref="popup" :mask-click="false">
+		<uni-popup ref="popup" :mask-click="false" :animation="false">
 			<view class="dialog">
 				<view class="dialog_title">过期作品无法查看</view>
 				<view class="dialog_btn_box">

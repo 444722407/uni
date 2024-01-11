@@ -44,7 +44,7 @@
 
 		<uni-popup ref="popup_img" :safe-area="false" @change="changePopupImg" >
 			<view class="preview_box">
-				<view class="t">请预览制作效果</view>
+				<view class="t">请预览效果</view>
 				<view class="s">点击【确认提交】可保存高清无水印作品</view>
 				<view class="img_box" :style="{ width: width - 20 + 'px' }">
 					<image :src="tempImage" class="tempImage" mode="widthFix"></image>
@@ -65,7 +65,7 @@
 			</view>
 		</uni-popup>
 
-		<uni-popup ref="popup_pay">
+		<uni-popup ref="popup_pay" :animation="false">
 			<view class="popup_pay">
 				<view class="t">编辑完成</view>
 				<view class="s">只差一步就可以生成啦</view>
@@ -89,7 +89,7 @@
 		</uni-popup>
 
 
-		<uni-popup ref="popup_text" :mask-click="false">
+		<uni-popup ref="popup_text" :mask-click="false" :animation="false">
 
 			<view class="dialog" style="margin-top: -30vh;">
 				<view class="dialog_title">修改内容</view>
@@ -102,7 +102,7 @@
 		
 		</uni-popup>
 
-		<uni-popup ref="popup_tips" :mask-click="false">
+		<uni-popup ref="popup_tips" :mask-click="false" :animation="false">
 			<view class="dialog">
 				<view class="dialog_title">操作说明</view>
 				<view class="dialog_tips">
@@ -119,7 +119,7 @@
 		</uni-popup>
 
 
-		<uni-popup ref="popup_error" :mask-click="false">
+		<uni-popup ref="popup_error" :mask-click="false" :animation="false">
 			<view class="dialog">
 				<view class="dialog_title">安全提示</view>
 				<view class="dialog_tips">
@@ -133,7 +133,7 @@
 			</view>
 		</uni-popup>
 
-		<uni-popup ref="popup_ad" :mask-click="false">
+		<uni-popup ref="popup_ad" :mask-click="false" :animation="false">
 			<view class="dialog" style="width: 640rpx;border-radius: 40rpx;">
 				<view class="dialog_title" style="font-size: 48rpx;">编辑完成</view>
 				<view class="dialog_tips">
@@ -483,7 +483,7 @@ const toPay = async () => {
 		const res = await fetchWork('/v1.trade/check');
 		if (res.make_num == 0) {
 			popup_img.value.close('bottom')
-			popup_pay.value.open('center')
+			popup_pay.value.open()
 		} 
 		else {
 			 successJump()
@@ -492,7 +492,7 @@ const toPay = async () => {
 		successJump()
 	}else{
 		// 免费的话去看广告
-		popup_ad.value.open('center')
+		popup_ad.value.open()
 	}
 	
 }
@@ -882,10 +882,11 @@ const hideAd = ()=>{
 	align-items: center;
 	justify-content: center;
 	border-radius: 24rpx;
-	width: 240rpx;
-	height: 92rpx;
-	margin-right: 20rpx;
+	width: 320rpx;
+	height: 108rpx;
+	margin-right: 34rpx;
 	color: #000;
+	
 }
 
 .preview_box .icon_back {
@@ -901,8 +902,8 @@ const hideAd = ()=>{
 	align-items: center;
 	justify-content: center;
 	border-radius: 24rpx;
-	width: 310rpx;
-	height: 92rpx;
+	width: 320rpx;
+	height: 108rpx;
 }
 
 .popup_pay {

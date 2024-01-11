@@ -51,7 +51,7 @@
 			</navigator> -->
 		</view>	
 
-		<uni-popup ref="popup_logout" type="dialog" :mask-click="false">
+		<uni-popup ref="popup_logout" type="dialog" :mask-click="false" :animation="false">
 			<view class="dialog">
 				<view class="dialog_title">是否要退出登录</view>
 				<view class="dialog_btn_box">

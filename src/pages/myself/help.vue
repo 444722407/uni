@@ -18,7 +18,7 @@
 
     <view style="height: 240rpx;"></view>
     <view class="btn_box">
-      <button class="btn" data-im-id="zhouxiaowa" open-type="im">
+      <button class="btn" data-im-id="55023321576" open-type="im">
         <image src="@/static/help_chat@2x.png" class="wx"></image>
         联系人工客服
       </button>

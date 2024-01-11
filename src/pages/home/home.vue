@@ -20,7 +20,7 @@
 			<picture-list type="picture" :list="picture" :status="status"></picture-list>
 		</view>
 	</view>
-	<uni-popup ref="popup" :mask-click="false">
+	<uni-popup ref="popup" :mask-click="false" :animation="false">
 		<view class="dialog">
 			<view class="dialog_title">暂无相关创作者，请换个口令搜索</view>
 			<view class="dialog_btn_box">

@@ -28,6 +28,7 @@
         const res = await fetchWork('/v1.user/get_wallpaper_browse_record',{page:page.value});
     
         if(res && res.list.length!= 0){
+            res.list.map((item)=>item.id = item.wallpaper_id)
 			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
 			status.value = res.list.length < 10? 'no-more':'more';
 			page.value ++;
