@@ -136,16 +136,17 @@ const search = async () => {
 	display: flex;
 	align-items: center;
 	margin-top: 36rpx;
-	padding: 0 16rpx;
+	padding: 0 15rpx;
 }
 
 .user_box .author {
 	width: 108rpx;
 	height: 108rpx;
 	border: 4rpx solid rgba(255, 255, 255, 0.8);
-	margin: 0 16rpx;
+	margin: 0 18rpx;
 	border-radius: 50%;
 	display: block;
+	box-sizing: border-box;
 }
 
 .picture_box {

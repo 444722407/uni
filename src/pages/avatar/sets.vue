@@ -1,23 +1,26 @@
 <template>
 	<view class="avatar">
-		<view class="search_box">
-			<image src="@/static/home_search@2x.png" class="icon"></image>
-			<input type="text" class="input" placeholder="输入您的姓氏" v-model="value">
-			
-			<view class="clear_box" @click="clear" v-if="value">
-				<image src="@/static/avatar_search_clear@2x.png" class="clear"></image>
+		<view class="fixed_search">
+			<view class="search_box">
+				<image src="@/static/home_search@2x.png" class="icon"></image>
+				<input type="text" class="input" placeholder="输入姓氏/名字" v-model="value">
+				
+				<view class="clear_box" @click="clear" v-if="value">
+					<image src="@/static/avatar_search_clear@2x.png" class="clear"></image>
+				</view>
+				<view class="btn" @click="search">搜索</view>
 			</view>
-			<view class="btn" @click="search">搜索</view>
 		</view>
+		<view style="height: 136rpx;"></view>
 		<view class="picture_box">
-			<picture-list type="avatar" :list="picture" :status="status" size="208" jumpType="redirect"></picture-list>
+			<picture-list type="avatar" :list="picture" :status="status" size="205" ></picture-list>
 		</view>
 	</view>
 </template>
 
 <script setup>
 	import {ref} from "vue";
-	import { onLoad,onReachBottom} from "@dcloudio/uni-app";
+	import { onLoad,onReachBottom,onReady} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
 	const seriesId = ref("");
@@ -27,21 +30,24 @@
     const page = ref(1);
     const is_load = ref(false);
     const is_search = ref(false);
+	const title = ref("");
 
 	onLoad(async (options)=>{
 		seriesId.value = options.seriesId;
 		pictureMore();
-		uni.setNavigationBarTitle({title:options.title})
+		title.value = options.title;
 	})
-
+	onReady(()=>{
+		uni.setNavigationBarTitle({title:title.value})
+	})
 	const pictureMore = async ()=>{
-		const res = await fetchWork('/v1.avatar/series',{page:page.value,limit:10,seriesId:seriesId.value,avatarName:value.value},'POST');
+		const res = await fetchWork('/v1.avatar/series',{page:page.value,limit:18,seriesId:seriesId.value,avatarName:value.value},'POST');
 		
         if(res && res.list.length!= 0){
 			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
-			status.value = res.list.length < 10? 'no-more':'more';
+			status.value = res.list.length < 18? 'no-more':'more';
 			page.value ++;
-			is_load.value = res.list.length == 10;
+			is_load.value = res.list.length == 18;
 		}else{
 			status.value= "";
 			return;
@@ -86,12 +92,23 @@
 		margin: 54rpx auto 0;
 		display: block;
 	}
+	.fixed_search{
+		position: fixed;
+		width: 100%;
+		top: 0;
+		left: 0;
+		padding: 20rpx 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 999;
+		background-color: #161616;
+	}
 	.search_box{
 		width: 680rpx;height: 96rpx;
-		margin: 70rpx auto 0;
-		border: 1rpx solid #6C3FFF;
-		background-color: rgba(108,63,255,0.2);
+		border: 1px solid #6C3FFF;
 		border-radius: 48rpx;
+		background-color: rgba(108,63,255,0.2);
 		box-shadow: 0px 20rpx 24rpx 0px rgba(0,0,0,0.2);
 		display: flex;
 		align-items: center;
@@ -134,11 +151,12 @@
 		text-align: center;
 		line-height: 84rpx;
 	}
-	.picture_box{
-		margin-top: 30rpx;
-	}
+	
 	.title{
 		font-size: 32rpx;padding: 0 34rpx;
+	}
+	.picture_box {
+		margin-top: -30rpx;
 	}
 
 </style>

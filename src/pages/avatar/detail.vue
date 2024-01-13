@@ -1,24 +1,26 @@
 <template>
     <view class="detail">
-        <view class="detail_imgBox">
-            <image :src="avatarInfo.avatar_thumb" class="detail_img"></image>
-            <view class="detail_aside">
-                <view class="name">{{ avatarInfo.series_name }}</view>
-                <navigator :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name"
-                    open-type="navigate" hover-class="navigator-hover" class="btn">
-                    查看专辑
-                </navigator>
-                <button open-type="share" class="btn">分享给朋友</button>
+        <view class="fixed_box">
+            <view class="detail_imgBox">
+                <image :src="avatarInfo.avatar_thumb" class="detail_img"></image>
+                <view class="detail_aside">
+                    <view class="name">{{ avatarInfo.series_name }}</view>
+                    <navigator :url="'/pages/avatar/sets?seriesId=' + avatarInfo.series_id + '&title=' + avatarInfo.series_name"
+                        hover-class="navigator-hover" class="btn">
+                        查看专辑
+                    </navigator>
+                    <button open-type="share" class="btn">分享给朋友</button>
+                </view>
+            </view>
+            <view class="down" @click="show">
+                <image src="@/static/avatar_download@2x.png" class="icon"></image>下载高清无水印原图
             </view>
         </view>
-       
-   
-        <view class="down" @click="show">
-            <image src="@/static/avatar_download@2x.png" class="icon"></image>下载高清无水印原图
-        </view>
+        <view style="height: 574rpx;"></view>
+
         <view class="picture_box">
             <view class="title">更多推荐</view>
-            <picture-list type="avatar" :list="picture" :status="status" jumpType="redirect"></picture-list>
+            <picture-list type="avatar" :list="picture" :status="status"></picture-list>
         </view>
         <uni-popup ref="save_mask" :mask-click="false" :animation="false">
 			<view class="save_tips">
@@ -125,7 +127,7 @@ onLoad(async (options) => {
     }
     id.value = options.id;
     title.value = options.title;
-    uni.setNavigationBarTitle({ title: title.value })
+   
     
     pictureMore();
     checkNumber();
@@ -136,7 +138,7 @@ onLoad(async (options) => {
 })
 onReady(async () => {
 
-  
+    uni.setNavigationBarTitle({ title: title.value })
 })
 
 onReachBottom(() => {
@@ -269,6 +271,15 @@ const pay = async () => {
 </script>
 
 <style scoped>
+.fixed_box{
+    position: fixed;
+    width: 100%;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    background-color: #161616;
+    padding-bottom: 30rpx;
+}
 
 .detail_imgBox{
     display: flex;
@@ -298,10 +309,11 @@ const pay = async () => {
     border: 2px solid #505050;
     font-size: 28rpx;
     color: #fff;
+    box-sizing: border-box;
 }
 .down {
     width: 680rpx;
-    height: 136rpx;
+    height: 120rpx;
     margin: 20rpx auto 0;
     display: flex;
     align-items: center;
@@ -310,7 +322,7 @@ const pay = async () => {
     color: #fff;
     font-weight: bold;
     background-color: #6C3FFF;
-    border-radius: 40rpx;
+    border-radius: 32rpx;
 }
 
 .down .icon {
@@ -322,7 +334,7 @@ const pay = async () => {
 .title {
     font-size: 32rpx;
     padding: 0 34rpx;
-    margin-top: 60rpx;
+    margin-top: 20rpx;
 }
 
 

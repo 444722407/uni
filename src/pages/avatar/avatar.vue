@@ -3,7 +3,7 @@
 		<image src="@/static/avatar_logo@2x.png" class="logo"></image>
 		<view class="search_box">
 			<image src="@/static/home_search@2x.png" class="icon"></image>
-			<input type="text" class="input" placeholder="输入您的姓氏" v-model="value" maxlength="16">
+			<input type="text" class="input" placeholder="输入姓氏/名字" v-model="value" maxlength="16">
 		
 			<view class="clear_box" @click="clear" v-if="value">
 				<image src="@/static/avatar_search_clear@2x.png" class="clear"></image>
@@ -12,7 +12,14 @@
 		</view>
 		<view class="picture_box">
 			<view class="title">{{is_search?'为您匹配以下头像':'热门头像'}}</view>
-			<picture-list type="avatar" :list="picture" :status="status"></picture-list>
+
+			<view v-show="!is_search">
+				<picture-list type="avatar" :list="picture" :status="status1" url="sets"></picture-list>
+			</view>
+			<view v-show="is_search">
+				<picture-list type="avatar" :list="searchData" :status="status2" url="detail"></picture-list>
+			</view>
+			
 		</view>
 	</view>
 </template>
@@ -22,39 +29,61 @@
 	import { onLoad,onReachBottom} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
 
-	const value = ref("")
+	const value = ref("");
+	const is_search = ref(false);
 	const picture = ref([]);
-    const status = ref("loading");
-    const page = ref(1);
-    const is_load = ref(false);
-    const is_search = ref(false);
+	const searchData = ref([]);
+
+
+    const status1 = ref("loading");
+    const page1 = ref(1);
+    const is_load1 = ref(false);
+	
+	const status2 = ref("loading");
+    const page2 = ref(1);
+    const is_load2 = ref(false);
+
 
 	onLoad(async ()=>{
 		pictureMore();
 		
 	})
-	const pictureMore = async ()=>{
-		const res = await fetchWork('/v1.avatar/data_list',{page:page.value,limit:10,avatarName:value.value},'POST');
+	const searchMore = async ()=>{
+		const res = await fetchWork('/v1.avatar/data_list',{page:page2.value,limit:10,avatarName:value.value},'POST');
 		
         if(res && res.list.length!= 0){
-			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
-			status.value = res.list.length < 10? 'no-more':'more';
-			page.value ++;
-			is_load.value = res.list.length == 10;
+			searchData.value = page2.value == 1 ? res.list:[...searchData.value,...res.list];
+			status2.value = res.list.length < 10? 'no-more':'more';
+			page2.value ++;
+			is_load2.value = res.list.length == 10;
 		}else{
-			status.value= "";
+			status2.value= "";
+			return;
+		}
+	}
+	const pictureMore = async ()=>{
+		const res = await fetchWork('/v1.avatar/recommend',{page:page1.value,limit:10},'POST');
+		
+        if(res && res.list.length!= 0){
+			
+			picture.value = page1.value == 1 ? res.list:[...picture.value,...res.list];
+			status1.value = res.list.length < 10? 'no-more':'more';
+			page1.value ++;
+			is_load1.value = res.list.length == 10;
+		}else{
+			status1.value= "";
 			return;
 		}
 
 	}
 	const search = async ()=>{
 		if(value.value){
-			picture.value = [];
-			page.value = 1;
-			is_load.value = false;
-			status.value = "loading";
+			searchData.value = [];
+			page2.value = 1;
+			is_load2.value = false;
+			status2.value = "loading";
 			is_search.value = true;
-			pictureMore()
+			searchMore()
 		}
 		
 	}
@@ -63,18 +92,19 @@
 		uni.hideKeyboard();
 
 		if(is_search.value){
-			page.value = 1;
-			is_load.value = false;
-			status.value = "loading";
+			page2.value = 1;
+			is_load2.value = false;
+			status2.value = "loading";
 			is_search.value = false;
-			picture.value = [];
-			pictureMore()
 		}
 		
 	}
 	onReachBottom(()=>{
-		if(is_load.value){
+		if(is_load1.value && !is_search.value){
             pictureMore();
+        }
+		if(is_load2.value && is_search.value){
+            searchMore();
         }
 	})
 </script>
