@@ -111,6 +111,7 @@ export default {
 
 <style>
 /*每个页面公共css */
+
 page {
   background-color: #161616;
   color: #FFFFFF

@@ -12,14 +12,8 @@
 		</view>
 		<view class="picture_box">
 			<view class="title">{{is_search?'为您匹配以下头像':'热门头像'}}</view>
-
-			<view v-show="!is_search">
-				<picture-list type="avatar" :list="picture" :status="status1" url="sets"></picture-list>
-			</view>
-			<view v-show="is_search">
-				<picture-list type="avatar" :list="searchData" :status="status2" url="detail"></picture-list>
-			</view>
-			
+			<picture-list  v-show="!is_search" type="avatar" :list="picture" :status="status1" url="sets"></picture-list>
+			<picture-list  v-show="is_search"  type="avatar" :list="searchData" :status="status2" url="detail"></picture-list>
 		</view>
 	</view>
 </template>

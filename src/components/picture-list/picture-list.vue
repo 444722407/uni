@@ -41,6 +41,10 @@
         url:{
             type:String,
             default:"detail"
+        },
+        w:{
+            type:String,
+            default:"50%" 
         }
     })
 
@@ -60,11 +64,12 @@
 	.list{
         display: flex;
         flex-wrap: wrap;
-        padding: 0 19rpx;
+        padding: 0 20rpx;
     }
     .item{
-        margin: 0 16rpx;
-        width: v-bind("props.size + 'rpx'");
+        padding: 0 16rpx;
+        width: v-bind("props.w");
         overflow: hidden;
+        box-sizing: border-box;
     }
 </style>

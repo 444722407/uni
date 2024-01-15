@@ -13,7 +13,7 @@
 		</view>
 		<view style="height: 136rpx;"></view>
 		<view class="picture_box">
-			<picture-list type="avatar" :list="picture" :status="status" size="205" ></picture-list>
+			<picture-list type="avatar" :list="picture" :status="status" size="205" w="33.333%"></picture-list>
 		</view>
 	</view>
 </template>

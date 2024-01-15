@@ -14,8 +14,8 @@
           <view class="nav" :class="{active:navId == 0}" @click="changeNav(0)">壁纸</view>
           <view class="nav" :class="{active:navId == 1}" @click="changeNav(1)">头像</view>
       </view>
-      <picture-list type="picture" v-show="navId == 0" :list="picture" :status="status"></picture-list>
-      <picture-list type="avatar"  v-show="navId == 1" :list="[]" status=""></picture-list>
+      <picture-list type="picture" v-show="navId == 0" :list="picture" :status="status1"></picture-list>
+      <picture-list type="avatar"  v-show="navId == 1" :list="avatar"  :status="status2"></picture-list>
   </view>
 
   
@@ -23,32 +23,55 @@
 
 <script setup >
   import {ref} from "vue";
-  import { onLoad } from "@dcloudio/uni-app";
+  import { onLoad,onReachBottom } from "@dcloudio/uni-app";
   import fetchWork from '@/services'
-  const picture = ref([]);
-  const avatar = ref([]);
+
+
   const navId = ref(0)
   const authorInfo = ref({});
+  const creator_id =  ref("");
+  const picture = ref([]);
+  const avatar = ref([]);
 
-  const status = ref("loading");
+  const status1 = ref("loading");
+  const page1 = ref(1);
+  const is_load1 = ref(false);
+
+  const status2 = ref("loading");
+  const page2 = ref(1);
+  const is_load2 = ref(false);
   
 
   const changeNav = (id)=>{
       navId.value = id;
   } 
+  const avatarMore = async ()=>{
+    
+      const res = await fetchWork('/v1.avatar/creator',{page:page2.value,limit:10,creatorId:creator_id.value},'POST');
+
+      if(res && res.list.length!= 0){
+          
+          avatar.value = page2.value == 1 ? res.list:[...avatar.value,...res.list];
+          status2.value = res.list.length < 10? 'no-more':'more';
+          page2.value ++;
+          is_load2.value = res.list.length == 10;
+      }else{
+          status2.value= "";
+          return;
+      }
+    }
   onLoad(async(options)=>{
-    const creator_id = options.creator_id;
+    creator_id.value = options.creator_id;
     if(creator_id){
-       fetchWork('/v1.creator/get_detail',{creator_id}).then((res)=>{
-
-        authorInfo.value = res;
+       fetchWork('/v1.creator/get_detail',{creator_id:creator_id.value}).then((res)=>{
+          authorInfo.value = res;
        })
 
-       fetchWork('/v1.creator/get_wallpaper_list',{creator_id}).then((res)=>{
+       fetchWork('/v1.creator/get_wallpaper_list',{creator_id:creator_id.value}).then((res)=>{
           picture.value= res.list;
-          status.value = "";
+          status1.value = "";
        })
-
+       avatarMore();
     }
   })
 
@@ -63,6 +86,13 @@
       }
     });
   }
+  onReachBottom(()=>{
+   
+		if(is_load2.value && navId.value == 1){
+        avatarMore();
+    }
+	})
+
 </script>
 
 <style scoped>

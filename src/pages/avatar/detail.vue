@@ -69,7 +69,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { onLoad, onReady, onReachBottom } from "@dcloudio/uni-app";
+import { onLoad, onReady, onReachBottom,onShareAppMessage} from "@dcloudio/uni-app";
 import fetchWork from '@/services'
 const app = getApp();
 
@@ -127,7 +127,7 @@ onLoad(async (options) => {
     }
     id.value = options.id;
     title.value = options.title;
-   
+    await app.globalData.checkLogin();
     
     pictureMore();
     checkNumber();
@@ -268,13 +268,22 @@ const pay = async () => {
     }
 }
 
+onShareAppMessage(()=>{
+    return {
+      title: title.value,
+      desc:"查看详情",
+      path: '/pages/avatar/detail?id=' + id.value + '&title=' + title.value,
+      imageUrl:avatarInfo.avatar_thumb
+    }
+})
+
 </script>
 
 <style scoped>
 .fixed_box{
     position: fixed;
     width: 100%;
-    z-index: 999;
+    z-index: 9;
     left: 0;
     top: 0;
     background-color: #161616;

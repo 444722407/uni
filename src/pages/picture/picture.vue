@@ -13,8 +13,15 @@
 			</view>
 		</view>
 		<view style="height: 256rpx;"></view>
+
 		<view class="picture_box" style="margin-top: -20rpx;">
-			<picture-list type="picture" :list="picture" :status="status"></picture-list>
+			<swiper class="swiper" @change="changeSwiper" :current="current">
+				<swiper-item v-for="(item,index) in navList" :key="item.id">
+					<scroll-view scroll-y style="height: 100%;" @scrolltolower="onBottom" :scroll-top="scrollTop">
+						<picture-list type="picture" :list="datas[index].list" :status="datas[index].status" v-if="datas[index] && datas[index].list.length"></picture-list>
+					</scroll-view>
+				</swiper-item>
+			</swiper>
 		</view>
 	</view>
 </template>
@@ -28,11 +35,9 @@
 	const left = ref(0);
 	const navId = ref(0);
 
-
-	const picture = ref([]);
-    const status = ref("loading");
-    const page = ref(1);
-    const is_load = ref(false);
+	const datas = ref([]);
+	const current = ref(0)
+	const scrollTop  = ref(0);
 
 	onLoad(async ()=>{
 		const res = await fetchWork('/v1.wallpaper/get_category_list');
@@ -41,47 +46,81 @@
 	
 		navList.value.unshift({id:0,name:"全部"},{id:-9527,name:"上新"});
 
-		pictureMore();
+
+		
+		
+
+		for(let i = 0;i<navList.value.length;i++){
+			let page = 1;
+			let res = [];
+			let is_load = false;
+			let status = "loading";
+
+			if( i == 1){
+				res = await fetchWork('/v1.wallpaper/get_new_list');
+			}else{
+				res =  await fetchWork('/v1.wallpaper/get_list',{page:1,category_id:navList.value[i].id});
+				page ++ ;
+				status = res.list.length < 10? 'no-more':'more';
+				is_load = res.list.length == 10;
+			}
+			
+			datas.value.push({
+				list:res.list,
+				page,
+				status,
+				is_load
+			}) 
+			
+		}
+	
 		
 	})
-	const pictureMore = async ()=>{
-		const res = await fetchWork('/v1.wallpaper/get_list',{page:page.value,category_id:navId.value});
-		
-        if(res && res.list.length!= 0){
-			picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
-			status.value = res.list.length < 10? 'no-more':'more';
-			page.value ++;
-			is_load.value = res.list.length == 10;
-		}else{
-			status.value= "";
-			return;
-		}
-
-	}
-	const popMore = async () =>{
-		const res = await fetchWork('/v1.wallpaper/get_new_list');
-		picture.value = res.list;
-		status.value = "";
-	}
 	
+	// const pictureMore = async ()=>{
+	// 	const res = await fetchWork('/v1.wallpaper/get_list',{page:page.value,category_id:navId.value});
+		
+    //     if(res && res.list.length!= 0){
+	// 		picture.value = page.value == 1 ? res.list:[...picture.value,...res.list];
+	// 		status.value = res.list.length < 10? 'no-more':'more';
+	// 		page.value ++;
+	// 		is_load.value = res.list.length == 10;
+	// 	}else{
+	// 		status.value= "";
+	// 		return;
+	// 	}
+
+	// }
+
 	const changNav = (id,index)=>{
 		navId.value = id;
 		left.value = index>3?index* 60:0;
-		status.value = 'loading';
-		page.value = 1;
-		picture.value = [];
-		if(id == -9527){
-			popMore();
-		}else{
-			pictureMore();
-		}
-		
+		current.value = index;
 	}
-	onReachBottom(()=>{
-		if(is_load.value){
-            pictureMore();
-        }
-	})
+
+	const changeSwiper = (e)=>{
+		const index = e.detail.current;
+		const id = navList.value[index].id;
+		changNav(id,index)
+	}
+
+
+	const onBottom = async ()=>{
+
+		if(navId.value.id == '-9527'){
+			return
+		}
+		const data = datas.value[current.value];
+		
+		if(data.is_load){
+			const res =  await fetchWork('/v1.wallpaper/get_list',{page:data.page,category_id:navList.value[current.value].id});
+			data.list = [...data.list,...res.list];
+			data.status =  res.list.length < 10? 'no-more':'more';
+			data.page++ ; 
+			data.is_load = res.list.length == 10;
+		}
+	}
+	
 </script>
 
 <style scoped>
@@ -171,5 +210,16 @@
 		100%{
 			width: 40rpx;
 		}
+	}
+	.picture {
+		height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+	.picture_box{
+		flex: 1;
+	}
+	.swiper{
+		min-height: 100%;
 	}
 </style>
