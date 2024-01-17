@@ -15,7 +15,7 @@
 		<view style="height: 256rpx;"></view>
 
 		<view class="picture_box" style="margin-top: -20rpx;">
-			<swiper class="swiper" @change="changeSwiper" :current="current">
+			<swiper class="swiper" @change="changeSwiper" :current="current" :duration="100">
 				<swiper-item v-for="(item,index) in navList" :key="item.id">
 					<scroll-view scroll-y style="height: 100%;" @scrolltolower="onBottom" :scroll-top="scrollTop">
 						<picture-list type="picture" :list="datas[index].list" :status="datas[index].status" v-if="datas[index] && datas[index].list.length"></picture-list>
@@ -58,6 +58,7 @@
 
 			if( i == 1){
 				res = await fetchWork('/v1.wallpaper/get_new_list');
+				status="no-more";
 			}else{
 				res =  await fetchWork('/v1.wallpaper/get_list',{page:1,category_id:navList.value[i].id});
 				page ++ ;
@@ -190,7 +191,7 @@
 	}
 	.active{
 		color: #FFD717;
-		transition: .1s color;
+		/* transition: 80ms color; */
 	}
 	.active::after{
 		content: "";
@@ -201,7 +202,7 @@
 		bottom: 10rpx;
 		left: 50%;
 		margin-left: -20rpx;
-		animation: ani_width .1s;
+		animation: ani_width 80ms;
 	}
 	@keyframes ani_width{
 		0%{

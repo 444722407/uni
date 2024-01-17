@@ -1,7 +1,8 @@
 <template>
 	<view class="avatar">
 		<image src="@/static/avatar_logo@2x.png" class="logo"></image>
-		<view class="search_box">
+		<view class="search_box_fixed">
+			<view class="search_box">
 			<image src="@/static/home_search@2x.png" class="icon"></image>
 			<input type="text" class="input" placeholder="输入姓氏/名字" v-model="value" maxlength="16">
 		
@@ -9,6 +10,7 @@
 				<image src="@/static/avatar_search_clear@2x.png" class="clear"></image>
 			</view>
 			<view class="btn" @click="search">立即匹配</view>
+		</view>
 		</view>
 		<view class="picture_box">
 			<view class="title">{{is_search?'为您匹配以下头像':'热门头像'}}</view>
@@ -106,12 +108,18 @@
 <style scoped>
 .logo{
 		width: 500rpx;height: 136rpx;
-		margin: 54rpx auto 0;
+		margin: 54rpx auto 70rpx;
 		display: block;
+	}
+	.search_box_fixed{
+		position: sticky;
+		top: 0;
+		background-color: #161616;
+		padding: 20rpx 0;
 	}
 	.search_box{
 		width: 632rpx;height: 112rpx;
-		margin: 70rpx auto 0;
+		margin: 0 auto;
 		border: 1rpx solid #6C3FFF;
 		background-color: rgba(108,63,255,0.2);
 		border-radius: 62rpx;

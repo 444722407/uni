@@ -1,5 +1,6 @@
 <template>
-  <canvas id="canvas-drag" canvas-id="canvas-drag" disable-scroll="true" @touchstart="start" @touchmove="move" @touchend="end" :style="'width: ' + width + 'px; height: ' + height + 'px;'"></canvas>
+  <canvas id="canvas-drag" canvas-id="canvas-drag" disable-scroll="true" :style="'width: ' + width + 'px; height: ' + height + 'px;'"></canvas>
+  <canvas id="canvas-drag2" canvas-id="canvas-drag2" disable-scroll="true" @touchstart="start" @touchmove="move" @touchend="end" :style="'width:100%;height: ' + height + 'px;'"></canvas>
 </template>
 
 <script>
@@ -11,7 +12,7 @@ const ROTATE_ENABLED = true;
 let isMove = false; // 标识触摸后是否有移动，用来判断是否需要增加操作历史
 
 const DEBUG_MODE = false; // 打开调试后会渲染操作区域边框（无背景时有效）
-const dragGraph = function({ x = 0, y = 0, w, h, type, text, index,id, fontSize = 20, color = "red", url = null, rotate = 0, sourceId = null, selected = false }, canvas, factor) {
+const dragGraph = function({ x = 0, y = 0, w, h, type, text, index,id, fontSize = 20, color = "red", url = null, rotate = 0, sourceId = null, selected = false }, canvas,canvas2,factor) {
 this.centerX = x + w / 2;
 this.centerY = y + h / 2;
 
@@ -32,6 +33,7 @@ this.text = text;
 this.fontSize = fontSize;
 this.color = color;
 this.ctx = canvas;
+this.ctx2 = canvas2;
 this.rotate = rotate;
 this.type = type;
 this.selected = selected;
@@ -236,6 +238,10 @@ props: {
   //   type: Object,
   //   default: () => ({})
   // },
+  dx:{
+    type: Number,
+    default: 0
+  },
   bgColor: {
     type: String,
     default: ""
@@ -274,6 +280,8 @@ beforeMount() {
   }
  
   this.ctx = uni.createCanvasContext('canvas-drag', this);
+  this.ctx2 = uni.createCanvasContext('canvas-drag2', this);
+ 
   this.draw();
 },
 
@@ -307,27 +315,27 @@ methods: {
       console.log("已是第一步，不能回退");
     }
   },
-  onGraphChange(n, o) {
-    if (JSON.stringify(n) === "{}")
-      return;
-    this.drawArr.push(new dragGraph(Object.assign({
-      x: 30,
-      y: 30
-    }, n), this.ctx, this.factor));
+  // onGraphChange(n, o) {
+  //   if (JSON.stringify(n) === "{}")
+  //     return;
+  //   this.drawArr.push(new dragGraph(Object.assign({
+  //     x: 30,
+  //     y: 30
+  //   }, n), this.ctx, this.factor));
 
-    this.draw();
-    this.recordHistory();
-  },
+  //   this.draw();
+  //   this.recordHistory();
+  // },
   initByArr(newArr,sy) {
   
     this.drawArr = [];
     
     newArr.forEach((item, index) => {
-      this.drawArr.push(new dragGraph(item, this.ctx, this.factor));
+      this.drawArr.push(new dragGraph(item, this.ctx, this.ctx2,this.factor));
     });
 
     // 增加水印
-    this.drawArr.push(new dragGraph(sy,this.ctx, this.factor))
+    this.drawArr.push(new dragGraph(sy,this.ctx,this.ctx2, this.factor))
     
     this.draw();
   },
@@ -338,31 +346,33 @@ methods: {
     });
 
     this.drawArr.forEach((item) => {
-
+    
         if(item.selected){
-          item.ctx.save()     
-          item.ctx.translate(item.centerX, item.centerY);
-          item.ctx.rotate(item.rotate * Math.PI / 180);
-          item.ctx.translate(-item.centerX, -item.centerY);
+          const dx = this.dx;
+          item.ctx2.save()     
+          item.ctx2.translate(item.centerX + dx, item.centerY);
+          item.ctx2.rotate(item.rotate * Math.PI / 180);
+          item.ctx2.translate(-item.centerX - dx, -item.centerY);
       
-          item.ctx.setLineDash([5, 5], 5);
-          item.ctx.setLineWidth(2);
-          item.ctx.setStrokeStyle(STROKE_COLOR);
+          item.ctx2.setLineDash([5, 5], 5);
+          item.ctx2.setLineWidth(2);
+          item.ctx2.setStrokeStyle(STROKE_COLOR);
           if (item.type === "text") {
-            item.ctx.strokeRect(item.x, item.y, item.w, item.h);
-            item.ctx.drawImage(DELETE_ICON2, item.x - 15, item.y - 15, 40, 25);
-            item.ctx.drawImage(DRAG_ICON, item.x + item.w - 15, item.y + item.h - 15, 24, 24);
+            item.ctx2.strokeRect(item.x + dx, item.y, item.w, item.h);
+            item.ctx2.drawImage(DELETE_ICON2, item.x - 15 + dx, item.y - 15, 40, 25);
+            item.ctx2.drawImage(DRAG_ICON, item.x + item.w - 15 +dx, item.y + item.h - 15, 24, 24);
           } else if (item.type === "image") {
-            item.ctx.strokeRect(item.x, item.y, item.w, item.h);
-            item.ctx.drawImage(DELETE_ICON, item.x - 15, item.y - 15, 40, 25);
-            item.ctx.drawImage(DRAG_ICON, item.x + item.w - 15, item.y + item.h - 15, 24, 24);
+            item.ctx2.strokeRect(item.x + dx, item.y, item.w, item.h);
+            item.ctx2.drawImage(DELETE_ICON, item.x - 15 + dx , item.y - 15, 40, 25);
+            item.ctx2.drawImage(DRAG_ICON, item.x + item.w - 15 + dx, item.y + item.h - 15, 24, 24);
           }
-          item.ctx.restore()
+        item.ctx2.restore()
         }
       
     });
-
-    
+   
+    this.ctx2.draw()
+  
     
   
     return new Promise((resolve) => {
@@ -373,6 +383,7 @@ methods: {
   },
   start(e) {
     isMove = false;
+    const dx = this.dx;
     const {
       x,
       y
@@ -382,7 +393,7 @@ methods: {
 
  
     this.drawArr && this.drawArr.forEach((item, index) => {
-      const action = item.isInGraph(x, y);
+      const action = item.isInGraph(x - dx, y);
       
       if (action) {
         item.action = action;
@@ -582,6 +593,18 @@ methods: {
 <style>
   #canvas-drag{
       margin: 0 auto;
+      position: absolute;
+      z-index: 8;
+      left: 50%;
+      transform: translate(-50%);
   }
+  #canvas-drag2{
+      margin: 0 auto;
+      position: absolute;
+      z-index: 9;
+      left: 0;
+      top: 0;
+  }
+  
   
 </style>
