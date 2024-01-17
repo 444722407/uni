@@ -24,7 +24,7 @@
 	import {ref} from "vue";
 	import { onLoad,onReachBottom} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
-
+	const app = getApp()
 	const value = ref("");
 	const is_search = ref(false);
 	const picture = ref([]);
@@ -41,6 +41,7 @@
 
 
 	onLoad(async ()=>{
+		await app.globalData.checkLogin();
 		pictureMore();
 		
 	})

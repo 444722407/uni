@@ -196,7 +196,8 @@ const sy = ref({});
 const dx = ref(0);
 
 
-onLoad((options) => {
+onLoad(async (options) => {
+	await app.globalData.checkLogin();
 	tt.setSwipeBackMode(0);
 	id.value = options.id;
 	make_id.value = options.make_id;
@@ -248,14 +249,17 @@ const getPayList = async () => {
 	res[0].check = true;
 	payList.value = res;
 	project_id.value = res[0].id;
+
+	scaleCanvas()
 }
 
 
 const scaleCanvas = () => {
 
-	const query = uni.createSelectorQuery().in(getCurrentInstance());
+	const query = uni.createSelectorQuery();
+
 	query.select('.canvas_box').boundingClientRect(async data => {
-	
+		
 		const this_height = data.height;
 		const this_width = data.width;
 
@@ -315,12 +319,7 @@ const scaleCanvas = () => {
 	}).exec();
 
 }
-onReady(async () => {
-	if (id.value || make_id.value) {
-		scaleCanvas()
-	}
-	
-})
+
 
 const selectImg = (id, type) => {
 

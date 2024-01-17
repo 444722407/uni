@@ -30,7 +30,7 @@
 	import {ref} from "vue";
 	import { onLoad,onReady,onReachBottom} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
-
+	const app = getApp()
 	const navList = ref([]);
 	const left = ref(0);
 	const navId = ref(0);
@@ -40,6 +40,7 @@
 	const scrollTop  = ref(0);
 
 	onLoad(async ()=>{
+		await app.globalData.checkLogin();
 		const res = await fetchWork('/v1.wallpaper/get_category_list');
 		
 		navList.value = res.list;

@@ -22,7 +22,7 @@
 	import {ref} from "vue";
 	import { onLoad,onReachBottom,onReady} from "@dcloudio/uni-app";
 	import fetchWork from '@/services'
-
+	const app = getApp()
 	const seriesId = ref("");
 	const value = ref("")
 	const picture = ref([]);
@@ -33,12 +33,13 @@
 	const title = ref("");
 
 	onLoad(async (options)=>{
+		await app.globalData.checkLogin();
 		seriesId.value = options.seriesId;
 		pictureMore();
 		title.value = options.title;
 	})
 	onReady(()=>{
-		uni.setNavigationBarTitle({title:title.value})
+		// uni.setNavigationBarTitle({title:title.value})
 	})
 	const pictureMore = async ()=>{
 		const res = await fetchWork('/v1.avatar/series',{page:page.value,limit:18,seriesId:seriesId.value,avatarName:value.value},'POST');
@@ -48,6 +49,7 @@
 			status.value = res.list.length < 18? 'no-more':'more';
 			page.value ++;
 			is_load.value = res.list.length == 18;
+			uni.setNavigationBarTitle({title:res.list[0].series_name})
 		}else{
 			status.value= "";
 			return;
