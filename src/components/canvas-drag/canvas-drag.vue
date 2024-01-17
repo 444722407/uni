@@ -288,7 +288,7 @@ beforeMount() {
 methods: {
   toPx(rpx) {
     return rpx * this.factor;
-  },
+  }, 
   initHistory() {
     this.history = [];
   },
